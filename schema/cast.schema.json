@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lake-sparkle.example/schema/cast.schema.json",
+  "title": "Cast",
+  "description": "A reusable set of characters. Adventures reference it by id.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "id", "name", "characters"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "name": { "type": "string" },
+    "characters": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/definitions/character" }
+    }
+  },
+  "definitions": {
+    "hex": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+    "character": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["look", "voice"],
+      "properties": {
+        "look": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["style", "hair", "skin", "outfit", "lips", "accent"],
+          "properties": {
+            "style": { "enum": ["big", "bob", "long", "slick"] },
+            "hair": { "$ref": "#/definitions/hex" },
+            "skin": { "$ref": "#/definitions/hex" },
+            "outfit": { "$ref": "#/definitions/hex" },
+            "lips": { "$ref": "#/definitions/hex" },
+            "accent": { "$ref": "#/definitions/hex" }
+          }
+        },
+        "voice": { "type": "string", "description": "How they talk. Goes into the LLM prompt." },
+        "secret": { "type": "string", "description": "Something the LLM can hint at. Never state outright." },
+        "spice": { "enum": [1, 2, 3], "description": "This character's own ceiling for how spicy their lines get." }
+      }
+    }
+  }
+}

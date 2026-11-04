@@ -1,0 +1,15 @@
+{
+  "place": "STUDIO 9 · THE REUNION COUCH · LIVE",
+  "narration": "The audience gasps in unison. Somewhere, a producer is weeping with joy.",
+  "speaker": "HOST CHAD BELLAMY-OKAFOR",
+  "line": "A tabloid! In my house! I haven't been this thrilled since the sommelier incident.",
+  "confessional": "I'd like to thank the goat. Without the goat, I'm just a man with a clipboard.",
+  "mood": "surprised",
+  "fx": ["sparkle"],
+  "memory": ["Chad is delighted by your confession."],
+  "choices": [
+    { "text": "Demand a cut of your own tabloid.", "next": "generate", "delta": { "drama": 15, "brand": 10000 }, "set": ["tabloid_confessed"] },
+    { "text": "Faint onto the second couch.", "next": "generate", "delta": { "pop": 10 } },
+    { "text": "Name the goat as your source.", "next": "END", "delta": { "drama": 20, "pop": -5, "brand": -4000 }, "hint": "The goat has an alibi." }
+  ]
+}

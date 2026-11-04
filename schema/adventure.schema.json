@@ -1,0 +1,191 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lake-sparkle.example/schema/adventure.schema.json",
+  "title": "Adventure",
+  "description": "One playable episode. See docs/ADVENTURE_FORMAT.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "id", "label", "episode", "cast", "stats", "scenes", "endings"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "label": { "type": "string", "minLength": 1, "maxLength": 12 },
+    "episode": { "type": "string", "minLength": 1 },
+    "cast": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "id of a file in cast/" },
+    "tone": { "type": "string", "description": "Style note passed to the LLM for generated beats." },
+    "endAfter": { "type": "integer", "minimum": 1, "description": "Force the ending after this many choices." },
+    "stats": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/definitions/statDef" }
+    },
+    "flags": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/definitions/flagDef" }
+    },
+    "scenes": {
+      "type": "object",
+      "required": ["start"],
+      "propertyNames": { "pattern": "^[a-z][a-z0-9_]*$" },
+      "additionalProperties": { "$ref": "#/definitions/baseScene" }
+    },
+    "endings": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/ending" }
+    }
+  },
+  "definitions": {
+    "flagName": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "mood": { "enum": ["neutral", "surprised", "angry", "smug"] },
+    "fxList": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["wine", "souffle", "horns", "sparkle"] }
+    },
+    "delta": { "type": "object", "additionalProperties": { "type": "number" } },
+    "statDef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "start"],
+      "properties": {
+        "label": { "type": "string" },
+        "start": { "type": "number" },
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "maxStep": { "type": "number", "exclusiveMinimum": 0, "description": "Largest single change an LLM-generated choice may apply." },
+        "display": { "enum": ["bar", "number", "money"] }
+      }
+    },
+    "flagDef": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "recap": { "type": "string", "description": "Line shown in the ending recap when this flag is set." }
+      }
+    },
+    "condition": {
+      "oneOf": [
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/flagName" }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "flags": { "type": "array", "items": { "$ref": "#/definitions/flagName" } },
+            "notFlags": { "type": "array", "items": { "$ref": "#/definitions/flagName" } },
+            "stats": {
+              "type": "object",
+              "additionalProperties": { "type": "string", "pattern": "^(>=|<=|==|!=|>|<)\\s*-?\\d+(\\.\\d+)?$" }
+            }
+          }
+        }
+      ]
+    },
+    "nextRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["go"],
+      "properties": {
+        "if": { "$ref": "#/definitions/condition" },
+        "go": { "type": "string", "minLength": 1 }
+      }
+    },
+    "next": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/nextRule" } }
+      ]
+    },
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "next"],
+      "properties": {
+        "text": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "next": { "$ref": "#/definitions/next" },
+        "delta": { "$ref": "#/definitions/delta" },
+        "set": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/definitions/flagName" } },
+        "requires": { "$ref": "#/definitions/condition" },
+        "hint": { "type": "string", "description": "Nudge for the LLM when next is \"generate\"." }
+      }
+    },
+    "scene": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "place": { "type": "string" },
+        "narration": { "type": "string" },
+        "speaker": { "type": "string" },
+        "line": { "type": "string" },
+        "confessional": { "type": "string" },
+        "mood": { "$ref": "#/definitions/mood" },
+        "fx": { "$ref": "#/definitions/fxList" },
+        "memory": { "type": "array", "items": { "type": "string" } },
+        "choices": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/choice" } },
+        "variants": { "type": "array", "items": { "$ref": "#/definitions/variant" } },
+        "spice": { "$ref": "#/definitions/spiceOverrides" }
+      }
+    },
+    "override": {
+      "allOf": [
+        { "$ref": "#/definitions/scene" },
+        { "not": { "anyOf": [{ "required": ["variants"] }, { "required": ["spice"] }] } }
+      ]
+    },
+    "variant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["if", "use"],
+      "properties": {
+        "if": { "$ref": "#/definitions/condition" },
+        "use": { "$ref": "#/definitions/override" }
+      }
+    },
+    "spiceOverrides": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "1": { "$ref": "#/definitions/override" },
+        "2": { "$ref": "#/definitions/override" },
+        "3": { "$ref": "#/definitions/override" }
+      }
+    },
+    "baseScene": {
+      "allOf": [
+        { "$ref": "#/definitions/scene" },
+        { "required": ["place", "narration", "choices"] }
+      ]
+    },
+    "endingOverride": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "title": { "type": "string" }, "text": { "type": "string" } }
+    },
+    "ending": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "text"],
+      "properties": {
+        "if": { "$ref": "#/definitions/condition" },
+        "title": { "type": "string" },
+        "text": { "type": "string" },
+        "spice": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "1": { "$ref": "#/definitions/endingOverride" },
+            "2": { "$ref": "#/definitions/endingOverride" },
+            "3": { "$ref": "#/definitions/endingOverride" }
+          }
+        }
+      }
+    }
+  }
+}

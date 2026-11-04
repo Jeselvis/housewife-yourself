@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema/adventure.schema.json",
+  "version": 1,
+  "id": "reunion",
+  "label": "REUNION",
+  "episode": "SEASON 4 · REUNION SPECIAL · \"EVERYONE BROUGHT A LAWYER\"",
+  "cast": "lake-sparkle",
+  "tone": "Live-TV chaos. Receipts, betrayals, and a host who is delighted by all of it.",
+  "endAfter": 6,
+  "stats": {
+    "drama": { "label": "Drama", "start": 62, "min": 0, "max": 100, "maxStep": 30, "display": "bar" },
+    "pop": { "label": "Popularity", "start": 48, "min": 0, "max": 100, "maxStep": 30, "display": "bar" },
+    "glasses": { "label": "Wine Thrown", "start": 0, "min": 0, "maxStep": 3, "display": "number" },
+    "brand": { "label": "Brand Value", "start": 25000, "min": 0, "maxStep": 25000, "display": "money" }
+  },
+  "flags": {
+    "tabloid_confessed": { "recap": "You declared yourself the tabloid, live." },
+    "second_couch": { "recap": "You produced a second, smaller couch from your purse." },
+    "lawyer_swapped": { "recap": "You fired your lawyer on air." }
+  },
+  "scenes": {
+    "start": {
+      "place": "STUDIO 9 · THE REUNION COUCH · LIVE",
+      "narration": "Seven women, one couch, and a host with a clipboard full of receipts. A lawyer is hiding under the coffee table. Possibly yours.",
+      "speaker": "HOST CHAD BELLAMY-OKAFOR",
+      "line": "Let's talk about the night of the goat. Somebody sold a story to a tabloid. Somebody sold it twice. Somebody sold it to a goat.",
+      "confessional": "I have never read a script. I have only read the room, and the room is on fire.",
+      "mood": "smug",
+      "memory": ["Chad has everyone's texts."],
+      "choices": [
+        { "text": "Stand up and declare yourself the tabloid.", "next": "generate", "hint": "The couch reacts. Chad is thrilled. Escalate.", "delta": { "drama": 25, "pop": 10, "brand": 13000 }, "set": ["tabloid_confessed"] },
+        { "text": "Slowly pull a second, smaller couch out of your purse.", "next": "generate", "hint": "Nobody knows what the second couch is for. Chad has questions.", "delta": { "drama": 10, "pop": 15, "brand": 17000 }, "set": ["second_couch"] },
+        { "text": "Fire your lawyer, live, and hire the one under the table.", "next": "generate", "hint": "The lawyer under the table has been listening this whole time.", "delta": { "drama": 15, "pop": 5, "glasses": 1, "brand": -9000 }, "set": ["lawyer_swapped"] }
+      ]
+    }
+  },
+  "endings": [
+    {
+      "if": { "stats": { "brand": ">=60000" } },
+      "title": "You Host Next Season",
+      "text": "Chad has been 'reassigned to a smaller couch.' You get the clipboard."
+    },
+    {
+      "if": { "stats": { "brand": ">=30000" } },
+      "title": "Renewed, Pending Legal",
+      "text": "You're back next season, subject to a 40-page agreement about the goat."
+    },
+    {
+      "title": "Cut From the Edit",
+      "text": "Every scene you were in was 'reimagined.' You can be seen in the background, holding a fountain."
+    }
+  ]
+}

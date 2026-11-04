@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lake Sparkle Adventure</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#170a21}
+button.choice{cursor:pointer;text-align:left;transition:background .12s,border-color .12s,transform .12s}
+button.choice:hover{background:#3a1a4d;border-color:#ffd54a;transform:translateX(6px)}
+button.choice:focus-visible,button.ep:focus-visible{outline:3px solid #5ee6d6;outline-offset:3px}
+button.ep{cursor:pointer}
+button.ep:hover{border-color:#ffd54a}
+</style>
+</helmet>
+<div style="width: 960px; height: 1100px; box-sizing: border-box; padding: 32px 40px; display: flex; flex-direction: column; gap: 20px; background: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 4px), #170a21; color: #f6ead8; font-family: 'VT323', monospace">
+
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; border-bottom: 4px double #ff6fb1; padding-bottom: 18px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<h1 style="margin: 0; font-family: 'Press Start 2P', monospace; font-size: 20px; line-height: 1.5; color: #ff6fb1; font-weight: 400">THE REAL HOUSEWIVES<br>OF LAKE SPARKLE</h1>
+<div style="font-size: 24px; color: #ffd54a; letter-spacing: 1px">{{adv.episode}}</div>
+<div style="display: flex; gap: 8px; align-items: center; font-size: 21px; color: #c9b3d6">
+<span>SPICE:</span>
+<sc-for list="{{spices}}" as="sp" hint-placeholder-count="3">
+<button class="ep" type="button" onClick="{{ sp.pick }}" style="font-family: 'VT323', monospace; font-size: 21px; padding: 2px 12px; background: {{sp.bg}}; color: {{sp.fg}}; border: 2px solid #ff6fb1">{{sp.label}}</button>
+</sc-for>
+</div>
+</div>
+<svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink: 0">
+<rect x="16" y="8" width="32" height="8" fill="#f6ead8"/>
+<rect x="20" y="16" width="24" height="8" fill="#f6ead8"/>
+<rect x="24" y="24" width="16" height="8" fill="#f6ead8"/>
+<rect x="20" y="12" width="24" height="8" fill="#ff6fb1"/>
+<rect x="24" y="20" width="16" height="4" fill="#ff6fb1"/>
+<rect x="30" y="32" width="4" height="16" fill="#f6ead8"/>
+<rect x="20" y="48" width="24" height="4" fill="#f6ead8"/>
+</svg>
+</div>
+
+<div style="display: flex; gap: 20px; align-items: stretch">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 22px; color: #c9b3d6; display: flex; justify-content: space-between"><span>DRAMA</span><span>{{drama}}</span></div>
+<div style="height: 12px; background: #3a1a4d; border: 2px solid #ff6fb1"><div style="height: 100%; background: #ff6fb1; width: {{dramaW}}"></div></div>
+</div>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 22px; color: #c9b3d6; display: flex; justify-content: space-between"><span>POPULARITY</span><span>{{pop}}</span></div>
+<div style="height: 12px; background: #3a1a4d; border: 2px solid #5ee6d6"><div style="height: 100%; background: #5ee6d6; width: {{popW}}"></div></div>
+</div>
+<div style="width: 150px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 22px; color: #c9b3d6">WINE THROWN</div>
+<div style="font-family: 'Press Start 2P', monospace; font-size: 18px; color: #ffd54a">{{glasses}}</div>
+</div>
+<div style="width: 200px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 22px; color: #c9b3d6">BRAND VALUE</div>
+<div style="font-family: 'Press Start 2P', monospace; font-size: 18px; color: #7dff9b">{{brand}}</div>
+</div>
+</div>
+
+<div style="background: #24112f; border: 3px solid #ffd54a; padding: 24px 28px; display: flex; flex-direction: column; gap: 16px; min-height: 250px">
+<div style="font-size: 22px; color: #c9b3d6; letter-spacing: 1px">{{scene.place}}</div>
+<div style="font-size: 26px; line-height: 1.25; color: #f6ead8">{{scene.narration}}</div>
+<sc-if value="{{scene.hasLine}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; gap: 20px; align-items: flex-start">
+<div style="position: relative; width: 96px; height: 96px; flex-shrink: 0; border: 4px solid #ff6fb1; background: #3a1a4d; box-shadow: 6px 6px 0 #170a21">
+<sc-if value="{{p.isBig}}" hint-placeholder-val="{{ true }}">
+<svg width="96" height="96" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" style="display: block">
+<rect x="2" y="1" width="12" height="13" fill="{{p.hair}}"/>
+<rect x="6" y="12" width="4" height="2" fill="{{p.skin}}"/>
+<rect x="4" y="4" width="8" height="8" fill="{{p.skin}}"/>
+<rect x="4" y="3" width="8" height="2" fill="{{p.hair}}"/>
+<rect x="5" y="7" width="2" height="1" fill="#1a0b24"/>
+<rect x="9" y="7" width="2" height="1" fill="#1a0b24"/>
+<rect x="7" y="10" width="2" height="1" fill="{{p.lips}}"/>
+<rect x="2" y="14" width="12" height="2" fill="{{p.outfit}}"/>
+<rect x="3" y="9" width="1" height="2" fill="{{p.accent}}"/>
+<rect x="12" y="9" width="1" height="2" fill="{{p.accent}}"/>
+</svg>
+</sc-if>
+<sc-if value="{{p.isBob}}" hint-placeholder-val="{{ false }}">
+<svg width="96" height="96" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" style="display: block">
+<rect x="3" y="2" width="10" height="10" fill="{{p.hair}}"/>
+<rect x="6" y="12" width="4" height="2" fill="{{p.skin}}"/>
+<rect x="4" y="4" width="8" height="8" fill="{{p.skin}}"/>
+<rect x="4" y="3" width="8" height="2" fill="{{p.hair}}"/>
+<rect x="5" y="7" width="2" height="1" fill="#1a0b24"/>
+<rect x="9" y="7" width="2" height="1" fill="#1a0b24"/>
+<rect x="7" y="10" width="2" height="1" fill="{{p.lips}}"/>
+<rect x="2" y="14" width="12" height="2" fill="{{p.outfit}}"/>
+<rect x="5" y="13" width="6" height="1" fill="{{p.accent}}"/>
+</svg>
+</sc-if>
+<sc-if value="{{p.isLong}}" hint-placeholder-val="{{ false }}">
+<svg width="96" height="96" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" style="display: block">
+<rect x="3" y="2" width="10" height="13" fill="{{p.hair}}"/>
+<rect x="6" y="12" width="4" height="2" fill="{{p.skin}}"/>
+<rect x="4" y="4" width="8" height="8" fill="{{p.skin}}"/>
+<rect x="4" y="3" width="8" height="2" fill="{{p.hair}}"/>
+<rect x="4" y="5" width="3" height="1" fill="{{p.hair}}"/>
+<rect x="5" y="7" width="2" height="1" fill="#1a0b24"/>
+<rect x="9" y="7" width="2" height="1" fill="#1a0b24"/>
+<rect x="7" y="10" width="2" height="1" fill="{{p.lips}}"/>
+<rect x="2" y="14" width="12" height="2" fill="{{p.outfit}}"/>
+<rect x="3" y="9" width="1" height="2" fill="{{p.accent}}"/>
+<rect x="12" y="9" width="1" height="2" fill="{{p.accent}}"/>
+</svg>
+</sc-if>
+<sc-if value="{{p.isSlick}}" hint-placeholder-val="{{ false }}">
+<svg width="96" height="96" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" style="display: block">
+<rect x="6" y="12" width="4" height="2" fill="{{p.skin}}"/>
+<rect x="4" y="4" width="8" height="8" fill="{{p.skin}}"/>
+<rect x="4" y="2" width="8" height="3" fill="{{p.hair}}"/>
+<rect x="3" y="4" width="1" height="3" fill="{{p.hair}}"/>
+<rect x="12" y="4" width="1" height="3" fill="{{p.hair}}"/>
+<rect x="5" y="7" width="2" height="1" fill="#1a0b24"/>
+<rect x="9" y="7" width="2" height="1" fill="#1a0b24"/>
+<rect x="7" y="10" width="2" height="1" fill="{{p.lips}}"/>
+<rect x="2" y="14" width="12" height="2" fill="{{p.outfit}}"/>
+<rect x="6" y="13" width="4" height="1" fill="#ffffff"/>
+<rect x="7" y="13" width="2" height="3" fill="{{p.accent}}"/>
+<rect x="3" y="7" width="1" height="3" fill="#b9b9c9"/>
+<rect x="3" y="10" width="3" height="1" fill="#b9b9c9"/>
+</svg>
+</sc-if>
+<sc-if value="{{p.moodSurprised}}" hint-placeholder-val="{{ false }}">
+<svg width="96" height="96" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" style="position: absolute; left: 0; top: 0; display: block">
+<rect x="5" y="5" width="6" height="6" fill="{{p.skin}}"/>
+<rect x="5" y="5" width="2" height="1" fill="#1a0b24"/>
+<rect x="9" y="5" width="2" height="1" fill="#1a0b24"/>
+<rect x="5" y="6" width="2" height="2" fill="#ffffff"/>
+<rect x="9" y="6" width="2" height="2" fill="#ffffff"/>
+<rect x="6" y="7" width="1" height="1" fill="#1a0b24"/>
+<rect x="10" y="7" width="1" height="1" fill="#1a0b24"/>
+<rect x="7" y="9" width="2" height="2" fill="#1a0b24"/>
+</svg>
+</sc-if>
+<sc-if value="{{p.moodAngry}}" hint-placeholder-val="{{ false }}">
+<svg width="96" height="96" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" style="position: absolute; left: 0; top: 0; display: block">
+<rect x="5" y="5" width="6" height="6" fill="{{p.skin}}"/>
+<rect x="5" y="5" width="1" height="1" fill="#1a0b24"/>
+<rect x="6" y="6" width="1" height="1" fill="#1a0b24"/>
+<rect x="10" y="5" width="1" height="1" fill="#1a0b24"/>
+<rect x="9" y="6" width="1" height="1" fill="#1a0b24"/>
+<rect x="5" y="7" width="2" height="1" fill="#1a0b24"/>
+<rect x="9" y="7" width="2" height="1" fill="#1a0b24"/>
+<rect x="6" y="10" width="4" height="1" fill="#1a0b24"/>
+<rect x="6" y="11" width="1" height="1" fill="#1a0b24"/>
+<rect x="9" y="11" width="1" height="1" fill="#1a0b24"/>
+</svg>
+</sc-if>
+<sc-if value="{{p.moodSmug}}" hint-placeholder-val="{{ false }}">
+<svg width="96" height="96" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" style="position: absolute; left: 0; top: 0; display: block">
+<rect x="5" y="5" width="6" height="6" fill="{{p.skin}}"/>
+<rect x="5" y="6" width="2" height="1" fill="#1a0b24"/>
+<rect x="9" y="5" width="2" height="1" fill="#1a0b24"/>
+<rect x="5" y="7" width="2" height="1" fill="#1a0b24"/>
+<rect x="9" y="7" width="2" height="1" fill="#1a0b24"/>
+<rect x="6" y="10" width="1" height="1" fill="{{p.lips}}"/>
+<rect x="7" y="11" width="2" height="1" fill="{{p.lips}}"/>
+<rect x="9" y="10" width="1" height="1" fill="{{p.lips}}"/>
+<rect x="10" y="9" width="1" height="1" fill="{{p.lips}}"/>
+</svg>
+</sc-if>
+<sc-if value="{{p.fxWine}}" hint-placeholder-val="{{ false }}">
+<svg width="96" height="96" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" style="position: absolute; left: 0; top: 0; display: block">
+<rect x="4" y="3" width="8" height="2" fill="#8b1030"/>
+<rect x="5" y="3" width="2" height="1" fill="#c4284e"/>
+<rect x="4" y="5" width="1" height="5" fill="#8b1030"/>
+<rect x="7" y="5" width="1" height="2" fill="#8b1030"/>
+<rect x="11" y="5" width="1" height="4" fill="#8b1030"/>
+<rect x="4" y="14" width="4" height="1" fill="#8b1030"/>
+</svg>
+</sc-if>
+<sc-if value="{{p.fxSouffle}}" hint-placeholder-val="{{ false }}">
+<svg width="96" height="96" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" style="position: absolute; left: 0; top: 0; display: block">
+<rect x="4" y="3" width="8" height="3" fill="#f5e3b3"/>
+<rect x="6" y="3" width="1" height="1" fill="#c98a3d"/>
+<rect x="9" y="4" width="2" height="1" fill="#c98a3d"/>
+<rect x="5" y="6" width="2" height="1" fill="#f5e3b3"/>
+<rect x="9" y="9" width="3" height="2" fill="#f5e3b3"/>
+<rect x="10" y="9" width="1" height="1" fill="#c98a3d"/>
+<rect x="3" y="14" width="3" height="1" fill="#f5e3b3"/>
+</svg>
+</sc-if>
+<sc-if value="{{p.fxHorns}}" hint-placeholder-val="{{ false }}">
+<svg width="96" height="96" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" style="position: absolute; left: 0; top: 0; display: block">
+<rect x="4" y="2" width="2" height="1" fill="#e8dfcf"/>
+<rect x="3" y="1" width="2" height="1" fill="#e8dfcf"/>
+<rect x="3" y="0" width="1" height="1" fill="#e8dfcf"/>
+<rect x="10" y="2" width="2" height="1" fill="#e8dfcf"/>
+<rect x="11" y="1" width="2" height="1" fill="#e8dfcf"/>
+<rect x="12" y="0" width="1" height="1" fill="#e8dfcf"/>
+</svg>
+</sc-if>
+<sc-if value="{{p.fxSparkle}}" hint-placeholder-val="{{ false }}">
+<svg width="96" height="96" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" style="position: absolute; left: 0; top: 0; display: block">
+<rect x="1" y="2" width="1" height="3" fill="#ffd54a"/>
+<rect x="0" y="3" width="3" height="1" fill="#ffd54a"/>
+<rect x="13" y="9" width="1" height="3" fill="#ffd54a"/>
+<rect x="12" y="10" width="3" height="1" fill="#ffd54a"/>
+<rect x="14" y="2" width="1" height="1" fill="#ffffff"/>
+<rect x="1" y="11" width="1" height="1" fill="#ffffff"/>
+</svg>
+</sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; border-left: 6px solid #ff6fb1; padding-left: 18px; flex: 1; min-width: 0">
+<div style="font-family: 'Press Start 2P', monospace; font-size: 13px; color: #ff6fb1">{{scene.speaker}}</div>
+<div style="font-size: 32px; line-height: 1.2; color: #fff6e6">{{scene.line}}</div>
+</div>
+</div>
+</sc-if>
+</div>
+
+<sc-if value="{{scene.hasLine}}" hint-placeholder-val="{{ true }}">
+<div style="background: #0f2a2c; border: 2px dashed #5ee6d6; padding: 14px 20px; display: flex; flex-direction: column; gap: 4px">
+<div style="font-family: 'Press Start 2P', monospace; font-size: 11px; color: #5ee6d6">CONFESSIONAL CUTAWAY</div>
+<div style="font-size: 25px; line-height: 1.2; color: #d9fbf7; font-style: italic">{{scene.confessional}}</div>
+</div>
+</sc-if>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="font-family: 'Press Start 2P', monospace; font-size: 12px; color: #ffd54a">WHAT DO YOU DO?</div>
+<sc-for list="{{choices}}" as="c" hint-placeholder-count="3">
+<button class="choice" type="button" onClick="{{ c.pick }}" style="display: flex; gap: 16px; align-items: baseline; width: 100%; box-sizing: border-box; padding: 12px 18px; background: #24112f; border: 2px solid #ff6fb1; color: #f6ead8; font-family: 'VT323', monospace; font-size: 27px; line-height: 1.15">
+<span style="font-family: 'Press Start 2P', monospace; font-size: 16px; color: #ffd54a; flex-shrink: 0">{{c.letter}}</span>
+<span>{{c.text}}</span>
+</button>
+</sc-for>
+</div>
+
+<div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 24px; font-size: 21px; color: #c9b3d6; border-top: 2px solid #3a1a4d; padding-top: 10px">
+<span>CAST MEMORY: {{scene.memory}}</span>
+<div style="display: flex; gap: 8px; align-items: center">
+<span>EPISODE:</span>
+<sc-for list="{{episodes}}" as="e" hint-placeholder-count="2">
+<button class="ep" type="button" onClick="{{ e.pick }}" style="font-family: 'VT323', monospace; font-size: 21px; padding: 2px 12px; background: {{e.bg}}; color: {{e.fg}}; border: 2px solid #ffd54a">{{e.label}}</button>
+</sc-for>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":960,"height":1100}}'>
+/* ADVENTURES: to add a new adventure, append one object below. No markup or logic changes needed.
+   scenes is keyed by scene id; "start" is required. A choice's "next" is a scene id.
+   Optional per choice: drama, pop, glasses, brand (stat changes; brand is in dollars, e.g. 15000). Omit "next" or use reset:true to restart.
+   Any scene id that is not defined ends the episode with the spin-off offer (see ENDINGS below).
+   Optional per scene, for the speaker's portrait: mood: "neutral" | "surprised" | "angry" | "smug",
+   fx: any of "wine", "souffle", "horns", "sparkle" (layered over the face; they work on every character).
+   spice: { "1": {...}, "3": {...} } overrides any scene field (narration, line, confessional, mood, fx, choices)
+   at that spice level. Level 2 is the base text; a scene with no spice block reads the same at every level. */
+const BREAK = {
+  place: "COMMERCIAL BREAK · WE'LL BE RIGHT BACK",
+  narration: "In the full game, the LLM writes the next scene here from your last choice, what every cast member remembers, and the drama meter. Then it hands you three new bad ideas.",
+  speaker: "", line: "", confessional: "",
+  memory: "Everyone remembers everything.",
+  choices: [
+    { text: "Restart the episode.", reset: true },
+    { text: "Restart the episode, but with more goat.", reset: true },
+    { text: "Restart the episode and sit in a different chair.", reset: true }
+  ]
+};
+
+/* ENDINGS: when a choice leads to a scene id that does not exist, the episode ends and the highest tier
+   whose minBrand the player's final brand value reaches is shown. An adventure can supply its own
+   "endings" list; otherwise these are used. Tiers can carry a spice block like scenes do. */
+const DEFAULT_ENDINGS = [
+  {
+    minBrand: 50000,
+    title: "Your Own Candle Line",
+    text: "The network wants a scent called 'Souffle Fury.' Dolly demands royalties and a lifetime supply.",
+    spice: {
+      "1": { title: "Your Own Tea Collection", text: "A tasteful range of calming teas, including 'Seating Chart Serenity.' Dolly approves, mostly." },
+      "3": { title: "Your Own Line of Personal Massagers", text: "The network has greenlit 'The Sparkle Collection.' It comes in six colors and one deeply awkward product launch. Dolly is asking for royalties." }
+    }
+  },
+  {
+    minBrand: 40000,
+    title: "The Spin-Off",
+    text: "'Housewife in the City' premieres in the spring. Six episodes, one goat, no refunds.",
+    spice: {
+      "3": { text: "'Housewife in the City' premieres in the spring. The network is calling it 'a lot.' Legal is calling it other things." }
+    }
+  },
+  {
+    minBrand: 28000,
+    title: "One More Season",
+    text: "Renewed, with a probationary peach. The goat has been added to the credits."
+  },
+  {
+    minBrand: 0,
+    title: "Woman Near Fountain",
+    text: "You get one minute of screen time. You are holding a fountain. The goat gets a better edit.",
+    spice: {
+      "3": { text: "You get one minute of screen time. You are holding a fountain and a restraining order. The goat gets a better edit." }
+    }
+  }
+];
+
+const ADVENTURES = [
+  {
+    id: "goat",
+    label: "EP 7",
+    episode: "SEASON 4 · EPISODE 7 · \"WHO INVITED THE GOAT?\"",
+    scenes: {
+      start: {
+        place: "VILLA SPARKLE · DOLLY'S DINNER PARTY · 8:42 PM",
+        narration: "The chandelier is shaking. Not from the bass. From Dolly's laugh. You have been a housewife for exactly eleven minutes.",
+        speaker: "DOLLY MARCHETTI-WYNN",
+        line: "Darling, the seating chart is sacred, and you are sitting in Bunny's emotional support chair. Explain yourself before the souffle does.",
+        confessional: "I don't hold grudges. I hold ledgers. Leather-bound ones. With a ribbon.",
+        memory: "Dolly knows you arrived by jet ski.",
+        mood: "smug",
+        spice: {
+          "1": {
+            narration: "The chandelier tinkles softly. Dolly's laugh is warm, like a candle that has opinions. You have been a housewife for eleven minutes.",
+            line: "Oh sweetheart, that's Bunny's special chair. Would you mind sliding over, gently, like a cloud?",
+            confessional: "I'm not upset. I'm simply keeping a very polite list."
+          },
+          "3": {
+            narration: "The chandelier is shaking. Dolly's fourth Pinot has entered the chat. You have been a housewife for eleven minutes and you have already ruined her whole life.",
+            line: "You absolute [BLEEP]. You sat in Bunny's chair. I've buried people for less, and I wasn't even angry then.",
+            confessional: "I'm going to ruin her. Socially, financially, and then in whatever way is left. I have a spreadsheet.",
+            mood: "angry",
+            choices: [
+              { text: "Announce you're Bunny's long-lost twin and demand half the souffle AND half her husband.", next: "twin", drama: 20, pop: 5, brand: 6000 },
+              { text: "Drop to one knee and propose to the chandelier. Use the ring Dolly lost in 2019.", next: "chandelier", drama: 15, pop: 10, glasses: 1, brand: 10000 },
+              { text: "Calmly reveal the wire. The podcast is called 'Dolly's Debts.'", next: "wire", drama: 25, pop: -5, brand: -5000 }
+            ]
+          }
+        },
+        choices: [
+          { text: "Announce you are Bunny's long-lost twin and demand half the souffle.", next: "twin", drama: 15, pop: 5, brand: 4000 },
+          { text: "Drop to one knee and propose to the chandelier to change the subject.", next: "chandelier", drama: 10, pop: 10, glasses: 1, brand: 8000 },
+          { text: "Calmly reveal you are wearing a wire. It's for a podcast about gluten.", next: "wire", drama: 20, pop: -5, brand: -5000 }
+        ]
+      },
+      twin: {
+        place: "VILLA SPARKLE · THE DINING ROOM · 8:44 PM",
+        narration: "Bunny rises. Her pearls rise one second later, out of respect.",
+        speaker: "BUNNY VANDERKLEET",
+        line: "A twin? I was an only child. I made sure of it. Which of our parents told you this, and did they sign anything?",
+        confessional: "If she's my twin, where's my half of the inheritance? And the nice half of her I didn't get?",
+        memory: "Bunny now suspects you of being family.",
+        mood: "surprised",
+        choices: [
+          { text: "Pour your wine on Bunny's head. It's how twins are tested.", next: "wined", drama: 20, pop: 5, glasses: 1, brand: 15000 },
+          { text: "Faint, face-first, into the souffle.", next: "souffle", drama: 5, pop: 15, brand: 6000 },
+          { text: "Accuse the goat of being the real twin.", next: "goat", drama: 25, pop: -10, brand: -8000 }
+        ]
+      },
+      wined: {
+        place: "VILLA SPARKLE · THE DINING ROOM · 8:46 PM",
+        narration: "A single glass of Merlot travels in a perfect arc. It lands exactly where you aimed. The room gasps in a key you didn't know existed.",
+        speaker: "BUNNY VANDERKLEET",
+        line: "Is this... Merlot? I can't decide whether to scream or ask for the vintage.",
+        confessional: "Fine. It was a good year. But she doesn't get the souffle AND the Merlot.",
+        memory: "Bunny is dripping, and taking names.",
+        mood: "surprised",
+        fx: ["wine"],
+        spice: {
+          "1": {
+            narration: "A tiny splash of Merlot lands very gently. Everyone politely pretends not to notice.",
+            line: "Oh! That's a little damp. Does anyone have a napkin? No rush.",
+            confessional: "Accidents happen. But I will remember the vintage."
+          },
+          "3": {
+            narration: "A glass of Merlot travels in a perfect arc and lands like a baptism. The sommelier crosses himself.",
+            line: "Is that the 2019?! You absolute animal. That was four hundred dollars a bottle, you [BLEEP].",
+            confessional: "I'm not mad about the wine. I'm mad it looks good on me."
+          }
+        },
+        choices: [
+          { text: "Hand her a napkin and call it a baptism.", next: "break", drama: 10, pop: 10, brand: 10000 },
+          { text: "Pour the rest on Dolly, to be fair.", next: "break", drama: 25, pop: -5, glasses: 1, brand: 20000 },
+          { text: "Ask if she'd like a second coat.", next: "break", drama: 15, pop: 15, glasses: 1, brand: 12000 }
+        ]
+      },
+      souffle: {
+        place: "VILLA SPARKLE · THE DINING TABLE · 8:46 PM",
+        narration: "You land in the souffle with the grace of a falling piano. The souffle, in turn, lands on Dolly.",
+        speaker: "DOLLY MARCHETTI-WYNN",
+        line: "You fainted into my souffle. It's still warm. So is my fury.",
+        confessional: "Four hours that souffle took. And she wears it like a facial.",
+        memory: "Dolly is plating you for the guests.",
+        mood: "angry",
+        fx: ["souffle"],
+        choices: [
+          { text: "Wake up and claim it was a spa treatment.", next: "break", drama: 15, pop: 10, brand: 9000 },
+          { text: "Stay perfectly still and hope the goat takes the blame.", next: "break", drama: 10, pop: -5, brand: -4000 },
+          { text: "Eat your way out, slowly, maintaining eye contact.", next: "break", drama: 20, pop: 15, brand: 18000 }
+        ]
+      },
+      goat: {
+        place: "VILLA SPARKLE · THE DINING ROOM · 8:46 PM",
+        narration: "The goat, silent until now, steps up to the emotional support chair and sits. A second later, something strange happens to Bunny's head.",
+        speaker: "BUNNY VANDERKLEET",
+        line: "Oh my God. The horns. It's genetic. Why did nobody tell me?",
+        confessional: "All those years of headbutting my own reflection finally make sense.",
+        memory: "Bunny believes she is part goat.",
+        mood: "surprised",
+        fx: ["horns"],
+        choices: [
+          { text: "Welcome her to the herd.", next: "break", drama: 10, pop: 15, brand: 7000 },
+          { text: "Confirm the family resemblance with a DNA test.", next: "break", drama: 15, pop: 5, brand: 3000 },
+          { text: "Offer her a tin can, as a family tradition.", next: "break", drama: 20, pop: 10, brand: 14000 }
+        ]
+      },
+      chandelier: {
+        place: "VILLA SPARKLE · UNDER THE CHANDELIER · 8:44 PM",
+        narration: "The chandelier does not answer. A sommelier in the corner quietly takes notes.",
+        speaker: "TAMSIN RUIZ",
+        line: "Did she just propose to a light fixture? Honestly, bold. But that chandelier has been seeing someone. I'm just saying.",
+        confessional: "I know who the chandelier is dating. I'm not saying it's the goat. It's the goat.",
+        memory: "Tamsin is now your ally, or your witness.",
+        mood: "smug",
+        fx: ["sparkle"],
+        choices: [
+          { text: "Demand to know the name of the other fixture.", next: "break", drama: 20, pop: 5, brand: 5000 },
+          { text: "Throw your wine at the sommelier, as a distraction.", next: "break", drama: 15, pop: -5, glasses: 2, brand: -12000 },
+          { text: "Marry the chandelier, right now, with Tamsin officiating.", next: "break", drama: 10, pop: 20, brand: 16000 }
+        ]
+      },
+      wire: {
+        place: "VILLA SPARKLE · THE DINING ROOM · 8:45 PM",
+        narration: "A hush falls. Somewhere, a violin loses its nerve.",
+        speaker: "DOLLY MARCHETTI-WYNN",
+        line: "A wire? For a podcast? Is it the one with the woman who reviews doorknobs? Because I have notes, and I was in the pilot.",
+        confessional: "I will not be recorded without my good side, and my good side is currently in Milan.",
+        memory: "Dolly wants a cut of the podcast.",
+        mood: "angry",
+        choices: [
+          { text: "Confess the podcast is a front, and the real front is the goat.", next: "break", drama: 20, pop: 5, brand: 6000 },
+          { text: "Offer Dolly a guest spot if she hands over her ledgers.", next: "break", drama: 10, pop: 10, brand: 9000 },
+          { text: "Swallow the microphone. Calmly. Maintain eye contact.", next: "break", drama: 15, pop: 15, glasses: 1, brand: 11000 }
+        ]
+      }
+    }
+  },
+  {
+    id: "reunion",
+    label: "REUNION",
+    episode: "SEASON 4 · REUNION SPECIAL · \"EVERYONE BROUGHT A LAWYER\"",
+    scenes: {
+      start: {
+        place: "STUDIO 9 · THE REUNION COUCH · LIVE",
+        narration: "Seven women, one couch, and a host with a clipboard full of receipts. A lawyer is hiding under the coffee table. Possibly yours.",
+        speaker: "HOST CHAD BELLAMY-OKAFOR",
+        line: "Let's talk about the night of the goat. Somebody sold a story to a tabloid. Somebody sold it twice. Somebody sold it to a goat.",
+        confessional: "I have never read a script. I have only read the room, and the room is on fire.",
+        memory: "Chad has everyone's texts.",
+        mood: "smug",
+        choices: [
+          { text: "Stand up and declare yourself the tabloid.", next: "break", drama: 25, pop: 10, brand: 13000 },
+          { text: "Slowly pull a second, smaller couch out of your purse.", next: "break", drama: 10, pop: 15, brand: 17000 },
+          { text: "Fire your lawyer, live, and hire the one under the table.", next: "break", drama: 15, pop: 5, glasses: 1, brand: -9000 }
+        ]
+      }
+    }
+  }
+];
+
+/* CAST: to add a character, add an entry keyed by the exact speaker name used in scenes.
+   style: "big" | "bob" | "long" | "slick". accent = earrings (big, long), pearls (bob), tie (slick). */
+const CAST = {
+  "DOLLY MARCHETTI-WYNN": { style: "big", hair: "#f2d98a", skin: "#f3c9a5", outfit: "#d6247a", lips: "#a3123f", accent: "#ffd54a" },
+  "BUNNY VANDERKLEET": { style: "bob", hair: "#c9c9d6", skin: "#f7dcc6", outfit: "#8f7bd1", lips: "#c05a7a", accent: "#ffffff" },
+  "TAMSIN RUIZ": { style: "long", hair: "#2b1a2e", skin: "#d9a06b", outfit: "#1fb5a6", lips: "#a8325a", accent: "#ffd54a" },
+  "HOST CHAD BELLAMY-OKAFOR": { style: "slick", hair: "#1c1c28", skin: "#e0b48a", outfit: "#2b3a67", lips: "#a05a50", accent: "#ff6fb1" }
+};
+const DEFAULT_FACE = { style: "bob", hair: "#7a6a8a", skin: "#e8c4a0", outfit: "#5a4a7a", lips: "#a05a60", accent: "#c9b3d6" };
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { adv: 0, scene: "start", drama: 62, pop: 48, glasses: 0, brand: 25000, spice: 2 };
+  }
+  renderVals() {
+    const s = this.state;
+    const adv = ADVENTURES[s.adv];
+    let base = adv.scenes[s.scene];
+    if (!base) {
+      const tiers = (adv.endings || DEFAULT_ENDINGS).slice().sort((a, b) => b.minBrand - a.minBrand);
+      let tier = tiers[tiers.length - 1];
+      for (let i = 0; i < tiers.length; i++) {
+        if (s.brand >= tiers[i].minBrand) { tier = tiers[i]; break; }
+      }
+      const tv = Object.assign({}, tier, (tier.spice && tier.spice[String(s.spice)]) || {});
+      base = Object.assign({}, BREAK, {
+        place: "EPISODE OVER · FINAL BRAND VALUE $" + Math.round(s.brand / 1000) + "K · THE OFFER: " + tv.title.toUpperCase(),
+        narration: tv.text,
+        memory: "The network remembers everything. So does Dolly."
+      });
+    }
+    const override = (base.spice && base.spice[String(s.spice)]) || {};
+    const sc = Object.assign({}, base, override);
+    const spices = [
+      { n: 1, label: "1 COZY" },
+      { n: 2, label: "2 PETTY" },
+      { n: 3, label: "3 UNHINGED" }
+    ].map((o) => ({
+      label: o.label,
+      bg: o.n === s.spice ? "#ff6fb1" : "#24112f",
+      fg: o.n === s.spice ? "#170a21" : "#f6ead8",
+      pick: () => this.setState({ spice: o.n })
+    }));
+    const clamp = (n) => Math.max(0, Math.min(100, n));
+    const letters = ["A", "B", "C"];
+    const fresh = (i) => ({ adv: i, scene: "start", drama: 62, pop: 48, glasses: 0, brand: 25000 });
+    const choices = sc.choices.map((c, i) => ({
+      letter: letters[i],
+      text: c.text,
+      pick: () => {
+        if (c.reset || !c.next) {
+          this.setState(fresh(s.adv));
+        } else {
+          this.setState({
+            scene: c.next,
+            drama: clamp(s.drama + (c.drama || 0)),
+            pop: clamp(s.pop + (c.pop || 0)),
+            glasses: s.glasses + (c.glasses || 0),
+            brand: Math.max(0, s.brand + (c.brand || 0))
+          });
+        }
+      }
+    }));
+    const episodes = ADVENTURES.map((a, i) => ({
+      label: a.label,
+      bg: i === s.adv ? "#ffd54a" : "#24112f",
+      fg: i === s.adv ? "#170a21" : "#f6ead8",
+      pick: () => this.setState(fresh(i))
+    }));
+    const face = CAST[sc.speaker] || DEFAULT_FACE;
+    const mood = sc.mood || "neutral";
+    const fx = sc.fx || [];
+    return {
+      p: {
+        hair: face.hair, skin: face.skin, outfit: face.outfit, lips: face.lips, accent: face.accent,
+        isBig: face.style === "big", isBob: face.style === "bob",
+        isLong: face.style === "long", isSlick: face.style === "slick",
+        moodSurprised: mood === "surprised", moodAngry: mood === "angry", moodSmug: mood === "smug",
+        fxWine: fx.indexOf("wine") >= 0, fxSouffle: fx.indexOf("souffle") >= 0,
+        fxHorns: fx.indexOf("horns") >= 0, fxSparkle: fx.indexOf("sparkle") >= 0
+      },
+      adv: { episode: adv.episode },
+      scene: {
+        place: sc.place,
+        narration: sc.narration,
+        speaker: sc.speaker,
+        line: sc.line,
+        confessional: sc.confessional,
+        memory: sc.memory,
+        hasLine: sc.line !== ""
+      },
+      choices: choices,
+      episodes: episodes,
+      spices: spices,
+      drama: s.drama,
+      pop: s.pop,
+      glasses: s.glasses,
+      brand: s.brand >= 1000000 ? "$" + (s.brand / 1000000).toFixed(1) + "M" : "$" + Math.round(s.brand / 1000) + "K",
+      dramaW: s.drama + "%",
+      popW: s.pop + "%"
+    };
+  }
+}
+</script>
+</body>
+</html>

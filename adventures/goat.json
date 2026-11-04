@@ -1,0 +1,243 @@
+{
+  "$schema": "../schema/adventure.schema.json",
+  "version": 1,
+  "id": "goat",
+  "label": "EP 7",
+  "episode": "SEASON 4 · EPISODE 7 · \"WHO INVITED THE GOAT?\"",
+  "cast": "lake-sparkle",
+  "tone": "Absurd, escalating, petty. Every beat wilder than the last. The goat is always somehow involved.",
+  "stats": {
+    "drama": { "label": "Drama", "start": 62, "min": 0, "max": 100, "maxStep": 30, "display": "bar" },
+    "pop": { "label": "Popularity", "start": 48, "min": 0, "max": 100, "maxStep": 30, "display": "bar" },
+    "glasses": { "label": "Wine Thrown", "start": 0, "min": 0, "maxStep": 3, "display": "number" },
+    "brand": { "label": "Brand Value", "start": 25000, "min": 0, "maxStep": 25000, "display": "money" }
+  },
+  "flags": {
+    "claimed_twin": { "recap": "You announced you were Bunny's long-lost twin." },
+    "proposed_to_chandelier": { "recap": "You proposed to the chandelier." },
+    "wired": { "recap": "You wore a wire to dinner." },
+    "wine_thrown": { "recap": "You poured wine on Bunny's head." },
+    "bunny_enemy": {},
+    "souffle_incident": { "recap": "You fainted face-first into the souffle." },
+    "goat_accused": { "recap": "You accused the goat of being the real twin." },
+    "goat_is_family": { "recap": "You toasted the goat as family." },
+    "cake_duel": { "recap": "You accepted Bunny's knife and cut the cake." }
+  },
+  "scenes": {
+    "start": {
+      "place": "VILLA SPARKLE · DOLLY'S DINNER PARTY · 8:42 PM",
+      "narration": "The chandelier is shaking. Not from the bass. From Dolly's laugh. You have been a housewife for exactly eleven minutes.",
+      "speaker": "DOLLY MARCHETTI-WYNN",
+      "line": "Darling, the seating chart is sacred, and you are sitting in Bunny's emotional support chair. Explain yourself before the souffle does.",
+      "confessional": "I don't hold grudges. I hold ledgers. Leather-bound ones. With a ribbon.",
+      "mood": "smug",
+      "memory": ["Dolly knows you arrived by jet ski."],
+      "choices": [
+        { "text": "Announce you are Bunny's long-lost twin and demand half the souffle.", "next": "twin", "delta": { "drama": 15, "pop": 5, "brand": 4000 }, "set": ["claimed_twin"] },
+        { "text": "Drop to one knee and propose to the chandelier to change the subject.", "next": "chandelier", "delta": { "drama": 10, "pop": 10, "glasses": 1, "brand": 8000 }, "set": ["proposed_to_chandelier"] },
+        { "text": "Calmly reveal you are wearing a wire. It's for a podcast about gluten.", "next": "wire", "delta": { "drama": 20, "pop": -5, "brand": -5000 }, "set": ["wired"] }
+      ],
+      "spice": {
+        "1": {
+          "narration": "The chandelier tinkles softly. Dolly's laugh is warm, like a candle that has opinions. You have been a housewife for eleven minutes.",
+          "line": "Oh sweetheart, that's Bunny's special chair. Would you mind sliding over, gently, like a cloud?",
+          "confessional": "I'm not upset. I'm simply keeping a very polite list."
+        },
+        "3": {
+          "narration": "The chandelier is shaking. Dolly's fourth Pinot has entered the chat. You have been a housewife for eleven minutes and you have already ruined her whole life.",
+          "line": "You absolute [BLEEP]. You sat in Bunny's chair. I've buried people for less, and I wasn't even angry then.",
+          "confessional": "I'm going to ruin her. Socially, financially, and then in whatever way is left. I have a spreadsheet.",
+          "mood": "angry",
+          "choices": [
+            { "text": "Announce you're Bunny's long-lost twin and demand half the souffle AND half her husband.", "next": "twin", "delta": { "drama": 20, "pop": 5, "brand": 6000 }, "set": ["claimed_twin"] },
+            { "text": "Drop to one knee and propose to the chandelier. Use the ring Dolly lost in 2019.", "next": "chandelier", "delta": { "drama": 15, "pop": 10, "glasses": 1, "brand": 10000 }, "set": ["proposed_to_chandelier"] },
+            { "text": "Calmly reveal the wire. The podcast is called 'Dolly's Debts.'", "next": "wire", "delta": { "drama": 25, "pop": -5, "brand": -5000 }, "set": ["wired"] }
+          ]
+        }
+      }
+    },
+
+    "twin": {
+      "place": "VILLA SPARKLE · THE DINING ROOM · 8:44 PM",
+      "narration": "Bunny rises. Her pearls rise one second later, out of respect.",
+      "speaker": "BUNNY VANDERKLEET",
+      "line": "A twin? I was an only child. I made sure of it. Which of our parents told you this, and did they sign anything?",
+      "confessional": "If she's my twin, where's my half of the inheritance? And the nice half of her I didn't get?",
+      "mood": "surprised",
+      "memory": ["Bunny now suspects you of being family."],
+      "choices": [
+        { "text": "Pour your wine on Bunny's head. It's how twins are tested.", "next": "wined", "delta": { "drama": 20, "pop": 5, "glasses": 1, "brand": 15000 }, "set": ["wine_thrown", "bunny_enemy"] },
+        { "text": "Faint, face-first, into the souffle.", "next": "souffle", "delta": { "drama": 5, "pop": 15, "brand": 6000 }, "set": ["souffle_incident"] },
+        { "text": "Accuse the goat of being the real twin.", "next": "goat", "delta": { "drama": 25, "pop": -10, "brand": -8000 }, "set": ["goat_accused"] }
+      ]
+    },
+
+    "wined": {
+      "place": "VILLA SPARKLE · THE DINING ROOM · 8:46 PM",
+      "narration": "A single glass of Merlot travels in a perfect arc. It lands exactly where you aimed. The room gasps in a key you didn't know existed.",
+      "speaker": "BUNNY VANDERKLEET",
+      "line": "Is this... Merlot? I can't decide whether to scream or ask for the vintage.",
+      "confessional": "Fine. It was a good year. But she doesn't get the souffle AND the Merlot.",
+      "mood": "surprised",
+      "fx": ["wine"],
+      "memory": ["Bunny is dripping, and taking names."],
+      "choices": [
+        { "text": "Hand her a napkin and call it a baptism.", "next": "dessert", "delta": { "drama": 10, "pop": 10, "brand": 10000 } },
+        { "text": "Pour the rest on Dolly, to be fair.", "next": "dessert", "delta": { "drama": 25, "pop": -5, "glasses": 1, "brand": 20000 } },
+        { "text": "Ask if she'd like a second coat.", "next": "dessert", "delta": { "drama": 15, "pop": 15, "glasses": 1, "brand": 12000 } }
+      ],
+      "spice": {
+        "1": {
+          "narration": "A tiny splash of Merlot lands very gently. Everyone politely pretends not to notice.",
+          "line": "Oh! That's a little damp. Does anyone have a napkin? No rush.",
+          "confessional": "Accidents happen. But I will remember the vintage."
+        },
+        "3": {
+          "narration": "A glass of Merlot travels in a perfect arc and lands like a baptism. The sommelier crosses himself.",
+          "line": "Is that the 2019?! You absolute animal. That was four hundred dollars a bottle, you [BLEEP].",
+          "confessional": "I'm not mad about the wine. I'm mad it looks good on me."
+        }
+      }
+    },
+
+    "souffle": {
+      "place": "VILLA SPARKLE · THE DINING TABLE · 8:46 PM",
+      "narration": "You land in the souffle with the grace of a falling piano. The souffle, in turn, lands on Dolly.",
+      "speaker": "DOLLY MARCHETTI-WYNN",
+      "line": "You fainted into my souffle. It's still warm. So is my fury.",
+      "confessional": "Four hours that souffle took. And she wears it like a facial.",
+      "mood": "angry",
+      "fx": ["souffle"],
+      "memory": ["Dolly is plating you for the guests."],
+      "choices": [
+        { "text": "Wake up and claim it was a spa treatment.", "next": "dessert", "delta": { "drama": 15, "pop": 10, "brand": 9000 } },
+        { "text": "Stay perfectly still and hope the goat takes the blame.", "next": "dessert", "delta": { "drama": 10, "pop": -5, "brand": -4000 } },
+        { "text": "Eat your way out, slowly, maintaining eye contact.", "next": "dessert", "delta": { "drama": 20, "pop": 15, "brand": 18000 } }
+      ]
+    },
+
+    "goat": {
+      "place": "VILLA SPARKLE · THE DINING ROOM · 8:46 PM",
+      "narration": "The goat, silent until now, steps up to the emotional support chair and sits. A second later, something strange happens to Bunny's head.",
+      "speaker": "BUNNY VANDERKLEET",
+      "line": "Oh my God. The horns. It's genetic. Why did nobody tell me?",
+      "confessional": "All those years of headbutting my own reflection finally make sense.",
+      "mood": "surprised",
+      "fx": ["horns"],
+      "memory": ["Bunny believes she is part goat."],
+      "choices": [
+        { "text": "Welcome her to the herd.", "next": "dessert", "delta": { "drama": 10, "pop": 15, "brand": 7000 } },
+        { "text": "Confirm the family resemblance with a DNA test.", "next": "dessert", "delta": { "drama": 15, "pop": 5, "brand": 3000 } },
+        { "text": "Offer her a tin can, as a family tradition.", "next": "dessert", "delta": { "drama": 20, "pop": 10, "brand": 14000 } }
+      ]
+    },
+
+    "chandelier": {
+      "place": "VILLA SPARKLE · UNDER THE CHANDELIER · 8:44 PM",
+      "narration": "The chandelier does not answer. A sommelier in the corner quietly takes notes.",
+      "speaker": "TAMSIN RUIZ",
+      "line": "Did she just propose to a light fixture? Honestly, bold. But that chandelier has been seeing someone. I'm just saying.",
+      "confessional": "I know who the chandelier is dating. I'm not saying it's the goat. It's the goat.",
+      "mood": "smug",
+      "fx": ["sparkle"],
+      "memory": ["Tamsin is now your ally, or your witness."],
+      "choices": [
+        { "text": "Demand to know the name of the other fixture.", "next": "dessert", "delta": { "drama": 20, "pop": 5, "brand": 5000 } },
+        { "text": "Throw your wine at the sommelier, as a distraction.", "next": "dessert", "delta": { "drama": 15, "pop": -5, "glasses": 2, "brand": -12000 } },
+        { "text": "Marry the chandelier, right now, with Tamsin officiating.", "next": "dessert", "delta": { "drama": 10, "pop": 20, "brand": 16000 } }
+      ]
+    },
+
+    "wire": {
+      "place": "VILLA SPARKLE · THE DINING ROOM · 8:45 PM",
+      "narration": "A hush falls. Somewhere, a violin loses its nerve.",
+      "speaker": "DOLLY MARCHETTI-WYNN",
+      "line": "A wire? For a podcast? Is it the one with the woman who reviews doorknobs? Because I have notes, and I was in the pilot.",
+      "confessional": "I will not be recorded without my good side, and my good side is currently in Milan.",
+      "mood": "angry",
+      "memory": ["Dolly wants a cut of the podcast."],
+      "choices": [
+        { "text": "Confess the podcast is a front, and the real front is the goat.", "next": "dessert", "delta": { "drama": 20, "pop": 5, "brand": 6000 } },
+        { "text": "Offer Dolly a guest spot if she hands over her ledgers.", "next": "dessert", "delta": { "drama": 10, "pop": 10, "brand": 9000 } },
+        { "text": "Swallow the microphone. Calmly. Maintain eye contact.", "next": "dessert", "delta": { "drama": 15, "pop": 15, "glasses": 1, "brand": 11000 } }
+      ]
+    },
+
+    "dessert": {
+      "place": "VILLA SPARKLE · DESSERT · 9:15 PM",
+      "narration": "Dessert arrives under a silver dome. Nobody ordered it. The goat is already sitting in front of it.",
+      "speaker": "TAMSIN RUIZ",
+      "line": "Whoever ordered the flambe, I want you to know I've called a lawyer and a priest, in that order.",
+      "confessional": "Eleven of these dinners, and this is the first cake with a knife standing up in it.",
+      "mood": "smug",
+      "memory": ["Everyone is watching the cake."],
+      "variants": [
+        {
+          "if": ["bunny_enemy"],
+          "use": {
+            "speaker": "BUNNY VANDERKLEET",
+            "line": "Oh look, cake. Why don't you cut it, darling? I insist. I've had some time to think, and I brought my own knife.",
+            "confessional": "Revenge is a dish best served flambeed.",
+            "mood": "angry",
+            "fx": ["wine"],
+            "memory": ["Bunny has been waiting for this moment."]
+          }
+        }
+      ],
+      "choices": [
+        { "text": "Accept the knife and cut the cake with ceremony.", "requires": ["bunny_enemy"], "next": "revenge_cake", "delta": { "drama": 25, "brand": 20000 }, "set": ["cake_duel"] },
+        { "text": "Light the flambe with a sparkler from your purse.", "next": "END", "delta": { "drama": 15, "pop": 10, "brand": 12000 } },
+        { "text": "Propose a toast to the goat.", "next": "END", "delta": { "pop": 15, "brand": 9000 }, "set": ["goat_is_family"] },
+        { "text": "Quietly leave through the window. Take the cake.", "next": "END", "delta": { "pop": -5, "brand": -3000 } }
+      ]
+    },
+
+    "revenge_cake": {
+      "place": "VILLA SPARKLE · THE DINING TABLE · 9:20 PM",
+      "narration": "You cut the cake with ceremony. Inside, a tiny gold envelope. Bunny has been smiling for a full forty seconds.",
+      "speaker": "BUNNY VANDERKLEET",
+      "line": "Surprise, darling. I own forty percent of the goat. And the goat has opinions about you.",
+      "confessional": "Never throw Merlot at a woman with a trust fund and a livestock portfolio.",
+      "mood": "smug",
+      "fx": ["sparkle"],
+      "memory": ["Bunny owns forty percent of the goat."],
+      "choices": [
+        { "text": "Eat the cake, the knife, and the evidence.", "next": "END", "delta": { "drama": 15, "pop": 15, "brand": 10000 } },
+        { "text": "Offer Bunny a co-hosting deal on the spot.", "next": "END", "delta": { "drama": 10, "pop": 10, "brand": 12000 } },
+        { "text": "Hand the goat the deed and walk away slowly.", "next": "END", "delta": { "drama": 20, "pop": 5, "brand": 6000 } }
+      ]
+    }
+  },
+
+  "endings": [
+    {
+      "if": { "stats": { "brand": ">=70000" } },
+      "title": "Your Own Candle Line",
+      "text": "The network wants a scent called 'Souffle Fury.' Dolly demands royalties and a lifetime supply.",
+      "spice": {
+        "1": { "title": "Your Own Tea Collection", "text": "A tasteful range of calming teas, including 'Seating Chart Serenity.' Dolly approves, mostly." },
+        "3": { "title": "Your Own Line of Personal Massagers", "text": "The network has greenlit 'The Sparkle Collection.' It comes in six colors and one deeply awkward product launch. Dolly is asking for royalties." }
+      }
+    },
+    {
+      "if": { "stats": { "brand": ">=50000" } },
+      "title": "The Spin-Off",
+      "text": "'Housewife in the City' premieres in the spring. Six episodes, one goat, no refunds.",
+      "spice": {
+        "3": { "text": "'Housewife in the City' premieres in the spring. The network is calling it 'a lot.' Legal is calling it other things." }
+      }
+    },
+    {
+      "if": { "stats": { "brand": ">=30000" } },
+      "title": "One More Season",
+      "text": "Renewed, with a probationary peach. The goat has been added to the credits."
+    },
+    {
+      "title": "Woman Near Fountain",
+      "text": "You get one minute of screen time. You are holding a fountain. The goat gets a better edit.",
+      "spice": {
+        "3": { "text": "You get one minute of screen time. You are holding a fountain and a restraining order. The goat gets a better edit." }
+      }
+    }
+  ]
+}

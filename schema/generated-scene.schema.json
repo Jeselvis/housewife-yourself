@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lake-sparkle.example/schema/generated-scene.schema.json",
+  "title": "GeneratedScene",
+  "description": "Exactly what the LLM must return for a \"generate\" beat. See docs/LLM_CONTRACT.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["place", "narration", "speaker", "line", "confessional", "mood", "fx", "memory", "choices"],
+  "properties": {
+    "place": { "type": "string", "minLength": 1, "maxLength": 90 },
+    "narration": { "type": "string", "minLength": 1, "maxLength": 300 },
+    "speaker": { "type": "string", "minLength": 1 },
+    "line": { "type": "string", "minLength": 1, "maxLength": 260 },
+    "confessional": { "type": "string", "minLength": 1, "maxLength": 220 },
+    "mood": { "$ref": "adventure.schema.json#/definitions/mood" },
+    "fx": { "$ref": "adventure.schema.json#/definitions/fxList" },
+    "memory": { "type": "array", "maxItems": 2, "items": { "type": "string", "minLength": 1, "maxLength": 100 } },
+    "choices": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "$ref": "#/definitions/choice" }
+    }
+  },
+  "definitions": {
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "next", "delta"],
+      "properties": {
+        "text": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "next": { "enum": ["generate", "END"] },
+        "delta": { "$ref": "adventure.schema.json#/definitions/delta" },
+        "set": { "type": "array", "uniqueItems": true, "items": { "$ref": "adventure.schema.json#/definitions/flagName" } },
+        "hint": { "type": "string", "maxLength": 200 }
+      }
+    }
+  }
+}

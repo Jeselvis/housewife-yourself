@@ -1,0 +1,17 @@
+{
+  "name": "lake-sparkle-adventure",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Retro choose-your-own-adventure reality-TV parody with an LLM-driven story engine.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "validate": "node scripts/validate-adventures.mjs",
+    "test": "node --test",
+    "portraits": "node scripts/portrait-sheet.mjs",
+    "check": "npm run validate && npm test"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1"
+  }
+}

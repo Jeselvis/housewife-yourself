@@ -1,0 +1,32 @@
+{
+  "$schema": "../schema/cast.schema.json",
+  "version": 1,
+  "id": "lake-sparkle",
+  "name": "The Housewives of Lake Sparkle",
+  "characters": {
+    "DOLLY MARCHETTI-WYNN": {
+      "look": { "style": "big", "hair": "#f2d98a", "skin": "#f3c9a5", "outfit": "#d6247a", "lips": "#a3123f", "accent": "#ffd54a" },
+      "voice": "Grand, passive-aggressive, speaks in ledgers and grudges. Calls everyone darling right before the knife.",
+      "secret": "Has been quietly dating the chandelier's electrician.",
+      "spice": 3
+    },
+    "BUNNY VANDERKLEET": {
+      "look": { "style": "bob", "hair": "#c9c9d6", "skin": "#f7dcc6", "outfit": "#8f7bd1", "lips": "#c05a7a", "accent": "#ffffff" },
+      "voice": "Fragile, dramatic, gasps at her own pearls. Wounded dignity with a trust fund.",
+      "secret": "Is an only child and has made her peace with it. Secretly owns a stake in the goat.",
+      "spice": 1
+    },
+    "TAMSIN RUIZ": {
+      "look": { "style": "long", "hair": "#2b1a2e", "skin": "#d9a06b", "outfit": "#1fb5a6", "lips": "#a8325a", "accent": "#ffd54a" },
+      "voice": "Dry, gossipy, always knows who the chandelier is dating. Delivers bombshells like weather reports.",
+      "secret": "Has attended eleven of these dinners and keeps score.",
+      "spice": 2
+    },
+    "HOST CHAD BELLAMY-OKAFOR": {
+      "look": { "style": "slick", "hair": "#1c1c28", "skin": "#e0b48a", "outfit": "#2b3a67", "lips": "#a05a50", "accent": "#ff6fb1" },
+      "voice": "Smooth reunion host with a clipboard of receipts. Pretends to be neutral, is thrilled by chaos.",
+      "secret": "Has read everyone's texts.",
+      "spice": 2
+    }
+  }
+}
