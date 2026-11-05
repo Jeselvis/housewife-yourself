@@ -1,0 +1,32 @@
+{
+  "$schema": "../schema/cast.schema.json",
+  "version": 1,
+  "id": "briarwood",
+  "name": "Forever in Briarwood",
+  "characters": {
+    "CRYSTAL FONTAINE": {
+      "look": { "style": "long", "hair": "#c8902a", "skin": "#f0c090", "outfit": "#9a2068", "lips": "#c03050", "accent": "#ffd54a" },
+      "voice": "Melodramatic, convinced she and Maxwell are cosmically destined. Delivers every line like a finale monologue. Has index cards for emergencies.",
+      "secret": "Has been faking amnesia on and off for three years to stay near Maxwell. The third episode was real. She doesn't tell anyone which one.",
+      "spice": 3
+    },
+    "MAXWELL CRANE": {
+      "look": { "style": "slick", "hair": "#181828", "skin": "#e0b878", "outfit": "#1e3464", "lips": "#905060", "accent": "#c8a040" },
+      "voice": "Earnest, oblivious, processes revelations extremely slowly and aloud, in full sentences, with sub-clauses.",
+      "secret": "Has known something was wrong with Vangie since the engagement. Has been making a list. The list is very long.",
+      "spice": 1
+    },
+    "VANGIE HOTCH": {
+      "look": { "style": "big", "hair": "#d8d0c8", "skin": "#f0c8b0", "outfit": "#1a1a2a", "lips": "#900030", "accent": "#c0c0d0" },
+      "voice": "Composed, strategic, smiles like she is about to audit you. Warm tones are a tool.",
+      "secret": "Is not Vangie Hotch. The real Vangie Hotch is at a spa in Montserrat and does not know any of this is happening.",
+      "spice": 2
+    },
+    "MAGDALENA VOSS": {
+      "look": { "style": "bob", "hair": "#7a6a90", "skin": "#c8a890", "outfit": "#2a1040", "lips": "#803060", "accent": "#9050c0" },
+      "voice": "Theatrical, cryptic, narrates events in third person. Responsible for about thirty percent of what happens. Finds free will irresponsible.",
+      "secret": "Her ex-husband is in the Crane Manor basement. He chose it. Mostly. The knocking is him asking for the newspaper.",
+      "spice": 3
+    }
+  }
+}

@@ -24,6 +24,10 @@
       "type": "object",
       "additionalProperties": { "$ref": "#/definitions/flagDef" }
     },
+    "items": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/definitions/itemDef" }
+    },
     "scenes": {
       "type": "object",
       "required": ["start"],
@@ -38,6 +42,7 @@
   },
   "definitions": {
     "flagName": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "itemName": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
     "mood": { "enum": ["neutral", "surprised", "angry", "smug"] },
     "fxList": {
       "type": "array",
@@ -65,6 +70,14 @@
         "recap": { "type": "string", "description": "Line shown in the ending recap when this flag is set." }
       }
     },
+    "itemDef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label"],
+      "properties": {
+        "label": { "type": "string", "minLength": 1, "description": "Display name shown in the inventory strip." }
+      }
+    },
     "condition": {
       "oneOf": [
         {
@@ -78,12 +91,14 @@
           "additionalProperties": false,
           "minProperties": 1,
           "properties": {
-            "flags": { "type": "array", "items": { "$ref": "#/definitions/flagName" } },
+            "flags":    { "type": "array", "items": { "$ref": "#/definitions/flagName" } },
             "notFlags": { "type": "array", "items": { "$ref": "#/definitions/flagName" } },
             "stats": {
               "type": "object",
               "additionalProperties": { "type": "string", "pattern": "^(>=|<=|==|!=|>|<)\\s*-?\\d+(\\.\\d+)?$" }
-            }
+            },
+            "hasItems": { "type": "array", "items": { "$ref": "#/definitions/itemName" } },
+            "notItems": { "type": "array", "items": { "$ref": "#/definitions/itemName" } }
           }
         }
       ]
@@ -111,7 +126,9 @@
         "text": { "type": "string", "minLength": 1, "maxLength": 160 },
         "next": { "$ref": "#/definitions/next" },
         "delta": { "$ref": "#/definitions/delta" },
-        "set": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/definitions/flagName" } },
+        "set":     { "type": "array", "uniqueItems": true, "items": { "$ref": "#/definitions/flagName" } },
+        "give":    { "type": "array", "uniqueItems": true, "items": { "$ref": "#/definitions/itemName" } },
+        "consume": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/definitions/itemName" } },
         "requires": { "$ref": "#/definitions/condition" },
         "hint": { "type": "string", "description": "Nudge for the LLM when next is \"generate\"." }
       }

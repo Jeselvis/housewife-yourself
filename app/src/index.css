@@ -1,0 +1,29 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #170a21;
+  color: #f6ead8;
+  font-family: 'VT323', monospace;
+  min-height: 100dvh;
+}
+
+button { font-family: inherit; cursor: pointer; }
+
+.choice-btn:hover {
+  background: #3a1a4d !important;
+  border-color: #ffd54a !important;
+  transform: translateX(4px);
+}
+
+.choice-btn:focus-visible,
+.ep-btn:focus-visible,
+.spice-btn:focus-visible {
+  outline: 3px solid #5ee6d6;
+  outline-offset: 3px;
+}
+
+.ep-btn:hover { border-color: #ffd54a !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

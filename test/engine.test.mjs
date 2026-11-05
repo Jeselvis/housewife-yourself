@@ -156,6 +156,46 @@ test('low brand falls through to the default ending', async () => {
   assert.equal(r.ending.title, 'Woman Near Fountain');
 });
 
+test('inventory: createState has empty inventory; give adds, consume removes; hasItems gates choices', () => {
+  const adv = goat();
+  adv.items = { napkin: { label: 'Damp Napkin' }, goblet: { label: 'Crystal Goblet' } };
+
+  // createState gives empty inventory
+  const s0 = engine.createState(adv);
+  assert.deepEqual(s0.inventory, []);
+
+  // give on choice 0 (twin path)
+  adv.scenes.start.choices[0].give = ['napkin'];
+  const { state: s1 } = engine.choose(adv, s0, 0);
+  assert.deepEqual(s1.inventory, ['napkin']);
+
+  // give is idempotent: picking the same item again doesn't duplicate
+  adv.scenes.twin.choices[0].give = ['napkin'];
+  const { state: s2 } = engine.choose(adv, s1, 0);
+  assert.deepEqual(s2.inventory, ['napkin']);
+
+  // consume removes the item
+  adv.scenes.twin.choices[1].consume = ['napkin'];
+  const { state: s3 } = engine.choose(adv, s1, 1);
+  assert.deepEqual(s3.inventory, []);
+
+  // hasItems: choice requiring goblet hidden when inventory empty
+  adv.scenes.start.choices[1].requires = { hasItems: ['goblet'] };
+  const withoutGoblet = engine.visibleChoices(engine.resolveScene(adv, s0), s0);
+  assert.ok(withoutGoblet.every((c) => !c.requires?.hasItems));
+
+  // give goblet, then gated choice appears
+  const sWithGoblet = { ...s0, inventory: ['goblet'] };
+  const withItem = engine.visibleChoices(engine.resolveScene(adv, sWithGoblet), sWithGoblet);
+  assert.ok(withItem.some((c) => c.requires?.hasItems?.includes('goblet')));
+
+  // notItems: choice hidden when item IS held
+  adv.scenes.start.choices[2].requires = { notItems: ['napkin'] };
+  const withNapkin = { ...s0, inventory: ['napkin'] };
+  const withNapkinChoices = engine.visibleChoices(engine.resolveScene(adv, withNapkin), withNapkin);
+  assert.ok(withNapkinChoices.every((c) => !c.requires?.notItems?.includes('napkin')));
+});
+
 test('generate beats: status, provideGeneratedScene, fallback, and endAfter', () => {
   const adv = reunion();
   const first = engine.choose(adv, engine.createState(adv), 0);

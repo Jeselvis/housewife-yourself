@@ -7,7 +7,7 @@ import { createValidator } from '../src/validate/validate.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const load = (p) => JSON.parse(readFileSync(p, 'utf8'));
-const jsonIn = (dir) => readdirSync(join(root, dir)).filter((f) => f.endsWith('.json')).map((f) => join(root, dir, f));
+const jsonIn = (dir) => readdirSync(join(root, dir)).filter((f) => f.endsWith('.json') && !f.startsWith('._')).map((f) => join(root, dir, f));
 
 const validator = createValidator({
   adventureSchema: load(join(root, 'schema/adventure.schema.json')),

@@ -1,0 +1,416 @@
+import { useState, useEffect, useCallback } from 'react'
+import {
+  createState, resolveScene, visibleChoices,
+  choose, fallbackScene, provideGeneratedScene, setSpice as engineSetSpice,
+} from '../../src/engine/engine.js'
+import { renderPortraitSVG } from '../../src/portrait/render.js'
+import layers from '../../src/portrait/layers.json'
+import goat from '../../adventures/goat.json'
+import reunion from '../../adventures/reunion.json'
+import passions from '../../adventures/passions.json'
+import lakeSparkleCast from '../../cast/lake-sparkle.json'
+import briarwoodCast from '../../cast/briarwood.json'
+
+const ADVENTURES = [goat, reunion, passions]
+const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast }
+const SAVE_KEY = 'lsa'
+
+const C = {
+  bg: '#170a21',
+  panel: '#24112f',
+  pink: '#ff6fb1',
+  gold: '#ffd54a',
+  teal: '#5ee6d6',
+  green: '#7dff9b',
+  cream: '#f6ead8',
+  lavender: '#c9b3d6',
+  dim: '#3a1a4d',
+}
+
+const scanlines = `repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0px,rgba(255,255,255,.025) 1px,transparent 1px,transparent 4px),${C.bg}`
+const press = "'Press Start 2P', monospace"
+const vt = "'VT323', monospace"
+
+// ── sub-components ───────────────────────────────────────────────────────────
+
+function LogoSVG() {
+  return (
+    <svg width="48" height="48" viewBox="0 0 64 64" aria-hidden="true" style={{ flexShrink: 0 }}>
+      <rect x="16" y="8"  width="32" height="8"  fill={C.cream}/>
+      <rect x="20" y="16" width="24" height="8"  fill={C.cream}/>
+      <rect x="24" y="24" width="16" height="8"  fill={C.cream}/>
+      <rect x="20" y="12" width="24" height="8"  fill={C.pink}/>
+      <rect x="24" y="20" width="16" height="4"  fill={C.pink}/>
+      <rect x="30" y="32" width="4"  height="16" fill={C.cream}/>
+      <rect x="20" y="48" width="24" height="4"  fill={C.cream}/>
+    </svg>
+  )
+}
+
+function Portrait({ look, mood, fx, name }) {
+  const svg = renderPortraitSVG(layers, look, { mood, fx, size: 128, label: name })
+  return (
+    <div
+      style={{ width: 136, height: 136, border: `4px solid ${C.pink}`, background: C.dim, boxShadow: `4px 4px 0 ${C.bg}`, flexShrink: 0, lineHeight: 0 }}
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
+  )
+}
+
+const BAR_COLORS = [C.pink, C.teal]
+
+function StatsRow({ stats, adventure }) {
+  let barIdx = 0
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 20px' }}>
+      {Object.entries(adventure.stats).map(([key, def]) => {
+        const val = stats[key]
+        if (def.display === 'bar') {
+          const color = BAR_COLORS[barIdx++ % BAR_COLORS.length]
+          const pct = `${Math.round((val / (def.max ?? 100)) * 100)}%`
+          return (
+            <div key={key}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 19, color: C.lavender, marginBottom: 4 }}>
+                <span>{def.label.toUpperCase()}</span><span>{val}</span>
+              </div>
+              <div style={{ height: 10, background: C.dim, border: `2px solid ${color}` }}>
+                <div style={{ height: '100%', background: color, width: pct, transition: 'width .3s' }} />
+              </div>
+            </div>
+          )
+        }
+        if (def.display === 'number') return (
+          <div key={key}>
+            <div style={{ fontSize: 19, color: C.lavender, marginBottom: 4 }}>{def.label.toUpperCase()}</div>
+            <div style={{ fontFamily: press, fontSize: 15, color: C.gold }}>{val}</div>
+          </div>
+        )
+        if (def.display === 'money') return (
+          <div key={key}>
+            <div style={{ fontSize: 19, color: C.lavender, marginBottom: 4 }}>{def.label.toUpperCase()}</div>
+            <div style={{ fontFamily: press, fontSize: 13, color: C.green }}>${val.toLocaleString()}</div>
+          </div>
+        )
+        return null
+      })}
+    </div>
+  )
+}
+
+function EpisodeSelect({ onSelect, onNewGame }) {
+  return (
+    <div style={{ background: scanlines, minHeight: '100dvh', padding: '32px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, maxWidth: 600, margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, alignSelf: 'flex-start' }}>
+        <LogoSVG />
+        <h1 style={{ fontFamily: press, fontSize: 13, color: C.pink, lineHeight: 1.8, fontWeight: 400 }}>
+          HOUSEWIFE<br />YOURSELF
+        </h1>
+      </div>
+      <div style={{ fontFamily: press, fontSize: 9, color: C.lavender, alignSelf: 'flex-start' }}>SELECT EPISODE</div>
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {ADVENTURES.map((adv, i) => {
+          const hasSave = !!localStorage.getItem(`${SAVE_KEY}-${adv.id}`)
+          const castName = (CASTS[adv.cast]?.name ?? '').toUpperCase()
+          const tease = adv.tone ? adv.tone.split('. ').slice(0, 2).join('. ') + '.' : ''
+          return (
+            <div key={adv.id} style={{ background: C.panel, border: `3px solid ${C.gold}`, padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ fontFamily: press, fontSize: 8, color: C.pink }}>{adv.label}</div>
+              <div style={{ fontSize: 18, color: C.lavender }}>{castName}</div>
+              <div style={{ fontSize: 20, color: C.gold, lineHeight: 1.3 }}>{adv.episode}</div>
+              <div style={{ fontSize: 18, color: C.cream, lineHeight: 1.3 }}>{tease}</div>
+              <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                <button className="ep-btn" onClick={() => onSelect(i)}
+                  style={{ flex: 1, fontFamily: press, fontSize: 10, padding: '12px 10px', minHeight: 44, background: C.pink, color: C.bg, border: `2px solid ${C.pink}`, cursor: 'pointer' }}>
+                  {hasSave ? 'CONTINUE ▶' : 'PLAY'}
+                </button>
+                {hasSave && (
+                  <button className="ep-btn" onClick={() => onNewGame(i)}
+                    style={{ fontFamily: press, fontSize: 9, padding: '12px 10px', minHeight: 44, background: C.dim, color: C.lavender, border: `2px solid ${C.lavender}`, cursor: 'pointer' }}>
+                    NEW GAME
+                  </button>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function EndingScreen({ ending, adventure, onRestart, onGoToSelect }) {
+  return (
+    <div style={{ background: scanlines, minHeight: '100dvh', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 600, margin: '0 auto' }}>
+      <h1 style={{ fontFamily: press, fontSize: 13, color: C.pink, lineHeight: 1.8, fontWeight: 400 }}>
+        HOUSEWIFE YOURSELF
+      </h1>
+      <div style={{ background: C.panel, border: `3px solid ${C.gold}`, padding: '20px 16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ fontFamily: press, fontSize: 10, color: C.gold, lineHeight: 1.8 }}>EPISODE OVER</div>
+        <div style={{ fontFamily: press, fontSize: 15, color: C.pink, lineHeight: 1.8 }}>{ending.title}</div>
+        <div style={{ fontSize: 24, lineHeight: 1.4 }}>{ending.text}</div>
+        {ending.recap.length > 0 && (
+          <>
+            <div style={{ fontFamily: press, fontSize: 10, color: C.lavender, marginTop: 6 }}>YOUR STORY</div>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {ending.recap.map((line, i) => (
+                <li key={i} style={{ fontSize: 22, paddingLeft: 14, borderLeft: `3px solid ${C.pink}` }}>{line}</li>
+              ))}
+            </ul>
+          </>
+        )}
+        <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {Object.entries(ending.stats).map(([key, val]) => {
+            const def = adventure.stats[key]
+            if (!def) return null
+            const display = def.display === 'money' ? `$${val.toLocaleString()}` : String(val)
+            return (
+              <div key={key} style={{ fontSize: 20, color: C.lavender }}>
+                {def.label.toUpperCase()}: <span style={{ color: C.cream }}>{display}</span>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 10 }}>
+        <button onClick={onRestart}
+          style={{ background: C.dim, border: `3px solid ${C.pink}`, color: C.pink, fontFamily: press, fontSize: 11, padding: '14px 18px', cursor: 'pointer' }}>
+          PLAY AGAIN
+        </button>
+        <button onClick={onGoToSelect}
+          style={{ background: C.dim, border: `3px solid ${C.lavender}`, color: C.lavender, fontFamily: press, fontSize: 11, padding: '14px 18px', cursor: 'pointer' }}>
+          EPISODES
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ── main app ─────────────────────────────────────────────────────────────────
+
+async function fetchScene(adventure, gameState, lastScene, choice, newState) {
+  const recentBeats = gameState.history.slice(-4).map((h) => `You: "${h.text}"`)
+  const body = {
+    adventureId: adventure.id,
+    spice:       gameState.spice,
+    stats:       newState.stats,
+    flags:       newState.flags,
+    inventory:   newState.inventory ?? [],
+    memory:      newState.memory,
+    recentBeats,
+    lastScene:   { place: lastScene.place, speaker: lastScene.speaker, line: lastScene.line },
+    choice:      { text: choice.text, hint: choice.hint ?? undefined },
+    beat:        newState.beat,
+  }
+  const res = await fetch('/api/scene', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.scene ?? null
+}
+
+export default function App() {
+  const [adventureIdx, setAdventureIdx] = useState(null)
+  const [gameState, setGameState]       = useState(null)
+  const [ending, setEnding]             = useState(null)
+  const [loading, setLoading]           = useState(false)
+
+  const adventure = adventureIdx !== null ? ADVENTURES[adventureIdx] : null
+
+  useEffect(() => {
+    if (!adventure) return
+    const saved = localStorage.getItem(`${SAVE_KEY}-${adventure.id}`)
+    if (saved) {
+      try { setGameState(JSON.parse(saved)); setEnding(null); return } catch {}
+    }
+    setGameState(createState(adventure))
+    setEnding(null)
+  }, [adventureIdx])
+
+  useEffect(() => {
+    if (adventure && gameState && !ending) {
+      localStorage.setItem(`${SAVE_KEY}-${adventure.id}`, JSON.stringify(gameState))
+    }
+  }, [gameState, ending])
+
+  const handleChoice = useCallback(async (idx) => {
+    if (loading) return
+    const lastScene = resolveScene(adventure, gameState)
+    const result = choose(adventure, gameState, idx)
+    if (result.status === 'scene') {
+      setGameState(result.state)
+    } else if (result.status === 'generate') {
+      setLoading(true)
+      try {
+        const generatedScene = await fetchScene(adventure, gameState, lastScene, result.choice, result.state)
+        const scene = generatedScene ?? fallbackScene(result.state)
+        setGameState(provideGeneratedScene(adventure, result.state, scene))
+      } catch {
+        const fb = fallbackScene(result.state)
+        setGameState(provideGeneratedScene(adventure, result.state, fb))
+      } finally {
+        setLoading(false)
+      }
+    } else if (result.status === 'end') {
+      setGameState(result.state)
+      setEnding(result.ending)
+      localStorage.removeItem(`${SAVE_KEY}-${adventure.id}`)
+    }
+  }, [adventure, gameState, loading])
+
+  const handleSpice = useCallback((level) => {
+    setGameState(gs => engineSetSpice(gs, level))
+  }, [])
+
+  const handleGoToSelect = useCallback(() => setAdventureIdx(null), [])
+
+  const handleSelectAdventure = useCallback((idx) => {
+    setAdventureIdx(idx)
+    setEnding(null)
+  }, [])
+
+  const handleNewGameSelect = useCallback((idx) => {
+    const adv = ADVENTURES[idx]
+    localStorage.removeItem(`${SAVE_KEY}-${adv.id}`)
+    setGameState(createState(adv))
+    setEnding(null)
+    setAdventureIdx(idx)
+  }, [])
+
+  const handleRestart = useCallback(() => {
+    if (!adventure) return
+    localStorage.removeItem(`${SAVE_KEY}-${adventure.id}`)
+    setGameState(createState(adventure))
+    setEnding(null)
+  }, [adventure])
+
+  if (adventureIdx === null) {
+    return <EpisodeSelect onSelect={handleSelectAdventure} onNewGame={handleNewGameSelect} />
+  }
+
+  if (!gameState) return null
+
+  if (ending) {
+    return <EndingScreen ending={ending} adventure={adventure} onRestart={handleRestart} onGoToSelect={handleGoToSelect} />
+  }
+
+  const scene      = resolveScene(adventure, gameState)
+  const choices    = visibleChoices(scene, gameState)
+  const castData   = CASTS[adventure.cast] ?? lakeSparkleCast
+  const speakerDef = scene.speaker ? castData.characters[scene.speaker] : null
+
+  return (
+    <div style={{ background: scanlines, minHeight: '100dvh', padding: '20px 16px', display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 600, margin: '0 auto' }}>
+
+      {/* ── header ── */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: `4px double ${C.pink}`, paddingBottom: 14 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <h1 style={{ fontFamily: press, fontSize: 13, color: C.pink, lineHeight: 1.8, fontWeight: 400 }}>
+            THE REAL HOUSEWIVES<br />OF LAKE SPARKLE
+          </h1>
+          <div style={{ fontSize: 20, color: C.gold }}>{adventure.episode}</div>
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 18, color: C.lavender, flexWrap: 'wrap' }}>
+            <span>SPICE:</span>
+            {[1, 2, 3].map(level => (
+              <button
+                key={level}
+                className="spice-btn"
+                onClick={() => handleSpice(level)}
+                style={{
+                  fontFamily: vt, fontSize: 18,
+                  padding: '0 10px', minHeight: 44, minWidth: 44,
+                  background: gameState.spice === level ? C.pink : C.dim,
+                  color: gameState.spice === level ? C.bg : C.lavender,
+                  border: `2px solid ${C.pink}`,
+                }}
+              >
+                {level === 1 ? 'COZY' : level === 2 ? 'PETTY' : 'UNHINGED'}
+              </button>
+            ))}
+          </div>
+        </div>
+        <LogoSVG />
+      </div>
+
+      {/* ── stats ── */}
+      <StatsRow stats={gameState.stats} adventure={adventure} />
+
+      {/* ── scene panel ── */}
+      <div style={{ background: C.panel, border: `3px solid ${C.gold}`, padding: '18px 14px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ fontSize: 17, color: C.lavender, letterSpacing: 1 }}>{scene.place}</div>
+        <div style={{ fontSize: 24, lineHeight: 1.3 }}>{scene.narration}</div>
+        {scene.speaker && speakerDef && (
+          <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', marginTop: 4 }}>
+            <Portrait look={speakerDef.look} mood={scene.mood} fx={scene.fx} name={scene.speaker} />
+            <div style={{ flex: 1 }}>
+              <div style={{ fontFamily: press, fontSize: 9, color: C.pink, marginBottom: 8, lineHeight: 1.8 }}>{scene.speaker}</div>
+              <div style={{ fontSize: 22, lineHeight: 1.3 }}>"{scene.line}"</div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── confessional ── */}
+      {scene.confessional && (
+        <div style={{ border: `2px dashed ${C.teal}`, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ fontFamily: press, fontSize: 8, color: C.teal, letterSpacing: 1 }}>CONFESSIONAL CUT</div>
+          <div style={{ fontSize: 22, lineHeight: 1.3, color: C.teal }}>"{scene.confessional}"</div>
+        </div>
+      )}
+
+      {/* ── inventory ── */}
+      {(gameState.inventory ?? []).length > 0 && (
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <span style={{ fontFamily: press, fontSize: 8, color: C.lavender }}>CARRYING:</span>
+          {gameState.inventory.map((id) => (
+            <span key={id} style={{ fontFamily: press, fontSize: 8, color: C.gold, border: `2px solid ${C.gold}`, padding: '3px 8px', background: C.dim }}>
+              {adventure.items?.[id]?.label ?? id}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* ── choices ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ fontFamily: press, fontSize: 10, color: C.gold, marginBottom: 2 }}>
+          {loading ? 'THE PRODUCERS ARE DECIDING…' : 'WHAT DO YOU DO?'}
+        </div>
+        {loading
+          ? <div style={{ fontSize: 22, color: C.lavender, padding: '10px 0' }}>[ live feed buffering ]</div>
+          : choices.map((choice, i) => (
+            <button
+              key={i}
+              className="choice-btn"
+              onClick={() => handleChoice(i)}
+              style={{
+                display: 'flex', gap: 12, alignItems: 'center',
+                background: C.dim, border: `2px solid ${C.pink}`,
+                color: C.cream, fontFamily: vt, fontSize: 22,
+                padding: '10px 14px', textAlign: 'left',
+                minHeight: 54, width: '100%',
+                transition: 'background .12s, border-color .12s, transform .12s',
+              }}
+            >
+              <span style={{ fontFamily: press, fontSize: 11, color: C.gold, flexShrink: 0 }}>
+                {String.fromCharCode(65 + i)}
+              </span>
+              {choice.text}
+            </button>
+          ))
+        }
+      </div>
+
+      {/* ── footer ── */}
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', paddingTop: 10, borderTop: `2px solid ${C.dim}` }}>
+        <span style={{ fontSize: 18, color: C.lavender, flex: 1 }}>{adventure.label} · {adventure.episode.split('·')[0].trim()}</span>
+        <button className="ep-btn" onClick={handleGoToSelect}
+          style={{ fontFamily: press, fontSize: 9, padding: '0 12px', minHeight: 44, background: C.dim, color: C.lavender, border: `2px solid ${C.lavender}`, cursor: 'pointer' }}>
+          EPISODES
+        </button>
+      </div>
+
+    </div>
+  )
+}

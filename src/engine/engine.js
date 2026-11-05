@@ -31,9 +31,10 @@ export function createState(adventure, { spice = 2 } = {}) {
     sceneId: 'start',
     spice,
     stats,
-    flags: [], // ordered, so the recap reads in story order
-    memory: [], // short facts the cast remembers; fed to the LLM
-    history: [], // [{ sceneId, choice, text }]
+    flags: [],     // ordered, so the recap reads in story order
+    inventory: [], // items currently held
+    memory: [],    // short facts the cast remembers; fed to the LLM
+    history: [],   // [{ sceneId, choice, text }]
     beat: 0,
     generated: {}, // scenes written by the LLM, kept so saves can replay
     ended: false,
@@ -98,6 +99,13 @@ function addFlags(flags, toSet = []) {
   return out;
 }
 
+function updateInventory(inventory, give = [], consume = []) {
+  const drop = new Set(consume);
+  const out = inventory.filter((item) => !drop.has(item));
+  for (const item of give) if (!out.includes(item)) out.push(item);
+  return out;
+}
+
 export function enterScene(adventure, state, sceneId) {
   const moved = { ...state, sceneId };
   const scene = resolveScene(adventure, moved);
@@ -115,10 +123,11 @@ export function choose(adventure, state, choiceIndex) {
 
   const next = {
     ...state,
-    stats: applyDelta(adventure, state.stats, choice.delta),
-    flags: addFlags(state.flags, choice.set),
-    history: [...state.history, { sceneId: state.sceneId, choice: choiceIndex, text: choice.text }],
-    beat: state.beat + 1,
+    stats:     applyDelta(adventure, state.stats, choice.delta),
+    flags:     addFlags(state.flags, choice.set),
+    inventory: updateInventory(state.inventory ?? [], choice.give, choice.consume),
+    history:   [...state.history, { sceneId: state.sceneId, choice: choiceIndex, text: choice.text }],
+    beat:      state.beat + 1,
   };
 
   let target = resolveNext(choice.next, next);

@@ -74,7 +74,13 @@ export function sanitizeGeneratedScene(scene, adv) {
 
 function condFlags(cond) {
   const c = normalizeCondition(cond);
-  return { positive: c.flags ?? [], negative: c.notFlags ?? [], stats: Object.keys(c.stats ?? {}) };
+  return {
+    positive: c.flags ?? [],
+    negative: c.notFlags ?? [],
+    stats:    Object.keys(c.stats ?? {}),
+    hasItems: c.hasItems ?? [],
+    notItems: c.notItems ?? [],
+  };
 }
 
 function targetsOf(next) {
@@ -84,10 +90,14 @@ function targetsOf(next) {
 function semanticChecks(adv, cast, errors, warnings) {
   const sceneIds = new Set(Object.keys(adv.scenes));
   const flagDefs = adv.flags ?? {};
-  const statKeys = new Set(Object.keys(adv.stats));
-  const flagsSet = new Set();
-  const flagsRead = new Set(); // positive reads
+  const itemDefs = adv.items ?? {};
+  const statKeys  = new Set(Object.keys(adv.stats));
+  const itemKeys  = new Set(Object.keys(itemDefs));
+  const flagsSet     = new Set();
+  const flagsRead    = new Set(); // positive reads
   const flagsReadNeg = new Set();
+  const itemsGiven   = new Set();
+  const itemsRead    = new Set(); // used in hasItems/notItems
   const edges = new Map(); // sceneId -> Set(target ids)
 
   if (cast) {
@@ -98,7 +108,7 @@ function semanticChecks(adv, cast, errors, warnings) {
   if (sceneIds.has('generate')) errors.push('scene id "generate" is reserved');
 
   const checkCondition = (cond, where) => {
-    const { positive, negative, stats } = condFlags(cond);
+    const { positive, negative, stats, hasItems, notItems } = condFlags(cond);
     for (const f of positive) {
       flagsRead.add(f);
       if (!flagDefs[f]) errors.push(`${where}: flag "${f}" is not declared in "flags"`);
@@ -108,6 +118,10 @@ function semanticChecks(adv, cast, errors, warnings) {
       if (!flagDefs[f]) errors.push(`${where}: flag "${f}" is not declared in "flags"`);
     }
     for (const s of stats) if (!statKeys.has(s)) errors.push(`${where}: unknown stat "${s}"`);
+    for (const item of [...hasItems, ...notItems]) {
+      itemsRead.add(item);
+      if (!itemKeys.has(item)) errors.push(`${where}: item "${item}" is not declared in "items"`);
+    }
   };
 
   const checkChoices = (choices, where, sceneId) => {
@@ -119,6 +133,13 @@ function semanticChecks(adv, cast, errors, warnings) {
       for (const f of c.set ?? []) {
         flagsSet.add(f);
         if (!flagDefs[f]) errors.push(`${at}: sets undeclared flag "${f}"`);
+      }
+      for (const item of c.give ?? []) {
+        itemsGiven.add(item);
+        if (!itemKeys.has(item)) errors.push(`${at}: gives undeclared item "${item}"`);
+      }
+      for (const item of c.consume ?? []) {
+        if (!itemKeys.has(item)) errors.push(`${at}: consumes undeclared item "${item}"`);
       }
       for (const k of Object.keys(c.delta ?? {})) if (!statKeys.has(k)) errors.push(`${at}: delta uses unknown stat "${k}"`);
       if (Array.isArray(c.next)) {
@@ -174,5 +195,14 @@ function semanticChecks(adv, cast, errors, warnings) {
     else if (!flagsRead.has(f) && !flagsReadNeg.has(f) && !flagDefs[f].recap) {
       warnings.push(`flag "${f}" is set but never read and has no "recap"`);
     }
+  }
+
+  // items
+  for (const item of itemsRead) {
+    if (!itemsGiven.has(item)) errors.push(`item "${item}" is required in a condition but no choice ever gives it`);
+  }
+  for (const item of Object.keys(itemDefs)) {
+    if (!itemsGiven.has(item)) warnings.push(`item "${item}" is declared but never given`);
+    else if (!itemsRead.has(item)) warnings.push(`item "${item}" is given but never used in a condition`);
   }
 }

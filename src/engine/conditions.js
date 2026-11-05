@@ -31,8 +31,11 @@ export function normalizeCondition(cond) {
 export function evalCondition(cond, state) {
   const c = normalizeCondition(cond);
   const flags = new Set(state.flags);
+  const inventory = new Set(state.inventory ?? []);
   if ((c.flags ?? []).some((f) => !flags.has(f))) return false;
   if ((c.notFlags ?? []).some((f) => flags.has(f))) return false;
+  if ((c.hasItems ?? []).some((i) => !inventory.has(i))) return false;
+  if ((c.notItems ?? []).some((i) => inventory.has(i))) return false;
   for (const [key, expr] of Object.entries(c.stats ?? {})) {
     if (!evalStatExpr(expr, state.stats[key] ?? 0)) return false;
   }
