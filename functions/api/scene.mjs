@@ -4,15 +4,7 @@
 import { createValidator, sanitizeGeneratedScene } from '../../src/validate/validate.js'
 
 // Statically imported so bundlers (Vite + Cloudflare esbuild) include them at build time.
-import goat       from '../../adventures/goat.json'    assert { type: 'json' }
-import reunion    from '../../adventures/reunion.json'  assert { type: 'json' }
-import passions   from '../../adventures/passions.json' assert { type: 'json' }
-import lakeSparkleCast from '../../cast/lake-sparkle.json' assert { type: 'json' }
-import briarwoodCast   from '../../cast/briarwood.json'    assert { type: 'json' }
-import adventureSchema     from '../../schema/adventure.schema.json'       assert { type: 'json' }
-import castSchema          from '../../schema/cast.schema.json'            assert { type: 'json' }
-import generatedSceneSchema from '../../schema/generated-scene.schema.json' assert { type: 'json' }
-
+import goat       from '../../adventures/goat.json'   import reunion    from '../../adventures/reunion.json' import passions   from '../../adventures/passions.json'import lakeSparkleCast from '../../cast/lake-sparkle.json'import briarwoodCast   from '../../cast/briarwood.json'   import adventureSchema     from '../../schema/adventure.schema.json'      import castSchema          from '../../schema/cast.schema.json'           import generatedSceneSchema from '../../schema/generated-scene.schema.json'
 const ADVENTURES = { goat, reunion, passions }
 const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast }
 
