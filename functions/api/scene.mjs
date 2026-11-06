@@ -170,6 +170,31 @@ async function tryGenerate(adventure, cast, systemPrompt, userMessage, keys, att
 
 // ── public entry point ────────────────────────────────────────────────────────
 
+// ── Cloudflare Pages Function entry point ─────────────────────────────────────
+
+export async function onRequestPost(context) {
+  const { request, env } = context
+  let body
+  try { body = await request.json() } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON' }), {
+      status: 400, headers: { 'Content-Type': 'application/json' },
+    })
+  }
+  const keys = {
+    geminiKey: env.GEMINI_API_KEY,
+    magicaKey: env.MAGICA_API_KEY,
+    provider:  env.SCENE_PROVIDER ?? 'gemini',
+    model:     env.SCENE_MODEL,
+  }
+  const result = await handleSceneRequest(body, keys)
+  return new Response(JSON.stringify(result), {
+    status: result.status ?? 200,
+    headers: { 'Content-Type': 'application/json' },
+  })
+}
+
+// ── shared logic (also used by Vite dev middleware) ───────────────────────────
+
 /**
  * @param {object} body — request body matching LLM_CONTRACT.md
  * @param {object} keys — { magicaKey, geminiKey, provider?, model? }

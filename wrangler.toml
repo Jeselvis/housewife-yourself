@@ -1,6 +1,3 @@
 name = "housewife-yourself"
-main = "worker.js"
+pages_build_output_dir = "./app/dist"
 compatibility_date = "2026-11-06"
-
-[assets]
-directory = "./app/dist"
