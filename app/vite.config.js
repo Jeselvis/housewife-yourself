@@ -25,7 +25,7 @@ export default defineConfig({
           req.on('end', async () => {
             res.setHeader('Content-Type', 'application/json')
             try {
-              const { handleSceneRequest } = await import('../api/scene.mjs')
+              const { handleSceneRequest } = await import('../functions/api/scene.mjs')
               const data = JSON.parse(body)
               const result = await handleSceneRequest(data, {
                 magicaKey: process.env.MAGICA_API_KEY,

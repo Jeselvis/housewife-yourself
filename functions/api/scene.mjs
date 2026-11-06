@@ -1,37 +1,36 @@
-// Host-agnostic scene generation logic.
-// Called by the Vite dev middleware (app/vite.config.js) and the Cloudflare Pages adapter
-// (functions/api/scene.js, Phase 2 deploy step).
-//
-// All I/O is passed in; this module reads no env vars directly — the caller supplies keys.
+// Scene generation — shared by Vite dev middleware and Cloudflare Pages Function (onRequestPost).
+// No env vars read directly; caller supplies keys.
 
-import { readFileSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
-import { dirname, join } from 'node:path'
-import { createValidator, sanitizeGeneratedScene } from '../src/validate/validate.js'
+import { createValidator, sanitizeGeneratedScene } from '../../src/validate/validate.js'
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const load = (p) => JSON.parse(readFileSync(join(root, p), 'utf8'))
+// Statically imported so bundlers (Vite + Cloudflare esbuild) include them at build time.
+import goat       from '../../adventures/goat.json'    assert { type: 'json' }
+import reunion    from '../../adventures/reunion.json'  assert { type: 'json' }
+import passions   from '../../adventures/passions.json' assert { type: 'json' }
+import lakeSparkleCast from '../../cast/lake-sparkle.json' assert { type: 'json' }
+import briarwoodCast   from '../../cast/briarwood.json'    assert { type: 'json' }
+import adventureSchema     from '../../schema/adventure.schema.json'       assert { type: 'json' }
+import castSchema          from '../../schema/cast.schema.json'            assert { type: 'json' }
+import generatedSceneSchema from '../../schema/generated-scene.schema.json' assert { type: 'json' }
 
-// Lazy-load per id so cold start doesn't read everything.
-const _adventures = {}
-const _casts = {}
-let _validator = null
+const ADVENTURES = { goat, reunion, passions }
+const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast }
 
 function getAdventure(id) {
-  if (!_adventures[id]) _adventures[id] = load(`adventures/${id}.json`)
-  return _adventures[id]
+  const adv = ADVENTURES[id]
+  if (!adv) throw new Error(`Unknown adventure: ${id}`)
+  return adv
 }
 function getCast(id) {
-  if (!_casts[id]) _casts[id] = load(`cast/${id}.json`)
-  return _casts[id]
+  const cast = CASTS[id]
+  if (!cast) throw new Error(`Unknown cast: ${id}`)
+  return cast
 }
+
+let _validator = null
 function getValidator() {
   if (!_validator) {
-    _validator = createValidator({
-      adventureSchema: load('schema/adventure.schema.json'),
-      castSchema:      load('schema/cast.schema.json'),
-      generatedSceneSchema: load('schema/generated-scene.schema.json'),
-    })
+    _validator = createValidator({ adventureSchema, castSchema, generatedSceneSchema })
   }
   return _validator
 }
@@ -170,7 +169,7 @@ async function tryGenerate(adventure, cast, systemPrompt, userMessage, keys, att
   return sanitizeGeneratedScene(parsed, adventure)
 }
 
-// ── public entry point ────────────────────────────────────────────────────────
+// ── public entry point (used by Vite dev middleware) ─────────────────────────
 
 /**
  * @param {object} body  — request body matching LLM_CONTRACT.md
@@ -199,4 +198,30 @@ export async function handleSceneRequest(body, keys) {
     console.error('[scene] provider error:', err?.message ?? err)
     return { fallback: true }
   }
+}
+
+// ── Cloudflare Pages Function entry point ─────────────────────────────────────
+
+export async function onRequestPost(context) {
+  const { request, env } = context
+
+  let body
+  try { body = await request.json() } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON', status: 400 }), {
+      status: 400, headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  const keys = {
+    geminiKey: env.GEMINI_API_KEY,
+    magicaKey: env.MAGICA_API_KEY,
+    provider:  env.SCENE_PROVIDER ?? 'gemini',
+    model:     env.SCENE_MODEL,
+  }
+
+  const result = await handleSceneRequest(body, keys)
+  return new Response(JSON.stringify(result), {
+    status: result.status ?? 200,
+    headers: { 'Content-Type': 'application/json' },
+  })
 }
