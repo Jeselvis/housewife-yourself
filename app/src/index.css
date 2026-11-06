@@ -1,10 +1,16 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html { overflow-x: hidden; }
+
 body {
   background: #170a21;
   color: #f6ead8;
   font-family: 'VT323', monospace;
   min-height: 100dvh;
+  overflow-x: hidden;
+  /* respect iPhone notch / home indicator */
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
 }
 
 button { font-family: inherit; cursor: pointer; }
@@ -15,6 +21,13 @@ button { font-family: inherit; cursor: pointer; }
   transform: translateX(4px);
 }
 
+/* touch tap feedback — hover doesn't reset reliably on iOS */
+.choice-btn:active {
+  background: #3a1a4d !important;
+  border-color: #ffd54a !important;
+  transform: translateX(2px);
+}
+
 .choice-btn:focus-visible,
 .ep-btn:focus-visible,
 .spice-btn:focus-visible {
@@ -22,7 +35,10 @@ button { font-family: inherit; cursor: pointer; }
   outline-offset: 3px;
 }
 
-.ep-btn:hover { border-color: #ffd54a !important; }
+.ep-btn:hover,
+.ep-btn:active { border-color: #ffd54a !important; }
+
+.spice-btn:active { opacity: 0.8; }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }

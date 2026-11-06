@@ -5,25 +5,27 @@
   "label": "SPECIAL",
   "episode": "SEASON 12 · WEDDING SPECIAL · \"FOREVER IS A VERY LONG TIME, MAXWELL\"",
   "cast": "briarwood",
-  "tone": "Gothic soap opera catastrophe at a cursed manor wedding. Every revelation gets its own dramatic zoom. Someone always faints, is secretly a twin, or returns from the dead. Witchcraft is treated as a minor inconvenience. The basement has a known presence and nobody acknowledges this openly.",
+  "tone": "Gothic soap opera catastrophe at a cursed manor wedding, filmed as a reality-TV housewives special. Everyone is mic'd, everyone has a tagline, and every revelation gets a slow push-in and a cut to a confessional. Producers lurk in doorways whispering 'say that again.' Alliances flip mid-sentence. Someone always says 'I said what I said,' flips a table, or announces they are not here to make friends. Someone also faints, is secretly a twin, or returns from the dead. Witchcraft is a minor inconvenience. The basement has a known presence and nobody acknowledges this openly.",
   "endAfter": 14,
   "stats": {
-    "drama":   { "label": "Drama",          "start": 55,    "min": 0, "max": 100, "maxStep": 25, "display": "bar" },
-    "chaos":   { "label": "Chaos Level",    "start": 30,    "min": 0, "max": 100, "maxStep": 25, "display": "bar" },
-    "tears":   { "label": "Tears Shed",     "start": 0,     "min": 0,             "maxStep": 3,  "display": "number" },
-    "destiny": { "label": "Destiny Points", "start": 10000, "min": 0,             "maxStep": 20000, "display": "money" }
+    "drama":   { "label": "Drama",        "start": 55,    "min": 0, "max": 100, "maxStep": 25, "display": "bar" },
+    "chaos":   { "label": "Chaos Level",  "start": 30,    "min": 0, "max": 100, "maxStep": 25, "display": "bar" },
+    "tears":   { "label": "Tears Shed",   "start": 0,     "min": 0,             "maxStep": 3,  "display": "number" },
+    "destiny": { "label": "Brand Value",  "start": 10000, "min": 0,             "maxStep": 20000, "display": "money" }
   },
   "flags": {
-    "helped_crystal":     { "recap": "You helped Crystal crash the wedding." },
-    "warned_maxwell":     { "recap": "You warned Maxwell about Vangie's true identity." },
-    "accepted_curse":     { "recap": "You accepted Magdalena's cursed amulet." },
-    "vows_interrupted":   { "recap": "The vows were interrupted on your watch." },
-    "crystal_died":       { "recap": "Crystal died mid-sentence during the ceremony." },
-    "crystal_revived":    { "recap": "Crystal returned from the dead during the reception." },
-    "vangie_exposed":     { "recap": "Vangie Hotch was exposed as a fiction." },
-    "evil_awakened":      { "recap": "Whatever lives in the Crane basement is now awake." },
-    "wedding_stopped":    { "recap": "The Crane-Hotch wedding was officially stopped." },
-    "magdalena_unleashed": { "recap": "You gave Magdalena permission to do her worst." }
+    "helped_crystal":      { "recap": "You helped Crystal crash the wedding." },
+    "warned_maxwell":      { "recap": "You warned Maxwell about Vangie's true identity." },
+    "accepted_curse":      { "recap": "You accepted Magdalena's cursed amulet." },
+    "vows_interrupted":    { "recap": "The vows were interrupted on your watch." },
+    "crystal_died":        { "recap": "Crystal died mid-sentence during the ceremony." },
+    "crystal_revived":     { "recap": "Crystal returned from the dead during the reception." },
+    "vangie_exposed":      { "recap": "Vangie Hotch was exposed as a fiction." },
+    "evil_awakened":       { "recap": "Whatever lives in the Crane basement is now awake." },
+    "wedding_stopped":     { "recap": "The Crane-Hotch wedding was officially stopped." },
+    "magdalena_unleashed": { "recap": "You gave Magdalena permission to do her worst." },
+    "table_flipped":       { "recap": "You flipped the buffet table. On camera. In a tagline-worthy way." },
+    "said_what_i_said":    { "recap": "You said what you said, and you did not take it back." }
   },
   "items": {
     "amulet":   { "label": "Cursed Amulet" },
@@ -31,27 +33,27 @@
   },
   "scenes": {
     "start": {
-      "place": "CRANE MANOR · THE GARDEN · 4:17 PM",
-      "narration": "White roses everywhere. A string quartet playing something haunted. You are new to Briarwood and already someone is grabbing your arm.",
+      "place": "CRANE MANOR · THE GARDEN · CAMERA 2 · 4:17 PM",
+      "narration": "White roses everywhere. A string quartet playing something haunted. A boom mic has followed you from the car. You are new to Briarwood, you have a tagline you did not write ('I'm not new money, I'm new problems'), and someone is already grabbing your arm.",
       "speaker": "CRYSTAL FONTAINE",
-      "line": "Thank God. A new face. You have to help me. Maxwell Crane is about to marry a woman who does not exist. I have proof. I also have a plan. The plan is insane but the proof is real.",
-      "confessional": "I have been in love with Maxwell Crane for fourteen years. I have faked amnesia twice. I have been to the basement. I know what's down there. We don't discuss it.",
+      "line": "Thank God. A new face. Don't look at the camera. Okay, look at the camera, they love it. Maxwell Crane is about to marry a woman who does not exist. I have proof. I also have a plan. The plan is insane but the proof is real.",
+      "confessional": "I have been in love with Maxwell Crane for fourteen years. I have faked amnesia twice. I have been to the basement. I know what's down there. We don't discuss it. Can you cut to my good side? I only have one.",
       "mood": "surprised",
-      "memory": ["Crystal has grabbed you at the Crane-Hotch wedding.", "Crystal claims Vangie Hotch does not exist."],
+      "memory": ["Crystal has grabbed you at the Crane-Hotch wedding, on camera.", "Crystal claims Vangie Hotch does not exist."],
       "choices": [
-        { "text": "Take Crystal's arm and help her sneak into the ceremony.", "next": "chapel_sneak", "delta": { "drama": 15, "chaos": 10, "destiny": 8000 }, "set": ["helped_crystal"] },
-        { "text": "Slip away to find Maxwell before the ceremony starts.", "next": "maxwell_warning", "delta": { "drama": 10, "chaos": 5, "destiny": 5000 } },
+        { "text": "Take Crystal's arm and help her sneak into the ceremony. Your mic pack is still hot.", "next": "chapel_sneak", "delta": { "drama": 15, "chaos": 10, "destiny": 8000 }, "set": ["helped_crystal"] },
+        { "text": "Slip away to find Maxwell before the ceremony. A producer mouths 'go, go, go.'", "next": "maxwell_warning", "delta": { "drama": 10, "chaos": 5, "destiny": 5000 } },
         { "text": "Find the psychic booth you spotted near the topiary. Something there rattled.", "next": "magdalena_booth", "delta": { "drama": 5, "chaos": 15, "destiny": 3000 } }
       ],
       "spice": {
         "1": {
-          "narration": "White roses everywhere. A string quartet. You are new to Briarwood and someone has taken your arm very firmly.",
-          "line": "Oh I'm so glad someone reasonable is here. Maxwell is about to make a terrible mistake. I have information. And a plan. The plan is perhaps ambitious.",
+          "narration": "White roses everywhere. A string quartet. A boom mic hovers politely over your shoulder. You are new to Briarwood and someone has taken your arm very firmly.",
+          "line": "Oh I'm so glad someone reasonable is here. Maxwell is about to make a terrible mistake. I have information. And a plan. The plan is perhaps ambitious. Do smile for the camera, dear.",
           "confessional": "I have admired Maxwell from a respectful distance for fourteen years. And a slightly less respectful one for two. We don't discuss the basement."
         },
         "3": {
-          "line": "Listen to me very carefully. That [BLEEP] woman about to marry my Maxwell is not who she says she is. I have photographs. I have dental records. I will burn this wedding to the ground and I need a witness.",
-          "confessional": "Fourteen years. Two fake amnesia episodes. One actual one. I've been to the basement. I won. We don't discuss it.",
+          "line": "Listen to me very carefully. That [BLEEP] woman about to marry my Maxwell is not who she says she is. I have photographs. I have dental records. I will burn this wedding to the ground and I need a witness. Preferably one with a mic.",
+          "confessional": "Fourteen years. Two fake amnesia episodes. One actual one. I've been to the basement. I won. We don't discuss it. And no, I will not be 'toning it down' for the edit.",
           "mood": "angry"
         }
       }
@@ -59,51 +61,51 @@
 
     "chapel_sneak": {
       "place": "CRANE MANOR · SIDE CORRIDOR · 4:22 PM",
-      "narration": "Crystal has somehow obtained a veil and is wearing it sideways. She presses a photograph into your hands without looking at you.",
+      "narration": "Crystal has somehow obtained a veil and is wearing it sideways. A camera operator walks backwards ahead of you, pretending not to be there. She presses a photograph into your hands without looking at you.",
       "speaker": "CRYSTAL FONTAINE",
       "line": "That's Vangie at a conference in Geneva in 2019. Notice anything? No, look closer. The real Vangie Hotch has a birthmark on her left wrist. This one doesn't. This one has a Wikipedia page that was created eighteen months ago.",
-      "confessional": "I found this in forty minutes of internet searching. The fact that no one else did this is frankly upsetting.",
+      "confessional": "I found this in forty minutes on my phone. An entire production team, and not one of them thought to google her. I am not mad. I am simply the only professional here.",
       "mood": "smug",
       "memory": ["Crystal gave you a photograph. Vangie's Wikipedia page was created eighteen months ago.", "Crystal's evidence involves wrist birthmarks and conference records."],
       "choices": [
         { "text": "Pocket the photograph. This is evidence.", "next": "chapel_enter", "delta": { "drama": 5, "chaos": 5, "destiny": 12000 }, "give": ["evidence"] },
-        { "text": "Signal Maxwell from the corridor right now. With your arms.", "next": "generate", "delta": { "drama": 20, "chaos": 15, "destiny": 6000 }, "hint": "Maxwell does not understand the arm signals. This escalates in a direction nobody predicted." },
+        { "text": "Signal Maxwell from the corridor right now. With your arms.", "next": "generate", "delta": { "drama": 20, "chaos": 15, "destiny": 6000 }, "hint": "Maxwell does not understand the arm signals. A producer cheerfully coaches you to do them bigger. This escalates in a direction nobody predicted." },
         { "text": "Put the veil on correctly and walk in as a bridesmaid.", "next": "chapel_enter", "delta": { "drama": 10, "chaos": 25, "tears": 1, "destiny": 4000 } }
       ]
     },
 
     "maxwell_warning": {
       "place": "CRANE MANOR · THE CLOAKROOM · 4:19 PM",
-      "narration": "Maxwell Crane is adjusting his cufflinks in a mirror, saying affirmations aloud. He doesn't hear you come in.",
+      "narration": "Maxwell Crane is adjusting his cufflinks in a mirror, saying affirmations aloud to a ring light. He doesn't hear you come in. The sound guy does, and nods at you encouragingly.",
       "speaker": "MAXWELL CRANE",
       "line": "I am a good man. I am a prepared man. I am a man who is definitely not about to make a decision he will regret for the next fourteen seasons. I mean years.",
-      "confessional": "I know something is wrong. I have known since the engagement. I keep almost remembering what it is.",
+      "confessional": "I know something is wrong. I have known since the engagement. I keep almost remembering what it is. Also, I'm told I am 'the husband' of this show. I have no storyline. I have a rental tux.",
       "mood": "neutral",
       "memory": ["Maxwell is saying affirmations alone in the cloakroom.", "Maxwell has a vague feeling something is wrong and cannot name it."],
       "choices": [
-        { "text": "Tell Maxwell: Vangie is not who she says she is.", "next": "generate", "delta": { "drama": 20, "chaos": 10, "destiny": 15000 }, "set": ["warned_maxwell"], "hint": "Maxwell processes this information very slowly and aloud, then tries to find Vangie to ask her directly. This goes poorly in a soap opera way." },
-        { "text": "Show Maxwell the bouquet that arrived from someone named V. Brennan. Crystal sent it.", "next": "generate", "delta": { "drama": 15, "chaos": 20, "tears": 1, "destiny": 8000 }, "hint": "Maxwell recognises the name V. Brennan immediately. The recognition crosses his face in slow motion. He says one sentence and then needs to sit down." },
-        { "text": "Listen — there's a sound coming from beneath the floor. A rhythmic knocking.", "next": "basement_peek", "delta": { "drama": 10, "chaos": 25, "destiny": 5000 } }
+        { "text": "Tell Maxwell: Vangie is not who she says she is.", "next": "generate", "delta": { "drama": 20, "chaos": 10, "destiny": 15000 }, "set": ["warned_maxwell"], "hint": "Maxwell processes this information very slowly and aloud, then tries to find Vangie to ask her directly. A producer pulls Vangie aside first. This goes poorly in a soap opera way." },
+        { "text": "Show Maxwell the bouquet that arrived from someone named V. Brennan. Crystal sent it.", "next": "generate", "delta": { "drama": 15, "chaos": 20, "tears": 1, "destiny": 8000 }, "hint": "Maxwell recognises the name V. Brennan immediately. The recognition crosses his face in slow motion while the camera pushes in. He says one sentence and then needs to sit down." },
+        { "text": "Listen. There's a sound coming from beneath the floor. A rhythmic knocking.", "next": "basement_peek", "delta": { "drama": 10, "chaos": 25, "destiny": 5000 } }
       ]
     },
 
     "magdalena_booth": {
       "place": "CRANE MANOR · THE TOPIARY GARDEN · 4:20 PM",
-      "narration": "A purple tent between the horse chestnut and the ice sculpture. A sign reads MAGDALENA VOSS · CERTIFIED SEER · WALK-INS WELCOME. Inside it smells like candles and consequence.",
+      "narration": "A purple tent between the horse chestnut and the ice sculpture. A sign reads MAGDALENA VOSS · CERTIFIED SEER · WALK-INS WELCOME · FRIEND OF THE SHOW. Inside it smells like candles and consequence.",
       "speaker": "MAGDALENA VOSS",
       "line": "Ah. The new one. Sit. No, not on the cat. The other chair. Now. You want to know about the wedding. I'll tell you what I told the mayor: it ends in fire, tears, or revelation. Probably all three. Would you like to help?",
-      "confessional": "I have been watching this family for forty years. I am responsible for about thirty percent of what happens. The other seventy is free will, which I find frankly irresponsible.",
+      "confessional": "I have been watching this family for forty years. I am responsible for about thirty percent of what happens. The other seventy is free will, which I find frankly irresponsible. Also, I get a cut of the merch.",
       "mood": "smug",
       "memory": ["Magdalena Voss has a certified psychic tent at the wedding.", "Magdalena claims to be responsible for thirty percent of Briarwood's history."],
       "choices": [
         { "text": "Accept the amulet she's holding out. It's warm and it hums.", "next": "chapel_enter", "delta": { "drama": 10, "chaos": 20, "destiny": 18000 }, "give": ["amulet"], "set": ["accepted_curse"] },
         { "text": "Ask about the knocking sound from below the manor.", "next": "basement_peek", "delta": { "drama": 15, "chaos": 30, "destiny": 10000 } },
-        { "text": "Ask Magdalena for a vision of how the ceremony ends.", "next": "generate", "delta": { "drama": 5, "chaos": 10, "tears": 1, "destiny": 7000 }, "hint": "Magdalena shows a vision that is entirely accurate and deeply alarming. She charges extra for accuracy. The vision includes the basement." }
+        { "text": "Ask Magdalena for a vision of how the ceremony ends.", "next": "generate", "delta": { "drama": 5, "chaos": 10, "tears": 1, "destiny": 7000 }, "hint": "Magdalena shows a vision that is entirely accurate and deeply alarming. She charges extra for accuracy. A camera zooms in on her crystal ball. The vision includes the basement." }
       ],
       "spice": {
         "3": {
           "line": "Sit your [BLEEP] down on the right chair. The cat bites. Now: this wedding ends in blood, tears, and a restraining order, and I can either make it worse or catastrophically worse. Your call.",
-          "confessional": "Forty years watching this family. I did not start any of it. I merely accelerated the inevitable. That's just physics.",
+          "confessional": "Forty years watching this family. I did not start any of it. I merely accelerated the inevitable. That's just physics. And ratings.",
           "mood": "smug"
         }
       }
@@ -111,31 +113,31 @@
 
     "chapel_enter": {
       "place": "CRANE MANOR · THE CHAPEL · 4:31 PM",
-      "narration": "The chapel fills. Candles gutter at the same moment for no reason. Vangie glides down the aisle as if she has practiced this exact posture in a mirror for weeks, which she has.",
+      "narration": "The chapel fills. Candles gutter at the same moment for no reason. Three cameras find their marks. Vangie glides down the aisle as if she has practiced this exact posture in a mirror for weeks, which she has.",
       "speaker": "VANGIE HOTCH",
-      "line": "Thank you all for being here. Particularly those of you who were not invited. We will address that after the ceremony.",
-      "confessional": "I have worked too hard for this. I have three backup identities and a one-way ticket. Nothing is going wrong today.",
+      "line": "Thank you all for being here. Particularly those of you who were not invited. We will address that after the ceremony. I'm not here to make friends. I'm here to make a marriage.",
+      "confessional": "I have worked too hard for this. I have three backup identities and a one-way ticket. Nothing is going wrong today. And if anything goes wrong, I want that clip to be my best angle.",
       "mood": "smug",
       "memory": ["The ceremony has begun at Crane Manor chapel.", "Vangie walked the aisle as if she owns the floor, the carpet, and several of the guests."],
       "choices": [
-        { "text": "Press the amulet against the pew and whisper what Magdalena told you to say.", "requires": { "hasItems": ["amulet"] }, "next": "altar", "delta": { "drama": 25, "chaos": 30, "destiny": 20000 }, "set": ["evil_awakened"], "consume": ["amulet"], "hint": "The amulet heats and shatters. The candles all go out. Something knocks from beneath the flagstones, three times." },
+        { "text": "Press the amulet against the pew and whisper what Magdalena told you to say.", "requires": { "hasItems": ["amulet"] }, "next": "altar", "delta": { "drama": 25, "chaos": 30, "destiny": 20000 }, "set": ["evil_awakened"], "consume": ["amulet"], "hint": "The amulet heats and shatters. The candles all go out. Something knocks from beneath the flagstones, three times. The camera operator mutters 'are we getting this.'" },
         { "text": "Catch Maxwell's eye and give him the signal you agreed on.", "requires": ["warned_maxwell"], "next": "altar", "delta": { "drama": 20, "chaos": 15, "destiny": 15000 }, "set": ["vows_interrupted"] },
         { "text": "Crystal is in the third pew. She's standing up. You absolutely cannot stop her.", "next": "crystal_drama", "delta": { "drama": 20, "chaos": 20, "tears": 1, "destiny": 10000 } },
-        { "text": "Sit in the back and wait. Something is definitely coming.", "next": "generate", "delta": { "drama": 5, "chaos": 5, "destiny": 5000 }, "hint": "Something small but significant happens in the row ahead of you. It sets off a chain reaction involving a hat, a cufflink, and a very bad timing." },
+        { "text": "Sit in the back and wait. Something is definitely coming.", "next": "generate", "delta": { "drama": 5, "chaos": 5, "destiny": 5000 }, "hint": "Something small but significant happens in the row ahead of you. It sets off a chain reaction involving a hat, a cufflink, and very bad timing. A producer pretends not to smile." },
         { "text": "Walk quietly to the front. The minister looks relieved to see someone who appears competent.", "next": "altar", "delta": { "drama": 10, "chaos": 10, "destiny": 8000 } }
       ]
     },
 
     "basement_peek": {
       "place": "CRANE MANOR · THE BASEMENT STAIRS · 4:25 PM",
-      "narration": "The door was unlocked. It's always unlocked. The knocking is louder down here. Magdalena appears at your shoulder as if she has been standing there the whole time.",
+      "narration": "The door was unlocked. It's always unlocked. The knocking is louder down here. The camera crew has declined to follow you. Magdalena appears at your shoulder as if she has been standing there the whole time.",
       "speaker": "MAGDALENA VOSS",
       "line": "Yes, he's still down there. No, we can't let him out. No, I won't explain why. What I will tell you is that he is currently very interested in what's happening upstairs and I find that troubling.",
-      "confessional": "My ex-husband has been in that basement for eleven years. He is fine. He has books. He chose this. The knocking means he wants the newspaper. We should leave now.",
+      "confessional": "My ex-husband has been in that basement for eleven years. He is fine. He has books. He chose this. The knocking means he wants the newspaper. Also, no, he has not signed a release, and yes, legal knows.",
       "mood": "neutral",
       "memory": ["Something is in the Crane Manor basement. Magdalena's ex-husband, apparently.", "The basement door is always unlocked. This is a known problem."],
       "choices": [
-        { "text": "Go down. Just a few steps. Just to look.", "next": "generate", "delta": { "drama": 15, "chaos": 30, "destiny": 12000 }, "set": ["evil_awakened"], "hint": "You find something down there that cannot be explained away. Magdalena says 'I told you' three times. Something follows you back up the stairs, slowly." },
+        { "text": "Go down. Just a few steps. Just to look.", "next": "generate", "delta": { "drama": 15, "chaos": 30, "destiny": 12000 }, "set": ["evil_awakened"], "hint": "You find something down there that cannot be explained away. Magdalena says 'I told you' three times. Something follows you back up the stairs, slowly. The crew gets the shot of their lives." },
         { "text": "Back upstairs immediately and announce to the guests that there is something in the basement.", "next": "altar", "delta": { "drama": 25, "chaos": 35, "destiny": 15000 }, "set": ["evil_awakened"] },
         { "text": "Close the door carefully. Walk back to the garden. Tell no one.", "next": "altar", "delta": { "drama": 5, "chaos": 5, "destiny": 3000 } }
       ]
@@ -143,15 +145,15 @@
 
     "crystal_drama": {
       "place": "CRANE MANOR · THE CHAPEL · 4:38 PM",
-      "narration": "Crystal stands. The whole chapel turns. She has prepared a speech. You can tell because she is holding index cards.",
+      "narration": "Crystal stands. The whole chapel turns. Three cameras swing around in unison. She has prepared a speech. You can tell because she is holding index cards.",
       "speaker": "CRYSTAL FONTAINE",
       "line": "Maxwell Crane. I need you to look at me for approximately thirty seconds while I read from these cards. This is not a speech about love. It is a presentation about identity fraud, and there will be a Q-and-A.",
-      "confessional": "I rehearsed this forty times. I sound completely unhinged. I know I sound unhinged. That is a risk I have assessed and accepted.",
+      "confessional": "I rehearsed this forty times. I sound completely unhinged. I know I sound unhinged. That is a risk I have assessed and accepted. I am not here for the group chat. I am here for the record.",
       "mood": "smug",
       "memory": ["Crystal stood up during the ceremony with colour-coded index cards.", "Crystal called Vangie's identity into question in front of everyone."],
       "choices": [
         { "text": "Stand next to Crystal. She needs a co-presenter.", "next": "altar", "delta": { "drama": 25, "chaos": 20, "destiny": 18000 }, "set": ["vows_interrupted"] },
-        { "text": "Slide quietly to the front while everyone watches Crystal. The minister looks panicked.", "next": "generate", "delta": { "drama": 15, "chaos": 15, "destiny": 12000 }, "hint": "You reach the minister and whisper something. The minister makes a decision that surprises everyone, including the minister." },
+        { "text": "Slide quietly to the front while everyone watches Crystal. The minister looks panicked.", "next": "generate", "delta": { "drama": 15, "chaos": 15, "destiny": 12000 }, "hint": "You reach the minister and whisper something. The minister makes a decision that surprises everyone, including the minister, and a producer out of frame gives a thumbs up." },
         { "text": "Crystal stops mid-sentence. She goes down like a marionette with cut strings.", "next": "crystal_death", "delta": { "drama": 35, "chaos": 25, "tears": 2, "destiny": 20000 }, "set": ["crystal_died"] }
       ],
       "spice": {
@@ -161,7 +163,7 @@
         },
         "3": {
           "line": "MAXWELL CRANE. Don't you dare say 'I do'. That [BLEEP] woman next to you has had three passports in four years and I have RECEIPTS.",
-          "confessional": "Index cards. Colour-coded. This is my Everest.",
+          "confessional": "Index cards. Colour-coded. This is my Everest. Put it in the trailer.",
           "mood": "angry"
         }
       }
@@ -169,10 +171,10 @@
 
     "crystal_death": {
       "place": "CRANE MANOR · THE CHAPEL AISLE · 4:41 PM",
-      "narration": "Crystal is on the floor. The string quartet plays one more bar and then stops. The silence is comprehensive.",
+      "narration": "Crystal is on the floor. The string quartet plays one more bar and then stops. The silence is comprehensive. Somewhere behind you, a producer whispers 'get the wide.'",
       "speaker": "MAXWELL CRANE",
-      "line": "Crystal? Crystal, this is not — this is not a good time for this. I know that's not — I know how that sounds. Crystal?",
-      "confessional": "I'll be honest, this has happened before. The first time I called emergency services. The second time I called the florist by mistake. I don't know what this is.",
+      "line": "Crystal? Crystal, this is not. This is not a good time for this. I know that's not. I know how that sounds. Crystal?",
+      "confessional": "I'll be honest, this has happened before. The first time I called emergency services. The second time I called the florist by mistake. I don't know what this is. I'm told this is 'a moment.'",
       "mood": "surprised",
       "fx": ["sparkle"],
       "memory": ["Crystal collapsed mid-sentence in the chapel aisle.", "Maxwell does not know if Crystal has done this before or not."],
@@ -180,27 +182,27 @@
         {
           "if": ["evil_awakened"],
           "use": {
-            "narration": "Crystal is on the floor. All the candles in the chapel relight at once, in blue.",
+            "narration": "Crystal is on the floor. All the candles in the chapel relight at once, in blue. The camera operator slowly lowers the camera, then raises it again.",
             "fx": ["sparkle", "horns"],
-            "line": "Crystal? Something is — the candles — I am going to need a moment to — Crystal?",
+            "line": "Crystal? Something is. The candles. I am going to need a moment to. Crystal?",
             "confessional": "The blue candles are new. This is new. I'm noting that this is new.",
             "mood": "surprised"
           }
         }
       ],
       "choices": [
-        { "text": "Kneel down. Perform CPR. Soap opera CPR works differently from regular CPR.", "next": "generate", "delta": { "drama": 20, "chaos": 15, "tears": 1, "destiny": 15000 }, "set": ["crystal_revived"], "hint": "Crystal revives dramatically mid-CPR. She sits up, looks directly at Vangie, and says one sentence that changes everything. Maxwell is still processing." },
+        { "text": "Kneel down. Perform CPR. Soap opera CPR works differently from regular CPR.", "next": "generate", "delta": { "drama": 20, "chaos": 15, "tears": 1, "destiny": 15000 }, "set": ["crystal_revived"], "hint": "Crystal revives dramatically mid-CPR. She sits up, looks directly at Vangie, and says one sentence that changes everything. Maxwell is still processing. Three cameras find their marks." },
         { "text": "Point at Vangie. Say: 'She did this.' You have no evidence. You have conviction.", "next": "confrontation", "delta": { "drama": 30, "chaos": 30, "destiny": 20000 }, "set": ["vangie_exposed", "wedding_stopped"] },
-        { "text": "Find Magdalena. Only Magdalena knows what this means.", "next": "generate", "delta": { "drama": 15, "chaos": 20, "tears": 1, "destiny": 10000 }, "hint": "Magdalena arrives having already known. She says something cryptic over Crystal's body and the temperature in the chapel drops exactly three degrees." }
+        { "text": "Find Magdalena. Only Magdalena knows what this means.", "next": "generate", "delta": { "drama": 15, "chaos": 20, "tears": 1, "destiny": 10000 }, "hint": "Magdalena arrives having already known. She says something cryptic over Crystal's body and the temperature in the chapel drops exactly three degrees. She glances at the camera first." }
       ]
     },
 
     "altar": {
       "place": "CRANE MANOR · THE ALTAR · 4:45 PM",
-      "narration": "The minister has the look of a person who has presided over seventeen weddings and six of them ended like this.",
+      "narration": "The minister has the look of a person who has presided over seventeen weddings and six of them ended like this. A producer is crouched behind the flowers, making a rolling gesture: keep going, keep going.",
       "speaker": "VANGIE HOTCH",
       "line": "I think what we all need right now is to continue. The ceremony. Which is happening. Right now. Minister, if you please.",
-      "confessional": "Four years of planning. I will not let Crystal Fontaine, a Wikipedia article, or whatever is in that basement derail this.",
+      "confessional": "Four years of planning. I will not let Crystal Fontaine, a Wikipedia article, or whatever is in that basement derail this. I have a tagline and I intend to earn it.",
       "mood": "angry",
       "memory": ["The ceremony has reached the altar.", "Vangie is determined to continue despite everything."],
       "variants": [
@@ -209,7 +211,7 @@
           "use": {
             "speaker": "MAGDALENA VOSS",
             "line": "Everyone stop. The floor is warm. That's not good. That means he's listening. And when he listens, things happen to the people talking. Carry on if you like.",
-            "confessional": "I told them about the floor in 2019. I sent a letter. I sent two letters.",
+            "confessional": "I told them about the floor in 2019. I sent a letter. I sent two letters. Not one of them made the edit.",
             "mood": "neutral",
             "fx": ["sparkle"]
           }
@@ -218,7 +220,7 @@
           "if": ["vows_interrupted"],
           "use": {
             "speaker": "CRYSTAL FONTAINE",
-            "line": "Maxwell, before you say anything — BEFORE you say anything — I need you to know that the woman next to you has had four names in six years, and I have the Wikipedia revision history to prove it.",
+            "line": "Maxwell, before you say anything, BEFORE you say anything, I need you to know that the woman next to you has had four names in six years, and I have the Wikipedia revision history to prove it.",
             "confessional": "He is looking at me. He is thinking. I can hear him thinking. This is good.",
             "mood": "surprised"
           }
@@ -226,9 +228,9 @@
       ],
       "choices": [
         { "text": "Hand Vangie the photograph. Right here. Right now. At the altar.", "requires": { "hasItems": ["evidence"] }, "next": "confrontation", "delta": { "drama": 30, "chaos": 20, "destiny": 25000 }, "set": ["vangie_exposed", "wedding_stopped"], "consume": ["evidence"] },
-        { "text": "Say: 'I object.' Two words. Clear voice. Eye contact with Maxwell.", "next": "confrontation", "delta": { "drama": 25, "chaos": 20, "tears": 1, "destiny": 20000 }, "set": ["vows_interrupted", "wedding_stopped"] },
+        { "text": "Say: 'I object.' Then turn to the nearest lens and add: 'I said what I said.'", "next": "confrontation", "delta": { "drama": 25, "chaos": 20, "tears": 1, "destiny": 20000 }, "set": ["vows_interrupted", "wedding_stopped", "said_what_i_said"] },
         { "text": "Step aside for Magdalena, who has appeared at the back of the chapel holding a candle.", "next": "confrontation", "delta": { "drama": 20, "chaos": 30, "destiny": 18000 }, "set": ["wedding_stopped"] },
-        { "text": "Say nothing. The minister opens his mouth. Something stops him. It may have been you.", "next": "generate", "delta": { "drama": 10, "chaos": 10, "destiny": 8000 }, "hint": "The ceremony pauses on a technicality that nobody understands. This creates space for one more revelation before the vows." }
+        { "text": "Say nothing. The minister opens his mouth. Something stops him. It may have been you.", "next": "generate", "delta": { "drama": 10, "chaos": 10, "destiny": 8000 }, "hint": "The ceremony pauses on a technicality that nobody understands. A producer whispers 'give us one more.' This creates space for one more revelation before the vows." }
       ],
       "spice": {
         "1": {
@@ -245,10 +247,10 @@
 
     "confrontation": {
       "place": "CRANE MANOR · THE CHAPEL · 4:52 PM",
-      "narration": "The ceremony has stopped. Everyone in the chapel is now looking at the same point. Even the people who came for the free food.",
+      "narration": "The ceremony has stopped. Everyone in the chapel is now looking at the same point. Even the people who came for the free food. Every boom mic in the building has drifted into the aisle.",
       "speaker": "VANGIE HOTCH",
-      "line": "All right. Fine. You want the truth? The truth is that I have worked harder for this life than anyone in this room. Including all of you.",
-      "confessional": "I had a plan. The plan was perfect. The plan did not account for Crystal Fontaine, a cursed amulet, and whatever is in that basement. Nobody plans for all three.",
+      "line": "All right. Fine. You want the truth? The truth is that I have worked harder for this life than anyone in this room. Including all of you. And I'd like it noted that I have never once been 'tired of the drama.'",
+      "confessional": "I had a plan. The plan was perfect. The plan did not account for Crystal Fontaine, a cursed amulet, and whatever is in that basement. Nobody plans for all three. Roll the clip.",
       "mood": "angry",
       "memory": ["Vangie dropped her composure at the confrontation.", "The whole chapel is a witness."],
       "variants": [
@@ -256,7 +258,7 @@
           "if": ["crystal_revived"],
           "use": {
             "speaker": "CRYSTAL FONTAINE",
-            "narration": "Crystal has entered through the stained glass window. It was locked. This is not being discussed.",
+            "narration": "Crystal has entered through the stained glass window. It was locked. This is not being discussed. The camera operators fight for position.",
             "line": "I was dead for four minutes and I have things to say. Maxwell, start writing. This is going to take a while.",
             "confessional": "I prepared this speech in the afterlife. The afterlife was quiet and had good acoustics.",
             "mood": "smug",
@@ -267,7 +269,7 @@
           "if": { "flags": ["crystal_died"], "notFlags": ["crystal_revived"] },
           "use": {
             "speaker": "MAXWELL CRANE",
-            "narration": "An empty pew at the front. Crystal's index cards on the floor. Nobody has moved them.",
+            "narration": "An empty pew at the front. Crystal's index cards on the floor. Nobody has moved them. A producer quietly asks if anyone can 'hold the sad.'",
             "line": "She was just right there. She had index cards. I should have listened to the index cards.",
             "confessional": "I always thought Crystal was too dramatic. I owe her an apology.",
             "mood": "surprised"
@@ -285,8 +287,9 @@
       "choices": [
         { "text": "Tell Magdalena she has permission. Whatever she was planning. Do it.", "requires": ["wedding_stopped"], "next": "END", "delta": { "drama": 35, "chaos": 40, "destiny": 30000 }, "set": ["magdalena_unleashed"] },
         { "text": "Tell Maxwell: choose. Right now. No more time.", "next": "END", "delta": { "drama": 40, "chaos": 25, "tears": 2, "destiny": 25000 } },
+        { "text": "Flip the buffet table. Announce you're not here to make friends. Take the champagne.", "next": "END", "delta": { "drama": 40, "chaos": 35, "tears": 1, "destiny": 22000 }, "set": ["table_flipped"] },
         { "text": "Walk out the side door. Take the champagne. You were only here for the canapes anyway.", "next": "END", "delta": { "drama": 5, "chaos": 5, "tears": 1, "destiny": 5000 } },
-        { "text": "Magdalena whispers something to you. You repeat it aloud to the whole chapel.", "next": "generate", "delta": { "drama": 25, "chaos": 30, "destiny": 20000 }, "hint": "What Magdalena whispered is something that everyone in the chapel reacts to differently. It concerns the basement, the guest list, and a year nobody mentioned." }
+        { "text": "Magdalena whispers something to you. You repeat it aloud to the whole chapel.", "next": "generate", "delta": { "drama": 25, "chaos": 30, "destiny": 20000 }, "hint": "What Magdalena whispered is something that everyone in the chapel reacts to differently. It concerns the basement, the guest list, and a year nobody mentioned. Every camera finds a different face." }
       ],
       "spice": {
         "1": {
@@ -307,23 +310,40 @@
     {
       "if": { "flags": ["crystal_revived", "magdalena_unleashed"], "stats": { "chaos": ">=70" } },
       "title": "THE CRANE WEDDING DISASTER (PARTS I–VI)",
-      "text": "It takes six episodes to cover everything that happened. The basement is on the news. Magdalena has a podcast. Crystal and Maxwell are engaged again. Vangie is somewhere warm.",
+      "text": "It takes a six-part reunion to cover everything that happened. The basement is on the news. Magdalena has a podcast. Crystal and Maxwell are engaged again. Vangie is somewhere warm. You get a new tagline and no say in it.",
       "spice": {
         "3": { "text": "Six episodes, a documentary, and a restraining order covering four counties. Magdalena's podcast is number one. Crystal threw a wedding cake at a news anchor. Everyone is renewed for another season." }
       }
     },
     {
+      "if": { "flags": ["table_flipped"], "stats": { "chaos": ">=50" } },
+      "title": "THE FLIP HEARD ROUND BRIARWOOD",
+      "text": "The buffet table is now the opening shot of the season trailer, in slow motion, with strings. The venue has banned you for life. The network has put you in the first chair at the reunion and a lawyer in the second.",
+      "spice": {
+        "1": { "text": "The buffet table is gently reset by the catering staff. Your apology goes viral for its excellent posture. The network invites you to the reunion, seated near the exit." },
+        "3": { "text": "The table lands. The champagne lands. Your last shred of dignity lands. The clip has forty million views and a hashtag. The venue has banned you for life and the network has put you in the first chair at the reunion." }
+      }
+    },
+    {
       "if": { "flags": ["vangie_exposed", "wedding_stopped"], "stats": { "drama": ">=60" } },
       "title": "THE EXPOSÉ",
-      "text": "Vangie Hotch does not exist. This is confirmed by three journalists and one very surprised government database. Maxwell is devastated and grateful and very confused in that order. Season 13 is greenlit.",
+      "text": "Vangie Hotch does not exist. This is confirmed by three journalists and one very surprised government database. Maxwell is devastated and grateful and very confused in that order. Season 13 is greenlit, and Vangie's tagline is already in the trailer.",
       "spice": {
         "1": { "text": "Vangie leaves gracefully. Maxwell is in therapy. Crystal has sent flowers every day for two weeks. Season 13 is confirmed." }
       }
     },
     {
+      "if": { "flags": ["said_what_i_said"], "stats": { "drama": ">=60" } },
+      "title": "YOU SAID WHAT YOU SAID",
+      "text": "The clip is on every screen in the studio. You are asked to apologize. You decline, twice, both times on camera. Your tagline is rewritten to 'I said what I said.' Merch is already in production.",
+      "spice": {
+        "3": { "text": "The clip is on every screen in the studio. You are asked to apologize. You say a word that gets [BLEEP]ed in full, twice. Your tagline is rewritten to 'I said what I said.' Merch is already in production, and legal is crying quietly in a stairwell." }
+      }
+    },
+    {
       "if": { "flags": ["helped_crystal"], "stats": { "drama": ">=60" } },
       "title": "CRYSTAL AND MAXWELL, FINALLY",
-      "text": "It took fourteen years, two amnesiac episodes, and one actual death. The wedding happens three weeks later. Magdalena officiates. The basement remains locked. The cat attends.",
+      "text": "It took fourteen years, two amnesiac episodes, and one actual death. The wedding happens three weeks later, as a two-part special. Magdalena officiates. The basement remains locked. The cat attends.",
       "spice": {
         "3": { "title": "CRYSTAL AND MAXWELL, FINALLY (THE UNHINGED VERSION)", "text": "The ceremony is eleven minutes long because Crystal is weeping too hard to read her vows. Magdalena's toast is twenty minutes. Maxwell cries. The cat is a legal witness. The basement door opens once, briefly, then closes again. The cat does not look surprised." }
       }
@@ -331,7 +351,7 @@
     {
       "if": { "flags": ["evil_awakened", "magdalena_unleashed"] },
       "title": "THE THING IN THE BASEMENT",
-      "text": "Magdalena's ex-husband is out. He is fine. He is adjusting. He has very strong feelings about what happened to this family and would like to discuss them. Season 13 is entirely about this.",
+      "text": "Magdalena's ex-husband is out. He is fine. He is adjusting. He has very strong feelings about what happened to this family and has already asked who his glam squad is. Season 13 is entirely about this.",
       "spice": {
         "3": { "text": "He's out. He's tall. He's been reading for eleven years and has opinions. Magdalena introduces you as 'the one who opened the door.' This is not accurate but you are not arguing with him about it. Season 13 is a different show now." }
       }
@@ -339,11 +359,11 @@
     {
       "if": { "stats": { "drama": ">=50" } },
       "title": "RENEWED FOR ANOTHER SEASON",
-      "text": "Nothing was resolved. Everything escalated. The network is thrilled. You are confirmed as a series regular starting episode three. Crystal is 'will she appear?' Vangie got away."
+      "text": "Nothing was resolved. Everything escalated. The network is thrilled. You are confirmed as a series regular and promoted from 'friend of' to a full tagline. Crystal is 'will she appear?' Vangie got away."
     },
     {
       "title": "YOU WERE BACKGROUND",
-      "text": "You are visible in four shots eating canapés. Crystal married the minister. Vangie is gone. Maxwell is engaged again to someone else. Magdalena winks at you on your way out.",
+      "text": "You are visible in four shots eating canapés. Crystal married the minister. Vangie is gone. Maxwell is engaged again to someone else. Magdalena winks at you on your way out. You are a 'friend of the show' now. Nobody will say whose friend.",
       "spice": {
         "3": { "text": "You're in four shots. In one of them you're eating someone else's canapé. Magdalena winks at you. Her wink means something. You will not ask what." }
       }

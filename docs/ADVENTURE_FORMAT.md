@@ -15,6 +15,7 @@ One JSON file per adventure in `adventures/`. Validate with `npm run validate`. 
   "endAfter": 6,
   "stats": { },
   "flags": { },
+  "items": { },
   "scenes": { },
   "endings": [ ]
 }
@@ -50,6 +51,32 @@ One JSON file per adventure in `adventures/`. Validate with `npm run validate`. 
 ```
 
 Every flag must be declared. This is also the allowlist for flags the LLM may propose. `recap` is the line shown on the ending screen when the flag is set (in the order flags were set). A flag that is set but never read by a condition should have a `recap`, or the validator warns.
+
+## Items
+
+```json
+"items": {
+  "bunny_knife":  { "label": "Bunny's Knife" },
+  "goat_deed":    { "label": "Deed to the Goat" }
+}
+```
+
+Persistent inventory carried through the episode. Every item must be declared. `label` is the display name shown in the inventory strip.
+
+Choices use `give` and `consume` to add or remove items:
+
+```json
+{ "text": "Accept the knife.",  "next": "dessert", "give":    ["bunny_knife"] }
+{ "text": "Return the knife.",  "next": "dessert", "consume": ["bunny_knife"] }
+```
+
+Conditions use `hasItems` / `notItems` (same object form as `flags` / `notFlags`):
+
+```json
+{ "hasItems": ["bunny_knife"], "notItems": ["goat_deed"] }
+```
+
+The validator errors if an item is used in a condition but no choice ever gives it, and warns if an item is declared but never given or never read.
 
 ## Scenes
 
@@ -87,7 +114,7 @@ Every flag must be declared. This is also the allowlist for flags the LLM may pr
 }
 ```
 
-- `text` and `next` are required. `delta`, `set`, `requires`, `hint` are optional.
+- `text` and `next` are required. `delta`, `set`, `give`, `consume`, `requires`, `hint` are optional.
 - **Always author at least 3 choices that have no `requires`**, so the player sees 3 no matter what. The engine shows the first 3 choices whose `requires` holds, in authored order, so put gated choices first and they displace the last ungated one.
 
 ### `next`
@@ -106,7 +133,7 @@ Either a flag list (all must be set) or an object. Everything listed must hold.
 ```json
 ["wine_thrown", "bunny_enemy"]
 
-{ "flags": ["a"], "notFlags": ["b"], "stats": { "brand": ">=40000", "drama": "<50" } }
+{ "flags": ["a"], "notFlags": ["b"], "stats": { "brand": ">=40000", "drama": "<50" }, "hasItems": ["bunny_knife"], "notItems": ["goat_deed"] }
 ```
 
 Stat operators: `>=  <=  >  <  ==  !=`.
@@ -158,4 +185,4 @@ First ending whose `if` holds wins. The last ending must have no `if`. The endin
 
 ## What the validator checks
 
-Schema shape; unknown moods, fx, typos; every `next`/`go` target exists; the last `next` rule and last ending have no `if`; every flag used or set is declared; a flag read in a condition is set by some choice; delta and condition stats exist; every speaker is in the cast; at least 3 ungated choices per scene (including variants and spice overrides); scenes unreachable from `start` (warning); flags declared but never set, or set but never read and without a `recap` (warnings).
+Schema shape; unknown moods, fx, typos; every `next`/`go` target exists; the last `next` rule and last ending have no `if`; every flag used or set is declared; a flag read in a condition is set by some choice; delta and condition stats exist; every speaker is in the cast; at least 3 ungated choices per scene (including variants and spice overrides); every item used in a condition is given by some choice; scenes unreachable from `start` (warning); flags declared but never set, or set but never read and without a `recap` (warnings); items declared but never given, or given but never used in a condition (warnings).

@@ -62,7 +62,7 @@ RULES
 - narration: 1–2 sentences, present tense, second person.
 - React to the player's last choice and to active flags. Callback to memory when funny.
 - Never repeat a joke from RECENT BEATS. Each beat is wilder than the last.
-- Exactly 3 choices. Each is a distinct absurd move. Funny to read, not just wild.
+- Exactly 3 choices. Each is a distinct absurd move. Funny to read, not just wild. One choice MUST be so unhinged it would make a producer spill their coffee — escalate beyond what seems reasonable.
 - delta values are integers. Brand Value in dollars (3000–20000 typical).
 - set: only flags from APPROVED FLAGS, only when the choice would cause it.
 - mood: neutral | surprised | angry | smug.

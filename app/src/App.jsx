@@ -99,7 +99,7 @@ function StatsRow({ stats, adventure }) {
 
 function EpisodeSelect({ onSelect, onNewGame }) {
   return (
-    <div style={{ background: scanlines, minHeight: '100dvh', padding: '32px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, maxWidth: 600, margin: '0 auto' }}>
+    <div style={{ background: scanlines, minHeight: '100dvh', padding: '32px 16px max(32px, env(safe-area-inset-bottom, 32px))', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, maxWidth: 600, margin: '0 auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, alignSelf: 'flex-start' }}>
         <LogoSVG />
         <h1 style={{ fontFamily: press, fontSize: 13, color: C.pink, lineHeight: 1.8, fontWeight: 400 }}>
@@ -140,7 +140,7 @@ function EpisodeSelect({ onSelect, onNewGame }) {
 
 function EndingScreen({ ending, adventure, onRestart, onGoToSelect }) {
   return (
-    <div style={{ background: scanlines, minHeight: '100dvh', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 600, margin: '0 auto' }}>
+    <div style={{ background: scanlines, minHeight: '100dvh', padding: '24px 16px max(24px, env(safe-area-inset-bottom, 24px))', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 600, margin: '0 auto' }}>
       <h1 style={{ fontFamily: press, fontSize: 13, color: C.pink, lineHeight: 1.8, fontWeight: 400 }}>
         HOUSEWIFE YOURSELF
       </h1>
@@ -302,12 +302,12 @@ export default function App() {
   const speakerDef = scene.speaker ? castData.characters[scene.speaker] : null
 
   return (
-    <div style={{ background: scanlines, minHeight: '100dvh', padding: '20px 16px', display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 600, margin: '0 auto' }}>
+    <div style={{ background: scanlines, minHeight: '100dvh', padding: '20px 16px max(20px, env(safe-area-inset-bottom, 20px))', display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 600, margin: '0 auto' }}>
 
       {/* ── header ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: `4px double ${C.pink}`, paddingBottom: 14 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <h1 style={{ fontFamily: press, fontSize: 13, color: C.pink, lineHeight: 1.8, fontWeight: 400 }}>
+          <h1 style={{ fontFamily: press, fontSize: 'clamp(9px, 3.3vw, 13px)', color: C.pink, lineHeight: 1.8, fontWeight: 400 }}>
             THE REAL HOUSEWIVES<br />OF LAKE SPARKLE
           </h1>
           <div style={{ fontSize: 20, color: C.gold }}>{adventure.episode}</div>
