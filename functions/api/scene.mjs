@@ -1,10 +1,16 @@
-// Scene generation — shared by Vite dev middleware and Cloudflare Pages Function (onRequestPost).
+// Scene generation — shared by Vite dev middleware and worker.js (Cloudflare).
 // No env vars read directly; caller supplies keys.
 
 import { createValidator, sanitizeGeneratedScene } from '../../src/validate/validate.js'
+import goat from '../../adventures/goat.json'
+import reunion from '../../adventures/reunion.json'
+import passions from '../../adventures/passions.json'
+import lakeSparkleCast from '../../cast/lake-sparkle.json'
+import briarwoodCast from '../../cast/briarwood.json'
+import adventureSchema from '../../schema/adventure.schema.json'
+import castSchema from '../../schema/cast.schema.json'
+import generatedSceneSchema from '../../schema/generated-scene.schema.json'
 
-// Statically imported so bundlers (Vite + Cloudflare esbuild) include them at build time.
-import goat       from '../../adventures/goat.json'   import reunion    from '../../adventures/reunion.json' import passions   from '../../adventures/passions.json'import lakeSparkleCast from '../../cast/lake-sparkle.json'import briarwoodCast   from '../../cast/briarwood.json'   import adventureSchema     from '../../schema/adventure.schema.json'      import castSchema          from '../../schema/cast.schema.json'           import generatedSceneSchema from '../../schema/generated-scene.schema.json'
 const ADVENTURES = { goat, reunion, passions }
 const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast }
 
@@ -13,6 +19,7 @@ function getAdventure(id) {
   if (!adv) throw new Error(`Unknown adventure: ${id}`)
   return adv
 }
+
 function getCast(id) {
   const cast = CASTS[id]
   if (!cast) throw new Error(`Unknown cast: ${id}`)
@@ -78,7 +85,7 @@ function buildUserMessage(req) {
     `Stats: ${statStr}`,
     `Active flags: ${flags.length ? flags.join(', ') : 'none'}`,
     inventory?.length ? `Inventory: ${inventory.join(', ')}` : '',
-    memory.length  ? `Cast remembers: ${memory.slice(-8).join(' | ')}` : '',
+    memory.length ? `Cast remembers: ${memory.slice(-8).join(' | ')}` : '',
     recentBeats?.length ? `Recent beats (don't repeat): ${recentBeats.slice(-4).join(' | ')}` : '',
     lastScene?.speaker ? `Last: ${lastScene.speaker} said "${lastScene.line}"` : '',
     `Player chose: "${choice.text}"`,
@@ -96,7 +103,7 @@ async function callMagica(systemPrompt, userMessage, { key, base = 'https://infe
       model,
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user',   content: userMessage },
+        { role: 'user', content: userMessage },
       ],
       response_format: { type: 'json_object' },
       max_tokens: 600,
@@ -161,12 +168,11 @@ async function tryGenerate(adventure, cast, systemPrompt, userMessage, keys, att
   return sanitizeGeneratedScene(parsed, adventure)
 }
 
-// ── public entry point (used by Vite dev middleware) ─────────────────────────
+// ── public entry point ────────────────────────────────────────────────────────
 
 /**
- * @param {object} body  — request body matching LLM_CONTRACT.md
- * @param {object} keys  — { magicaKey, geminiKey, provider?, model? }
- * @returns {{ scene: object } | { fallback: true } | { error: string, status: number }}
+ * @param {object} body — request body matching LLM_CONTRACT.md
+ * @param {object} keys — { magicaKey, geminiKey, provider?, model? }
  */
 export async function handleSceneRequest(body, keys) {
   const { adventureId, spice } = body ?? {}
@@ -175,13 +181,13 @@ export async function handleSceneRequest(body, keys) {
   let adventure, cast
   try {
     adventure = getAdventure(adventureId)
-    cast      = getCast(adventure.cast)
+    cast = getCast(adventure.cast)
   } catch {
     return { error: `Unknown adventure: ${adventureId}`, status: 400 }
   }
 
   const systemPrompt = buildSystemPrompt(adventure, cast, spice ?? 2)
-  const userMessage  = buildUserMessage(body)
+  const userMessage = buildUserMessage(body)
 
   try {
     const scene = await tryGenerate(adventure, cast, systemPrompt, userMessage, keys)
@@ -190,30 +196,4 @@ export async function handleSceneRequest(body, keys) {
     console.error('[scene] provider error:', err?.message ?? err)
     return { fallback: true }
   }
-}
-
-// ── Cloudflare Pages Function entry point ─────────────────────────────────────
-
-export async function onRequestPost(context) {
-  const { request, env } = context
-
-  let body
-  try { body = await request.json() } catch {
-    return new Response(JSON.stringify({ error: 'Invalid JSON', status: 400 }), {
-      status: 400, headers: { 'Content-Type': 'application/json' },
-    })
-  }
-
-  const keys = {
-    geminiKey: env.GEMINI_API_KEY,
-    magicaKey: env.MAGICA_API_KEY,
-    provider:  env.SCENE_PROVIDER ?? 'gemini',
-    model:     env.SCENE_MODEL,
-  }
-
-  const result = await handleSceneRequest(body, keys)
-  return new Response(JSON.stringify(result), {
-    status: result.status ?? 200,
-    headers: { 'Content-Type': 'application/json' },
-  })
 }
