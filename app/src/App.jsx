@@ -100,12 +100,7 @@ function StatsRow({ stats, adventure }) {
 function EpisodeSelect({ onSelect, onNewGame }) {
   return (
     <div style={{ background: scanlines, minHeight: '100dvh', padding: '32px 16px max(32px, env(safe-area-inset-bottom, 32px))', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, maxWidth: 600, margin: '0 auto' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, alignSelf: 'flex-start' }}>
-        <LogoSVG />
-        <h1 style={{ fontFamily: press, fontSize: 13, color: C.pink, lineHeight: 1.8, fontWeight: 400 }}>
-          HOUSEWIFE<br />YOURSELF
-        </h1>
-      </div>
+      <img src="/title.png" alt="Real You-wives" style={{ width: '100%', maxWidth: 480, imageRendering: 'pixelated' }} />
       <div style={{ fontFamily: press, fontSize: 9, color: C.lavender, alignSelf: 'flex-start' }}>SELECT EPISODE</div>
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
         {ADVENTURES.map((adv, i) => {
