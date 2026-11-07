@@ -33,19 +33,6 @@ const vt = "'VT323', monospace"
 
 // ── sub-components ───────────────────────────────────────────────────────────
 
-function LogoSVG() {
-  return (
-    <svg width="48" height="48" viewBox="0 0 64 64" aria-hidden="true" style={{ flexShrink: 0 }}>
-      <rect x="16" y="8"  width="32" height="8"  fill={C.cream}/>
-      <rect x="20" y="16" width="24" height="8"  fill={C.cream}/>
-      <rect x="24" y="24" width="16" height="8"  fill={C.cream}/>
-      <rect x="20" y="12" width="24" height="8"  fill={C.pink}/>
-      <rect x="24" y="20" width="16" height="4"  fill={C.pink}/>
-      <rect x="30" y="32" width="4"  height="16" fill={C.cream}/>
-      <rect x="20" y="48" width="24" height="4"  fill={C.cream}/>
-    </svg>
-  )
-}
 
 function Portrait({ look, mood, fx, name }) {
   const svg = renderPortraitSVG(layers, look, { mood, fx, size: 128, label: name })
@@ -97,10 +84,56 @@ function StatsRow({ stats, adventure }) {
   )
 }
 
-function EpisodeSelect({ onSelect, onNewGame }) {
+function TypedText({ text, speed = 55, style }) {
+  const words = (text ?? '').split(' ').filter(Boolean)
+  const [n, setN] = useState(0)
+  useEffect(() => { setN(0) }, [text])
+  useEffect(() => {
+    if (n >= words.length) return
+    const t = setTimeout(() => setN(i => i + 1), speed)
+    return () => clearTimeout(t)
+  })
+  const done = n >= words.length
+  return (
+    <span style={style}>
+      {words.slice(0, n).join(' ')}
+      {!done && <span className="typing-cursor" aria-hidden="true">▌</span>}
+    </span>
+  )
+}
+
+function EpisodeSelect({ onSelect, onNewGame, spice, onSpice }) {
+  const [shakingBtn, setShakingBtn] = useState(null)
+  const handleSpice = (level) => {
+    onSpice(level)
+    setShakingBtn(level)
+    setTimeout(() => setShakingBtn(null), 450)
+  }
   return (
     <div style={{ background: scanlines, minHeight: '100dvh', padding: '32px 16px max(32px, env(safe-area-inset-bottom, 32px))', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, maxWidth: 600, margin: '0 auto' }}>
-      <img src="/title.png" alt="Real You-wives" style={{ width: '100%', maxWidth: 480, imageRendering: 'pixelated' }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, alignSelf: 'flex-start', width: '100%' }}>
+        <img src="/icon-512.png" alt="" aria-hidden="true" style={{ height: 72, width: 72, imageRendering: 'pixelated', flexShrink: 0 }} />
+        <img src="/title.png" alt="Real You-wives" style={{ flex: 1, minWidth: 0, imageRendering: 'pixelated' }} />
+      </div>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 18, color: C.lavender, flexWrap: 'wrap', alignSelf: 'flex-start' }}>
+        <span style={{ fontFamily: press, fontSize: 8 }}>SPICE:</span>
+        {[1, 2, 3].map(level => (
+          <button
+            key={level}
+            className={`spice-btn${shakingBtn === level ? ' unhinged-anim' : ''}`}
+            onClick={() => handleSpice(level)}
+            style={{
+              fontFamily: vt, fontSize: 18,
+              padding: '0 10px', minHeight: 44, minWidth: 44,
+              background: spice === level ? C.pink : C.dim,
+              color: spice === level ? C.bg : C.lavender,
+              border: `2px solid ${C.pink}`,
+            }}
+          >
+            {level === 1 ? 'COZY' : level === 2 ? 'PETTY' : 'UNHINGED'}
+          </button>
+        ))}
+      </div>
       <div style={{ fontFamily: press, fontSize: 9, color: C.lavender, alignSelf: 'flex-start' }}>SELECT EPISODE</div>
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
         {ADVENTURES.map((adv, i) => {
@@ -211,6 +244,7 @@ export default function App() {
   const [gameState, setGameState]       = useState(null)
   const [ending, setEnding]             = useState(null)
   const [loading, setLoading]           = useState(false)
+  const [appSpice, setAppSpice]         = useState(2)
 
   const adventure = adventureIdx !== null ? ADVENTURES[adventureIdx] : null
 
@@ -220,7 +254,7 @@ export default function App() {
     if (saved) {
       try { setGameState(JSON.parse(saved)); setEnding(null); return } catch {}
     }
-    setGameState(createState(adventure))
+    setGameState(engineSetSpice(createState(adventure), appSpice))
     setEnding(null)
   }, [adventureIdx])
 
@@ -255,10 +289,6 @@ export default function App() {
     }
   }, [adventure, gameState, loading])
 
-  const handleSpice = useCallback((level) => {
-    setGameState(gs => engineSetSpice(gs, level))
-  }, [])
-
   const handleGoToSelect = useCallback(() => setAdventureIdx(null), [])
 
   const handleSelectAdventure = useCallback((idx) => {
@@ -269,7 +299,7 @@ export default function App() {
   const handleNewGameSelect = useCallback((idx) => {
     const adv = ADVENTURES[idx]
     localStorage.removeItem(`${SAVE_KEY}-${adv.id}`)
-    setGameState(createState(adv))
+    setGameState(engineSetSpice(createState(adv), appSpice))
     setEnding(null)
     setAdventureIdx(idx)
   }, [])
@@ -282,7 +312,7 @@ export default function App() {
   }, [adventure])
 
   if (adventureIdx === null) {
-    return <EpisodeSelect onSelect={handleSelectAdventure} onNewGame={handleNewGameSelect} />
+    return <EpisodeSelect onSelect={handleSelectAdventure} onNewGame={handleNewGameSelect} spice={appSpice} onSpice={setAppSpice} />
   }
 
   if (!gameState) return null
@@ -300,33 +330,12 @@ export default function App() {
     <div style={{ background: scanlines, minHeight: '100dvh', padding: '20px 16px max(20px, env(safe-area-inset-bottom, 20px))', display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 600, margin: '0 auto' }}>
 
       {/* ── header ── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: `4px double ${C.pink}`, paddingBottom: 14 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <h1 style={{ fontFamily: press, fontSize: 'clamp(9px, 3.3vw, 13px)', color: C.pink, lineHeight: 1.8, fontWeight: 400 }}>
-            THE REAL HOUSEWIVES<br />OF LAKE SPARKLE
-          </h1>
-          <div style={{ fontSize: 20, color: C.gold }}>{adventure.episode}</div>
-          <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 18, color: C.lavender, flexWrap: 'wrap' }}>
-            <span>SPICE:</span>
-            {[1, 2, 3].map(level => (
-              <button
-                key={level}
-                className="spice-btn"
-                onClick={() => handleSpice(level)}
-                style={{
-                  fontFamily: vt, fontSize: 18,
-                  padding: '0 10px', minHeight: 44, minWidth: 44,
-                  background: gameState.spice === level ? C.pink : C.dim,
-                  color: gameState.spice === level ? C.bg : C.lavender,
-                  border: `2px solid ${C.pink}`,
-                }}
-              >
-                {level === 1 ? 'COZY' : level === 2 ? 'PETTY' : 'UNHINGED'}
-              </button>
-            ))}
-          </div>
+      <div style={{ borderBottom: `4px double ${C.pink}`, paddingBottom: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <img src="/icon-512.png" alt="" aria-hidden="true" style={{ height: 56, width: 56, imageRendering: 'pixelated', flexShrink: 0 }} />
+          <img src="/title.png" alt="Real You-wives" style={{ flex: 1, minWidth: 0, imageRendering: 'pixelated' }} />
         </div>
-        <LogoSVG />
+        <div style={{ fontSize: 20, color: C.gold }}>{adventure.episode}</div>
       </div>
 
       {/* ── stats ── */}
@@ -335,13 +344,17 @@ export default function App() {
       {/* ── scene panel ── */}
       <div style={{ background: C.panel, border: `3px solid ${C.gold}`, padding: '18px 14px', display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{ fontSize: 17, color: C.lavender, letterSpacing: 1 }}>{scene.place}</div>
-        <div style={{ fontSize: 24, lineHeight: 1.3 }}>{scene.narration}</div>
+        <div style={{ fontSize: 24, lineHeight: 1.3 }}>
+          <TypedText key={scene.narration} text={scene.narration} />
+        </div>
         {scene.speaker && speakerDef && (
           <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', marginTop: 4 }}>
             <Portrait look={speakerDef.look} mood={scene.mood} fx={scene.fx} name={scene.speaker} />
             <div style={{ flex: 1 }}>
               <div style={{ fontFamily: press, fontSize: 9, color: C.pink, marginBottom: 8, lineHeight: 1.8 }}>{scene.speaker}</div>
-              <div style={{ fontSize: 22, lineHeight: 1.3 }}>"{scene.line}"</div>
+              <div style={{ fontSize: 22, lineHeight: 1.3 }}>
+                "<TypedText key={scene.line} text={scene.line} />"
+              </div>
             </div>
           </div>
         )}

@@ -40,6 +40,21 @@ button { font-family: inherit; cursor: pointer; }
 
 .spice-btn:active { opacity: 0.8; }
 
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.typing-cursor { animation: blink .7s step-end infinite; }
+
+@keyframes unhinged-shake {
+  0%,100% { transform: translateX(0) rotate(0); }
+  20%     { transform: translateX(-5px) rotate(-1.5deg); }
+  40%     { transform: translateX(5px) rotate(1.5deg); }
+  60%     { transform: translateX(-4px) rotate(-1deg); }
+  80%     { transform: translateX(4px) rotate(1deg); }
+}
+.unhinged-anim { animation: unhinged-shake 0.45s ease-in-out; }
+
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
