@@ -216,9 +216,9 @@ export async function handleSceneRequest(body, keys) {
 
   try {
     const scene = await tryGenerate(adventure, cast, systemPrompt, userMessage, keys)
-    return scene ? { scene } : { fallback: true }
+    return scene ? { scene } : { fallback: true, reason: 'generate returned null' }
   } catch (err) {
     console.error('[scene] provider error:', err?.message ?? err)
-    return { fallback: true }
+    return { fallback: true, reason: err?.message ?? String(err) }
   }
 }
