@@ -137,7 +137,7 @@ function EndingScreen({ ending, adventure, onRestart, onGoToSelect }) {
   return (
     <div style={{ background: scanlines, minHeight: '100dvh', padding: '24px 16px max(24px, env(safe-area-inset-bottom, 24px))', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 600, margin: '0 auto' }}>
       <h1 style={{ fontFamily: press, fontSize: 13, color: C.pink, lineHeight: 1.8, fontWeight: 400 }}>
-        HOUSEWIFE YOURSELF
+        REAL YOU-WIVES
       </h1>
       <div style={{ background: C.panel, border: `3px solid ${C.gold}`, padding: '20px 16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div style={{ fontFamily: press, fontSize: 10, color: C.gold, lineHeight: 1.8 }}>EPISODE OVER</div>
