@@ -95,7 +95,7 @@ function buildUserMessage(req) {
 
 // ── provider calls ────────────────────────────────────────────────────────────
 
-async function callMagica(systemPrompt, userMessage, { key, base = 'https://inference.magica.com/v1', model = 'deepseek/deepseek-v4.1-flash' }) {
+async function callMagica(systemPrompt, userMessage, { key, base = 'https://inference.magica.com/v1', model = 'deepseek/deepseek-chat' }) {
   const res = await fetch(`${base}/chat/completions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
