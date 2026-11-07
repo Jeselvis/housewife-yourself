@@ -2,8 +2,6 @@
 // No env vars read directly; caller supplies keys.
 
 import { createValidator, sanitizeGeneratedScene } from '../../src/validate/validate.js'
-import goat from '../../adventures/goat.json'
-import reunion from '../../adventures/reunion.json'
 import passions from '../../adventures/passions.json'
 import lakeSparkleCast from '../../cast/lake-sparkle.json'
 import briarwoodCast from '../../cast/briarwood.json'
@@ -11,7 +9,7 @@ import adventureSchema from '../../schema/adventure.schema.json'
 import castSchema from '../../schema/cast.schema.json'
 import generatedSceneSchema from '../../schema/generated-scene.schema.json'
 
-const ADVENTURES = { goat, reunion, passions }
+const ADVENTURES = { passions }
 const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast }
 
 function getAdventure(id) {

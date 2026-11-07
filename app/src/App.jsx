@@ -5,13 +5,11 @@ import {
 } from '../../src/engine/engine.js'
 import { renderPortraitSVG } from '../../src/portrait/render.js'
 import layers from '../../src/portrait/layers.json'
-import goat from '../../adventures/goat.json'
-import reunion from '../../adventures/reunion.json'
-import passions from '../../adventures/passions.json'
 import lakeSparkleCast from '../../cast/lake-sparkle.json'
 import briarwoodCast from '../../cast/briarwood.json'
 
-const ADVENTURES = [goat, reunion, passions]
+const _adventureMods = import.meta.glob('../../adventures/*.json', { eager: true })
+const ADVENTURES = Object.values(_adventureMods).map(m => m.default)
 const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast }
 const SAVE_KEY = 'lsa'
 

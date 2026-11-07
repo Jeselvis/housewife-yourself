@@ -43,7 +43,8 @@
       "choices": [
         { "text": "Take Crystal's arm and help her sneak into the ceremony. Your mic pack is still hot.", "next": "chapel_sneak", "delta": { "drama": 15, "chaos": 10, "destiny": 8000 }, "set": ["helped_crystal"] },
         { "text": "Slip away to find Maxwell before the ceremony. A producer mouths 'go, go, go.'", "next": "maxwell_warning", "delta": { "drama": 10, "chaos": 5, "destiny": 5000 } },
-        { "text": "Find the psychic booth you spotted near the topiary. Something there rattled.", "next": "magdalena_booth", "delta": { "drama": 5, "chaos": 15, "destiny": 3000 } }
+        { "text": "Find the psychic booth you spotted near the topiary. Something there rattled.", "next": "magdalena_booth", "delta": { "drama": 5, "chaos": 15, "destiny": 3000 } },
+        { "text": "Walk directly to the string quartet, take the first violin, and play something that is not what they were playing.", "next": "generate", "hint": "Total chaos from second one. No plan. Fully committed.", "delta": { "drama": 25, "chaos": 25, "destiny": -5000 } }
       ],
       "spice": {
         "1": {
