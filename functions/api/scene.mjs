@@ -109,7 +109,7 @@ async function callMagica(systemPrompt, userMessage, { key, base = 'https://infe
       max_tokens: 600,
       temperature: 0.9,
     }),
-    signal: AbortSignal.timeout(8000),
+    signal: AbortSignal.timeout(25000),
   })
   if (!res.ok) throw new Error(`Magica HTTP ${res.status}: ${await res.text()}`)
   const data = await res.json()
@@ -128,7 +128,7 @@ async function callGemini(systemPrompt, userMessage, { key, model = 'gemini-2.0-
       contents: [{ role: 'user', parts: [{ text: userMessage }] }],
       generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 600, temperature: 0.9 },
     }),
-    signal: AbortSignal.timeout(8000),
+    signal: AbortSignal.timeout(25000),
   })
   if (!res.ok) throw new Error(`Gemini HTTP ${res.status}: ${await res.text()}`)
   const data = await res.json()
@@ -216,9 +216,9 @@ export async function handleSceneRequest(body, keys) {
 
   try {
     const scene = await tryGenerate(adventure, cast, systemPrompt, userMessage, keys)
-    return scene ? { scene } : { fallback: true, reason: 'generate returned null' }
+    return scene ? { scene } : { fallback: true }
   } catch (err) {
     console.error('[scene] provider error:', err?.message ?? err)
-    return { fallback: true, reason: err?.message ?? String(err) }
+    return { fallback: true }
   }
 }
