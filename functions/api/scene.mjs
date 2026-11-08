@@ -149,7 +149,11 @@ async function tryGenerate(adventure, cast, systemPrompt, userMessage, keys, att
     ? `${systemPrompt}\n\nFIX FROM PREVIOUS ATTEMPT: ${extraInstruction}`
     : systemPrompt
 
+  console.log('[scene] system prompt:', prompt.slice(0, 300))
+  console.log('[scene] user message:', userMessage)
+
   const rawText = await callProvider(prompt, userMessage, keys)
+  console.log('[scene] raw response:', rawText.slice(0, 800))
 
   // Some models wrap JSON in markdown code fences despite response_format: json_object
   const cleaned = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim()
