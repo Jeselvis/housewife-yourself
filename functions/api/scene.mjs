@@ -151,10 +151,13 @@ async function tryGenerate(adventure, cast, systemPrompt, userMessage, keys, att
 
   const rawText = await callProvider(prompt, userMessage, keys)
 
+  // Some models wrap JSON in markdown code fences despite response_format: json_object
+  const cleaned = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim()
+
   let parsed
-  try { parsed = JSON.parse(rawText) } catch (e) {
+  try { parsed = JSON.parse(cleaned) } catch (e) {
     if (attempt < 2) return tryGenerate(adventure, cast, systemPrompt, userMessage, keys, 2, `JSON parse failed: ${e.message}`)
-    return null
+    throw new Error(`JSON parse failed on retry: ${e.message} | raw: ${rawText.slice(0, 300)}`)
   }
 
   const errors = getValidator().validateGeneratedScene(parsed, adventure, cast)
