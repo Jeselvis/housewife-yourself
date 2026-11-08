@@ -135,10 +135,11 @@ STATS: ${statIds}`
 }
 
 function buildUserMessage(req) {
-  const { stats, flags, inventory, memory, recentBeats, lastScene, choice, beat } = req
+  const { stats, flags, inventory, memory, recentBeats, lastScene, choice, beat, actGoal } = req
   const statStr = Object.entries(stats).map(([k, v]) => `${k}=${v}`).join(', ')
   return [
     `Beat: ${beat}`,
+    actGoal ? `Act goal: ${actGoal}` : '',
     `Stats: ${statStr}`,
     `Active flags: ${flags.length ? flags.join(', ') : 'none'}`,
     inventory?.length ? `Inventory: ${inventory.join(', ')}` : '',

@@ -124,6 +124,14 @@ function semanticChecks(adv, cast, errors, warnings) {
     }
   };
 
+  // acts — checked after checkCondition is defined
+  (adv.acts ?? []).forEach((act, i) => {
+    const at = `acts[${i}]`;
+    if (act.anchor && !sceneIds.has(act.anchor)) errors.push(`${at}: anchor "${act.anchor}" is not a scene`);
+    if (act.until) checkCondition(act.until, `${at}.until`);
+    if (!act.until && !act.minBeats) warnings.push(`${at}: no "until" and no "minBeats" — act will complete on the first beat`);
+  });
+
   const checkChoices = (choices, where, sceneId) => {
     const ungated = choices.filter((c) => c.requires === undefined).length;
     if (ungated < 3) errors.push(`${where}: needs at least 3 choices without "requires" (has ${ungated}) so the player always sees 3`);

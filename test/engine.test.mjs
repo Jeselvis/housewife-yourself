@@ -219,3 +219,108 @@ test('generate beats: status, provideGeneratedScene, fallback, and endAfter', ()
   assert.equal(forced.status, 'end');
   assert.ok(forced.ending.title);
 });
+
+// ── act system ───────────────────────────────────────────────────────────────
+
+function actAdventure() {
+  return {
+    id: 'act-test', version: 1, label: 'TEST', episode: 'Test', cast: 'test',
+    tone: 'test',
+    stats: { drama: { label: 'Drama', start: 0, min: 0, max: 100 } },
+    flags: { revealed: {}, finished: {} },
+    items: {},
+    acts: [
+      { goal: 'Act 1 goal', until: ['revealed'], minBeats: 2 },
+      { goal: 'Act 2 goal', minBeats: 2 },
+    ],
+    scenes: {
+      start: {
+        place: 'HERE', narration: 'Begin.',
+        choices: [
+          { text: 'Reveal', next: 'generate', delta: { drama: 5 }, set: ['revealed'] },
+          { text: 'Wait',   next: 'generate', delta: { drama: 1 } },
+          { text: 'Quiet',  next: 'generate', delta: { drama: 1 } },
+        ],
+      },
+      climax: {
+        place: 'CLIMAX', narration: 'Showdown.',
+        choices: [
+          { text: 'End it',  next: 'END', set: ['finished'] },
+          { text: 'Push on', next: 'generate' },
+          { text: 'Stall',   next: 'generate' },
+        ],
+      },
+    },
+    endings: [
+      { if: ['finished'], title: 'Victory', text: 'You won.' },
+      { title: 'Fallback', text: 'Nothing.' },
+    ],
+  };
+}
+
+test('createState initialises act and actBeat to 0', () => {
+  const adv = actAdventure();
+  const s = engine.createState(adv);
+  assert.equal(s.act, 0);
+  assert.equal(s.actBeat, 0);
+});
+
+test('act does not advance before minBeats is reached', () => {
+  const adv = actAdventure();
+  const s0 = engine.createState(adv);
+  // choice 0 sets 'revealed' — but minBeats: 2 so act stays at 0 on beat 1
+  const r1 = engine.choose(adv, s0, 0);
+  assert.equal(r1.state.act, 0);
+  assert.equal(r1.state.actBeat, 1);
+});
+
+test('act advances when minBeats met and until condition holds', () => {
+  const adv = actAdventure();
+  const s0 = engine.createState(adv);
+  const r1 = engine.choose(adv, s0, 0); // beat 1: revealed set, actBeat=1 < 2
+  // beat 2 with revealed already set → actBeat=2 >= 2, condition holds → act advances
+  const r2 = engine.choose(adv, r1.state, 1);
+  assert.equal(r2.state.act, 1);
+  assert.equal(r2.state.actBeat, 0);
+});
+
+test('END is blocked (overridden to generate) while acts are incomplete', () => {
+  const adv = actAdventure();
+  // Add an END choice to start
+  adv.scenes.start.choices[0].next = 'END';
+  const s0 = engine.createState(adv);
+  const r = engine.choose(adv, s0, 0);
+  // Acts not complete → END overridden to generate
+  assert.equal(r.status, 'generate');
+});
+
+test('END is allowed once all acts complete', () => {
+  const adv = actAdventure();
+  const s0 = engine.createState(adv);
+  // Fast-forward: skip to act 1 complete state
+  const s = { ...s0, act: 2, actBeat: 3, flags: ['revealed', 'finished'] };
+  adv.scenes.start.choices[0].next = 'END';
+  const r = engine.choose(adv, s, 0);
+  assert.equal(r.status, 'end');
+});
+
+test('anchor fires when act completes, overriding choice.next', () => {
+  const adv = actAdventure();
+  adv.acts[0].anchor = 'climax';
+  const s0 = engine.createState(adv);
+  const r1 = engine.choose(adv, s0, 0); // beat 1: revealed, actBeat=1
+  const r2 = engine.choose(adv, r1.state, 1); // beat 2: actBeat=2, until met → anchor
+  assert.equal(r2.status, 'scene');
+  assert.equal(r2.state.sceneId, 'climax');
+  assert.equal(r2.state.act, 1);
+  assert.equal(r2.state.actBeat, 0);
+});
+
+test('currentAct returns the current act or null when all complete', () => {
+  const adv = actAdventure();
+  const s0 = engine.createState(adv);
+  assert.equal(engine.currentAct(adv, s0).goal, 'Act 1 goal');
+  assert.equal(engine.currentAct(adv, { ...s0, act: 1 }).goal, 'Act 2 goal');
+  assert.equal(engine.currentAct(adv, { ...s0, act: 2 }), null);
+  assert.equal(engine.currentAct({ ...adv, acts: undefined }, s0), null);
+});

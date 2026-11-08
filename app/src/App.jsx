@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   createState, resolveScene, visibleChoices,
-  choose, fallbackScene, provideGeneratedScene, setSpice as engineSetSpice,
+  choose, fallbackScene, provideGeneratedScene, setSpice as engineSetSpice, currentAct,
 } from '../../src/engine/engine.js'
-import { renderPortraitSVG } from '../../src/portrait/render.js'
+import { renderPortraitSVG, renderGestureSVG } from '../../src/portrait/render.js'
 import layers from '../../src/portrait/layers.json'
 import lakeSparkleCast from '../../cast/lake-sparkle.json'
 import briarwoodCast from '../../cast/briarwood.json'
@@ -39,6 +39,23 @@ function Portrait({ look, mood, fx, name }) {
       style={{ width: 136, height: 136, border: `4px solid ${C.pink}`, background: C.dim, boxShadow: `4px 4px 0 ${C.bg}`, flexShrink: 0, lineHeight: 0 }}
       dangerouslySetInnerHTML={{ __html: svg }}
     />
+  )
+}
+
+function ConfessionalPortrait({ look, mood, name }) {
+  const [gestureKey, setGestureKey] = useState(0)
+  useEffect(() => {
+    const t = setTimeout(() => setGestureKey(k => k + 1), 500)
+    return () => clearTimeout(t)
+  }, [name])
+
+  const svg     = renderPortraitSVG(layers, look, { mood, size: 80, label: name, confessional: true })
+  const gesture = renderGestureSVG(layers, look, 80)
+  return (
+    <div style={{ position: 'relative', width: 88, height: 88, border: `3px solid ${C.teal}`, background: C.dim, flexShrink: 0, overflow: 'hidden' }}>
+      <div className="conf-talk" dangerouslySetInnerHTML={{ __html: svg }} />
+      <div key={gestureKey} className="conf-gesture" dangerouslySetInnerHTML={{ __html: gesture }} />
+    </div>
   )
 }
 
@@ -215,6 +232,7 @@ function EndingScreen({ ending, adventure, onRestart, onGoToSelect }) {
 
 async function fetchScene(adventure, gameState, lastScene, choice, newState) {
   const recentBeats = gameState.history.slice(-4).map((h) => `You: "${h.text}"`)
+  const act = currentAct(adventure, newState)
   const body = {
     adventureId: adventure.id,
     spice:       gameState.spice,
@@ -226,6 +244,7 @@ async function fetchScene(adventure, gameState, lastScene, choice, newState) {
     lastScene:   { place: lastScene.place, speaker: lastScene.speaker, line: lastScene.line },
     choice:      { text: choice.text, hint: choice.hint ?? undefined },
     beat:        newState.beat,
+    actGoal:     act?.goal ?? null,
   }
   const res = await fetch('/api/scene', {
     method: 'POST',
@@ -360,9 +379,14 @@ export default function App() {
 
       {/* ── confessional ── */}
       {scene.confessional && (
-        <div style={{ border: `2px dashed ${C.teal}`, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ border: `2px dashed ${C.teal}`, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div style={{ fontFamily: press, fontSize: 8, color: C.teal, letterSpacing: 1 }}>CONFESSIONAL CUT</div>
-          <div style={{ fontSize: 22, lineHeight: 1.3, color: C.teal }}>"{scene.confessional}"</div>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+            {scene.speaker && speakerDef && (
+              <ConfessionalPortrait look={speakerDef.look} mood={scene.mood} name={scene.speaker} />
+            )}
+            <div style={{ fontSize: 22, lineHeight: 1.3, color: C.teal, flex: 1 }}>"{scene.confessional}"</div>
+          </div>
         </div>
       )}
 

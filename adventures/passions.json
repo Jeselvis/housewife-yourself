@@ -6,7 +6,24 @@
   "episode": "SEASON 12 · WEDDING SPECIAL · \"FOREVER IS A VERY LONG TIME, MAXWELL\"",
   "cast": "briarwood",
   "tone": "Gothic soap opera catastrophe at a cursed manor wedding, filmed as a reality-TV housewives special. Everyone is mic'd, everyone has a tagline, and every revelation gets a slow push-in and a cut to a confessional. Producers lurk in doorways whispering 'say that again.' Alliances flip mid-sentence. Someone always says 'I said what I said,' flips a table, or announces they are not here to make friends. Someone also faints, is secretly a twin, or returns from the dead. Witchcraft is a minor inconvenience. The basement has a known presence and nobody acknowledges this openly.",
-  "endAfter": 14,
+  "endAfter": 20,
+  "acts": [
+    {
+      "goal": "Establish yourself at the wedding before the ceremony — help Crystal, warn Maxwell, or find out what's in the basement. At least one revelation must land.",
+      "until": { "stats": { "drama": ">=75" } },
+      "minBeats": 2
+    },
+    {
+      "goal": "The ceremony is happening and it must be disrupted. Interrupt the vows, expose Vangie, or give Magdalena permission to do her worst. The wedding cannot go smoothly.",
+      "until": { "stats": { "drama": ">=90" } },
+      "minBeats": 3,
+      "anchor": "confrontation"
+    },
+    {
+      "goal": "Everything is in the open — escalate to a decisive ending. Give Magdalena permission, make Maxwell choose, flip the table, or walk out with the champagne.",
+      "minBeats": 3
+    }
+  ],
   "stats": {
     "drama":   { "label": "Drama",        "start": 55,    "min": 0, "max": 100, "maxStep": 25, "display": "bar" },
     "chaos":   { "label": "Chaos Level",  "start": 30,    "min": 0, "max": 100, "maxStep": 25, "display": "bar" },

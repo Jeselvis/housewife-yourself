@@ -55,6 +55,25 @@ button { font-family: inherit; cursor: pointer; }
 }
 .unhinged-anim { animation: unhinged-shake 0.45s ease-in-out; }
 
+@keyframes conf-talk {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-2px); }
+}
+.conf-talk { animation: conf-talk 0.45s ease-in-out infinite; display: inline-block; line-height: 0; }
+
+@keyframes conf-gesture {
+  0%        { opacity: 0; transform: translate(4px, 4px); }
+  15%       { opacity: 1; transform: translate(0, 0); }
+  75%       { opacity: 1; transform: translate(0, 0); }
+  100%      { opacity: 0; transform: translate(4px, 4px); }
+}
+.conf-gesture {
+  position: absolute;
+  bottom: 0; right: 0;
+  pointer-events: none;
+  animation: conf-gesture 1.8s ease-in-out forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }

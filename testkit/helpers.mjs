@@ -6,8 +6,8 @@ import { createValidator } from '../src/validate/validate.js';
 export const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export const load = (rel) => JSON.parse(readFileSync(join(root, rel), 'utf8'));
 
-export const goat = () => load('adventures/goat.json');
-export const reunion = () => load('adventures/reunion.json');
+export const goat = () => load('adventures/archived/goat.json');
+export const reunion = () => load('adventures/archived/reunion.json');
 export const cast = () => load('cast/lake-sparkle.json');
 export const layers = () => load('src/portrait/layers.json');
 

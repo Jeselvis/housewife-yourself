@@ -36,6 +36,8 @@ export function createState(adventure, { spice = 2 } = {}) {
     memory: [],    // short facts the cast remembers; fed to the LLM
     history: [],   // [{ sceneId, choice, text }]
     beat: 0,
+    act: 0,        // index into adventure.acts[] (0 when no acts defined)
+    actBeat: 0,    // beats played since entering the current act
     generated: {}, // scenes written by the LLM, kept so saves can replay
     ended: false,
   };
@@ -121,18 +123,51 @@ export function choose(adventure, state, choiceIndex) {
   const choice = visibleChoices(scene, state)[choiceIndex];
   if (!choice) throw new RangeError(`No visible choice at index ${choiceIndex}.`);
 
-  const next = {
+  let next = {
     ...state,
     stats:     applyDelta(adventure, state.stats, choice.delta),
     flags:     addFlags(state.flags, choice.set),
     inventory: updateInventory(state.inventory ?? [], choice.give, choice.consume),
     history:   [...state.history, { sceneId: state.sceneId, choice: choiceIndex, text: choice.text }],
     beat:      state.beat + 1,
+    act:       state.act ?? 0,
+    actBeat:   (state.actBeat ?? 0) + 1,
   };
 
+  // ── act progression ───────────────────────────────────────────────────────
+  const acts = adventure.acts ?? [];
+  let { act, actBeat } = next;
+  let forcedAnchor = null;
+
+  if (acts.length > 0 && act < acts.length) {
+    const currentAct = acts[act];
+    const minBeats = currentAct.minBeats ?? 0;
+    const untilMet = !currentAct.until || evalCondition(currentAct.until, next);
+    if (actBeat >= minBeats && untilMet) {
+      forcedAnchor = currentAct.anchor ?? null;
+      act++;
+      actBeat = 0;
+    }
+  }
+  next = { ...next, act, actBeat };
+
+  // ── forced anchor routing (act completion) ────────────────────────────────
+  if (forcedAnchor) {
+    if (!adventure.scenes[forcedAnchor]) throw new Error(`Unknown anchor scene: ${forcedAnchor}`);
+    return { status: 'scene', state: enterScene(adventure, next, forcedAnchor) };
+  }
+
+  // ── target resolution ─────────────────────────────────────────────────────
   let target = resolveNext(choice.next, next);
+
+  // endAfter: force end after N total beats
   if (adventure.endAfter && next.beat >= adventure.endAfter && target.kind !== 'end') {
     target = { kind: 'end' };
+  }
+
+  // acts: block END while any act is still incomplete
+  if (target.kind === 'end' && acts.length > 0 && act < acts.length) {
+    target = { kind: 'generate' };
   }
 
   if (target.kind === 'scene') {
@@ -144,6 +179,12 @@ export function choose(adventure, state, choiceIndex) {
     return { status: 'end', state: ended, ending: pickEnding(adventure, ended) };
   }
   return { status: 'generate', state: next, choice, hint: choice.hint ?? null };
+}
+
+/** Returns the current act definition for a state, or null if no acts or all complete. */
+export function currentAct(adventure, state) {
+  const acts = adventure.acts ?? [];
+  return acts[state.act ?? 0] ?? null;
 }
 
 /** Install an LLM-written (already validated + sanitized) scene and move to it. */

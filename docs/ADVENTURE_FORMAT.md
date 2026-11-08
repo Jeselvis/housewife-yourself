@@ -162,6 +162,44 @@ Level 2 is the base text. Each entry overrides any scene field except `variants`
 
 **Merge order:** base scene, then the first matching variant, then the spice override (spice wins).
 
+## Acts
+
+```json
+"acts": [
+  {
+    "goal": "Establish yourself — discover Vangie's secret or Crystal's plan before the ceremony.",
+    "until": { "stats": { "drama": ">=75" } },
+    "minBeats": 2
+  },
+  {
+    "goal": "The ceremony must be disrupted. Interrupt the vows or unleash Magdalena.",
+    "until": { "stats": { "drama": ">=90" } },
+    "minBeats": 3,
+    "anchor": "confrontation"
+  },
+  {
+    "goal": "Everything is in the open. Escalate to the ending.",
+    "minBeats": 3
+  }
+]
+```
+
+Acts are the spine of the story. All acts must complete before `END` choices unlock.
+
+| Field | Notes |
+|---|---|
+| `goal` | Injected into the LLM user message as `Act goal:` so each beat steers toward the right part of the story |
+| `until` | Condition (same format as `requires`/`if`) that completes this act. Omit for a time-only act |
+| `minBeats` | The act cannot complete until at least this many beats have been played in it |
+| `anchor` | Optional scene id. When this act completes, the engine routes here automatically — useful to force a scripted turning point |
+
+**Rules:**
+- Acts are checked after every `choose()` call. If `actBeat >= minBeats` **and** `until` is met (or omitted), the act advances.
+- `END` is blocked (overridden to `generate`) while `act < acts.length`. Once all acts are done, `END` works normally.
+- An `anchor` fires before the choice's own `next` is resolved — it overrides routing entirely.
+- The last act should have no `until` and use `minBeats` alone to enforce a minimum confrontation length.
+- The act `goal` is *not* shown to the player — it's a director's note to the LLM.
+
 ## Endings
 
 ```json
