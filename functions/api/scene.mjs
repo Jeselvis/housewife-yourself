@@ -157,10 +157,10 @@ async function callMagica(systemPrompt, userMessage, { key, base = 'https://infe
         { role: 'user', content: userMessage },
       ],
       response_format: { type: 'json_object' },
-      max_tokens: 600,
+      max_tokens: 400,
       temperature: 0.9,
     }),
-    signal: AbortSignal.timeout(25000),
+    signal: AbortSignal.timeout(29000),
   })
   if (!res.ok) throw new Error(`Magica HTTP ${res.status}: ${await res.text()}`)
   const data = await res.json()
@@ -177,9 +177,9 @@ async function callGemini(systemPrompt, userMessage, { key, model = 'gemini-2.0-
     body: JSON.stringify({
       system_instruction: { parts: [{ text: systemPrompt }] },
       contents: [{ role: 'user', parts: [{ text: userMessage }] }],
-      generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 600, temperature: 0.9 },
+      generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 400, temperature: 0.9 },
     }),
-    signal: AbortSignal.timeout(25000),
+    signal: AbortSignal.timeout(29000),
   })
   if (!res.ok) throw new Error(`Gemini HTTP ${res.status}: ${await res.text()}`)
   const data = await res.json()
