@@ -1,0 +1,37 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install root deps
+        run: npm ci
+
+      - name: Build app
+        run: cd app && npm install && npm run build
+
+      - name: Deploy Worker
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+
+      - name: Set Worker secrets
+        run: |
+          echo "$MAGICA_API_KEY"  | npx wrangler secret put MAGICA_API_KEY
+          echo "$GEMINI_API_KEY"  | npx wrangler secret put GEMINI_API_KEY
+          echo "$SCENE_PROVIDER"  | npx wrangler secret put SCENE_PROVIDER
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          MAGICA_API_KEY: ${{ secrets.MAGICA_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SCENE_PROVIDER: ${{ secrets.SCENE_PROVIDER }}
