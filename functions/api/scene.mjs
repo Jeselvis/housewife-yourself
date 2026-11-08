@@ -12,6 +12,12 @@ const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast }
 const VALID_MOODS = new Set(['neutral', 'surprised', 'angry', 'smug'])
 const VALID_FX    = new Set(['wine', 'souffle', 'horns', 'sparkle'])
 
+const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash'
+const DEFAULT_MAGICA_MODEL = 'deepseek/deepseek-chat'
+const MAGICA_BASE_URL      = 'https://inference.magica.com/v1'
+const MAX_OUTPUT_TOKENS    = 400
+const PROVIDER_TIMEOUT_MS  = 29000
+
 function getAdventure(id) {
   const adv = ADVENTURES[id]
   if (!adv) throw new Error(`Unknown adventure: ${id}`)
@@ -146,7 +152,7 @@ function buildUserMessage(req) {
 
 // ── provider calls ────────────────────────────────────────────────────────────
 
-async function callMagica(systemPrompt, userMessage, { key, base = 'https://inference.magica.com/v1', model = 'deepseek/deepseek-chat' }) {
+async function callMagica(systemPrompt, userMessage, { key, base = MAGICA_BASE_URL, model = DEFAULT_MAGICA_MODEL }) {
   const res = await fetch(`${base}/chat/completions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
@@ -157,10 +163,10 @@ async function callMagica(systemPrompt, userMessage, { key, base = 'https://infe
         { role: 'user', content: userMessage },
       ],
       response_format: { type: 'json_object' },
-      max_tokens: 400,
+      max_tokens: MAX_OUTPUT_TOKENS,
       temperature: 0.9,
     }),
-    signal: AbortSignal.timeout(29000),
+    signal: AbortSignal.timeout(PROVIDER_TIMEOUT_MS),
   })
   if (!res.ok) throw new Error(`Magica HTTP ${res.status}: ${await res.text()}`)
   const data = await res.json()
@@ -169,7 +175,7 @@ async function callMagica(systemPrompt, userMessage, { key, base = 'https://infe
   return text
 }
 
-async function callGemini(systemPrompt, userMessage, { key, model = 'gemini-2.0-flash' }) {
+async function callGemini(systemPrompt, userMessage, { key, model = DEFAULT_GEMINI_MODEL }) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`
   const res = await fetch(url, {
     method: 'POST',
@@ -177,9 +183,9 @@ async function callGemini(systemPrompt, userMessage, { key, model = 'gemini-2.0-
     body: JSON.stringify({
       system_instruction: { parts: [{ text: systemPrompt }] },
       contents: [{ role: 'user', parts: [{ text: userMessage }] }],
-      generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 400, temperature: 0.9 },
+      generationConfig: { responseMimeType: 'application/json', maxOutputTokens: MAX_OUTPUT_TOKENS, temperature: 0.9 },
     }),
-    signal: AbortSignal.timeout(29000),
+    signal: AbortSignal.timeout(PROVIDER_TIMEOUT_MS),
   })
   if (!res.ok) throw new Error(`Gemini HTTP ${res.status}: ${await res.text()}`)
   const data = await res.json()
