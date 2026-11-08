@@ -176,7 +176,7 @@ async function callMagica(systemPrompt, userMessage, { key, base = MAGICA_BASE_U
 }
 
 async function callGemini(systemPrompt, userMessage, { key, model = DEFAULT_GEMINI_MODEL }) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`
+  const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${key}`
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
