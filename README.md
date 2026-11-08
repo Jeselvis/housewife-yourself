@@ -15,7 +15,8 @@ All characters and places are fictional. This is a standalone project.
 | `docs/PORTRAITS.md` | How the layered pixel portraits work and how to extend them |
 | `schema/` | JSON Schemas: adventure, cast, LLM output |
 | `cast/` | Reusable casts (characters, looks, voices, secrets) |
-| `adventures/` | Playable adventures (`goat.json` is fully scripted; `reunion.json` uses LLM beats) |
+| `adventures/` | Live playable adventures (drop a `.json` here to add one to the app) |
+| `adventures/archived/` | Adventures removed from the live game (kept for reference) |
 | `src/engine/` | Framework-free game engine (pure functions, JSON state) |
 | `src/portrait/` | Portrait layers (`layers.json`) and an SVG renderer |
 | `src/validate/` | Schema + cross-reference validation, and LLM-output sanitizing |
@@ -47,11 +48,33 @@ Phase 1 needs no API key. The LLM comes in Phase 2.
 
 ## Writing a new adventure
 
-1. Copy `adventures/goat.json`, change `id`, `label`, `episode`.
+1. Copy an existing adventure from `adventures/archived/`, change `id`, `label`, `episode`.
 2. Write scenes. Every choice names a `next` scene, `"END"`, or `"generate"` (let the LLM write it).
 3. `npm run validate` catches broken references, undeclared flags, missing speakers and unreachable scenes.
+4. Add an import and entry to `functions/api/scene.mjs` so the Worker can serve LLM beats for it.
+5. The app picks it up automatically via `import.meta.glob` — no code change needed on the frontend.
 
-See `docs/ADVENTURE_FORMAT.md`.
+To archive an adventure: move its `.json` to `adventures/archived/` and remove its import from `functions/api/scene.mjs`.
+
+See `docs/ADVENTURE_FORMAT.md` and `docs/adventure-authoring-brief.md`.
+
+## Deployment
+
+Pushes to `main` trigger GitHub Actions (`.github/workflows/deploy.yml`), which builds the app and deploys the Worker to Cloudflare. Secrets (`MAGICA_API_KEY`, `GEMINI_API_KEY`, `SCENE_PROVIDER`, `CF_API_TOKEN`) live in GitHub → Settings → Secrets → Actions and are set on the Worker automatically on each deploy.
+
+Cloudflare's own git integration is disabled ("Disable builds" enabled in project settings) to avoid double-deploys.
+
+See `docs/DEPLOY.md` for initial setup steps.
+
+## Debugging the LLM endpoint
+
+Stream Worker logs live while playing the game:
+
+```bash
+npx wrangler tail realyouwives
+```
+
+Logs show LLM validation errors and raw output. Run in a separate terminal; authenticate first with `npx wrangler login` if needed.
 
 ## Content guardrails
 

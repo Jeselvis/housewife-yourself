@@ -89,14 +89,29 @@ function buildSystemPrompt(adventure, cast, spice) {
 TONE: ${adventure.tone}
 SPICE ${spice}: ${SPICE_GUIDE[spice]}
 
-Reply with ONE JSON object matching the schema. No prose, no code fences.
+Reply with ONE JSON object exactly matching this shape. No prose, no code fences.
+
+SCHEMA
+{
+  "place":     "LOCATION IN CAPS",
+  "narration": "1-2 sentences, present tense, second person.",
+  "speaker":   "CAST NAME",
+  "line":      "what they say",
+  "mood":      "neutral",
+  "fx":        [],
+  "choices": [
+    { "text": "choice text", "next": "generate", "delta": { "drama": 5  } },
+    { "text": "choice text", "next": "generate", "delta": {}              },
+    { "text": "choice text", "next": "END",      "delta": { "drama": 10 } }
+  ]
+}
 
 RULES
-- speaker must be exactly one name from CAST.
+- speaker: exactly one name from CAST.
 - narration: 1–2 sentences, present tense, second person.
-- React to the player's last choice and to active flags. Callback to memory when funny.
+- React to the player's last choice and active flags. Callback to memory when funny.
 - Never repeat a joke from RECENT BEATS. Each beat is wilder than the last.
-- Exactly 3 choices. Each is a distinct absurd move. Funny to read, not just wild. One choice MUST be so unhinged it would make a producer spill their coffee — escalate beyond what seems reasonable.
+- Exactly 3 choices. Each a distinct absurd move — funny to read, not just wild. One MUST be so unhinged it would make a producer spill their coffee.
 - delta values are integers. Brand Value in dollars (3000–20000 typical).
 - set: only flags from APPROVED FLAGS, only when the choice would cause it.
 - mood: neutral | surprised | angry | smug.
