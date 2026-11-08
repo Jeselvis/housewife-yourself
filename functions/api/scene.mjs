@@ -159,8 +159,10 @@ async function tryGenerate(adventure, cast, systemPrompt, userMessage, keys, att
 
   const errors = getValidator().validateGeneratedScene(parsed, adventure, cast)
   if (errors.length) {
+    console.error('[scene] validation errors:', errors.join('; '))
+    console.error('[scene] raw parsed:', JSON.stringify(parsed).slice(0, 500))
     if (attempt < 2) return tryGenerate(adventure, cast, systemPrompt, userMessage, keys, 2, `Validation errors: ${errors.join('; ')}`)
-    return null
+    throw new Error(`Validation failed after retry: ${errors.join('; ')}`)
   }
 
   return sanitizeGeneratedScene(parsed, adventure)
