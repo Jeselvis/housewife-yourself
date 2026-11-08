@@ -1,16 +1,16 @@
 // Scene generation — shared by Vite dev middleware and worker.js (Cloudflare).
 // No env vars read directly; caller supplies keys.
 
-import { createValidator, sanitizeGeneratedScene } from '../../src/validate/validate.js'
+// No Ajv — Cloudflare Workers block new Function(). Inline validation instead.
 import passions from '../../adventures/passions.json'
 import lakeSparkleCast from '../../cast/lake-sparkle.json'
 import briarwoodCast from '../../cast/briarwood.json'
-import adventureSchema from '../../schema/adventure.schema.json'
-import castSchema from '../../schema/cast.schema.json'
-import generatedSceneSchema from '../../schema/generated-scene.schema.json'
 
 const ADVENTURES = { passions }
 const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast }
+
+const VALID_MOODS = new Set(['neutral', 'surprised', 'angry', 'smug'])
+const VALID_FX    = new Set(['wine', 'souffle', 'horns', 'sparkle'])
 
 function getAdventure(id) {
   const adv = ADVENTURES[id]
@@ -24,12 +24,50 @@ function getCast(id) {
   return cast
 }
 
-let _validator = null
-function getValidator() {
-  if (!_validator) {
-    _validator = createValidator({ adventureSchema, castSchema, generatedSceneSchema })
+function validateGeneratedScene(scene, adv, cast) {
+  const errors = []
+  if (!scene || typeof scene !== 'object') return ['scene is not an object']
+  if (!scene.place)     errors.push('missing place')
+  if (!scene.narration) errors.push('missing narration')
+  if (!scene.speaker)   errors.push('missing speaker')
+  if (!scene.line)      errors.push('missing line')
+  if (scene.speaker && !cast.characters[scene.speaker])
+    errors.push(`speaker "${scene.speaker}" not in cast — must be one of: ${Object.keys(cast.characters).join(', ')}`)
+  if (!Array.isArray(scene.choices) || scene.choices.length < 3)
+    errors.push(`need at least 3 choices, got ${scene.choices?.length ?? 0}`)
+  if (scene.mood && !VALID_MOODS.has(scene.mood))
+    errors.push(`invalid mood "${scene.mood}" — must be: ${[...VALID_MOODS].join(', ')}`)
+  if (Array.isArray(scene.choices)) {
+    scene.choices.forEach((c, i) => {
+      if (!c.text) errors.push(`choice[${i}] missing text`)
+      if (c.next !== 'generate' && c.next !== 'END')
+        errors.push(`choice[${i}] next must be "generate" or "END", got "${c.next}"`)
+    })
   }
-  return _validator
+  return errors
+}
+
+function sanitizeGeneratedScene(scene, adv) {
+  const approved = new Set(Object.keys(adv.flags ?? {}))
+  const statKeys  = new Set(Object.keys(adv.stats))
+  return {
+    ...scene,
+    mood: VALID_MOODS.has(scene.mood) ? scene.mood : 'neutral',
+    fx:   Array.isArray(scene.fx) ? scene.fx.filter(f => VALID_FX.has(f)) : [],
+    choices: scene.choices.map((c) => {
+      const delta = {}
+      for (const [key, val] of Object.entries(c.delta ?? {})) {
+        if (!statKeys.has(key)) continue
+        const step = adv.stats[key].maxStep ?? Infinity
+        delta[key] = Math.max(-step, Math.min(step, val))
+      }
+      const set = (c.set ?? []).filter(f => approved.has(f))
+      const out = { text: c.text, next: c.next, delta }
+      if (set.length) out.set = set
+      if (c.hint) out.hint = c.hint
+      return out
+    }),
+  }
 }
 
 // ── prompt ───────────────────────────────────────────────────────────────────
@@ -164,7 +202,7 @@ async function tryGenerate(adventure, cast, systemPrompt, userMessage, keys, att
     throw new Error(`JSON parse failed on retry: ${e.message} | raw: ${rawText.slice(0, 300)}`)
   }
 
-  const errors = getValidator().validateGeneratedScene(parsed, adventure, cast)
+  const errors = validateGeneratedScene(parsed, adventure, cast)
   if (errors.length) {
     console.error('[scene] validation errors:', errors.join('; '))
     console.error('[scene] raw parsed:', JSON.stringify(parsed).slice(0, 500))
