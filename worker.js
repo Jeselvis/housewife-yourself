@@ -1,7 +1,25 @@
 import { handleSceneRequest } from './functions/api/scene.mjs'
 
+function authorized(request, env) {
+  if (!env.SITE_PASSWORD) return true  // no password set → open
+  const header = request.headers.get('Authorization') ?? ''
+  const [scheme, encoded] = header.split(' ')
+  if (scheme !== 'Basic' || !encoded) return false
+  try {
+    const [, pass] = atob(encoded).split(':')
+    return pass === env.SITE_PASSWORD
+  } catch { return false }
+}
+
 export default {
   async fetch(request, env) {
+    if (!authorized(request, env)) {
+      return new Response('Unauthorized', {
+        status: 401,
+        headers: { 'WWW-Authenticate': 'Basic realm="Lake Sparkle Adventure"' },
+      })
+    }
+
     const url = new URL(request.url)
 
     if (url.pathname === '/api/scene') {
