@@ -15,7 +15,7 @@ const VALID_FX    = new Set(['wine', 'souffle', 'horns', 'sparkle'])
 const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash'
 const DEFAULT_MAGICA_MODEL = 'openai/gpt-5.6-terra'
 const MAGICA_BASE_URL      = 'https://inference.magica.com/v1'
-const MAX_OUTPUT_TOKENS    = 400
+const MAX_OUTPUT_TOKENS    = 600
 const PROVIDER_TIMEOUT_MS  = 29000
 
 function getAdventure(id) {
