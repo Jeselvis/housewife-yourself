@@ -3,7 +3,7 @@ import {
   createState, resolveScene, visibleChoices,
   choose, fallbackScene, provideGeneratedScene, setSpice as engineSetSpice, currentAct,
 } from '../../src/engine/engine.js'
-import { renderPortraitSVG, renderGestureSVG } from '../../src/portrait/render.js'
+import { renderPortraitSVG, renderGestureSVG, renderMouthOpenSVG } from '../../src/portrait/render.js'
 import layers from '../../src/portrait/layers.json'
 import lakeSparkleCast from '../../cast/lake-sparkle.json'
 import briarwoodCast from '../../cast/briarwood.json'
@@ -49,11 +49,13 @@ function ConfessionalPortrait({ look, mood, name }) {
     return () => clearTimeout(t)
   }, [name])
 
-  const svg     = renderPortraitSVG(layers, look, { mood, size: 80, label: name, confessional: true })
-  const gesture = renderGestureSVG(layers, look, 80)
+  const svg      = renderPortraitSVG(layers, look, { mood, size: 80, label: name, confessional: true })
+  const mouthSvg = renderMouthOpenSVG(layers, look, 80)
+  const gesture  = renderGestureSVG(layers, look, 80)
   return (
     <div style={{ position: 'relative', width: 88, height: 88, border: `3px solid ${C.teal}`, background: C.dim, flexShrink: 0, overflow: 'hidden' }}>
       <div className="conf-talk" dangerouslySetInnerHTML={{ __html: svg }} />
+      <div className="conf-mouth" dangerouslySetInnerHTML={{ __html: mouthSvg }} />
       <div key={gestureKey} className="conf-gesture" dangerouslySetInnerHTML={{ __html: gesture }} />
     </div>
   )

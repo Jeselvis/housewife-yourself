@@ -24,6 +24,19 @@ export function renderGestureSVG(layers, look, size = 96) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${layers.viewBox} ${layers.viewBox}" shape-rendering="crispEdges" aria-hidden="true">${body}</svg>`;
 }
 
+/** Open-mouth overlay for confessional talking animation.
+ *  Uses the confessional viewBox so coordinates line up with the portrait. */
+/** Open-mouth overlay for confessional talking animation.
+ *  Extends lips 1px down + dark interior to show an open mouth.
+ *  Uses the confessional viewBox so coordinates align with the main portrait. */
+export function renderMouthOpenSVG(layers, look, size = 96) {
+  const vb = `0 2 ${layers.viewBox} ${layers.viewBox - 4}`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${vb}" shape-rendering="crispEdges" aria-hidden="true">` +
+    `<rect x="7" y="10" width="2" height="2" fill="${look.lips}"/>` +
+    `<rect x="7" y="11" width="2" height="1" fill="#1a0b24"/>` +
+    `</svg>`;
+}
+
 export function renderPortraitSVG(layers, look, { mood = 'neutral', fx = [], size = 96, label = '', confessional = false } = {}) {
   const body = portraitRects(layers, look, { mood, fx, confessional })
     .map(([x, y, w, h, fill]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/>`)

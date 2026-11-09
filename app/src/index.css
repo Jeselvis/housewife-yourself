@@ -61,6 +61,18 @@ button { font-family: inherit; cursor: pointer; }
 }
 .conf-talk { animation: conf-talk 0.45s ease-in-out infinite; display: inline-block; line-height: 0; }
 
+@keyframes conf-mouth {
+  0%, 35%  { opacity: 0; }
+  45%, 90% { opacity: 1; }
+  100%     { opacity: 0; }
+}
+.conf-mouth {
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+  animation: conf-mouth 0.38s ease-in-out infinite;
+}
+
 @keyframes conf-gesture {
   0%        { opacity: 0; transform: translate(4px, 4px); }
   15%       { opacity: 1; transform: translate(0, 0); }
