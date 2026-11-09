@@ -3,11 +3,13 @@
 
 // No Ajv — Cloudflare Workers block new Function(). Inline validation instead.
 import passions from '../../adventures/passions.json'
+import toast from '../../adventures/toast.json'
 import lakeSparkleCast from '../../cast/lake-sparkle.json'
 import briarwoodCast from '../../cast/briarwood.json'
+import lakewoodCast from '../../cast/lakewood.json'
 
-const ADVENTURES = { passions }
-const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast }
+const ADVENTURES = { passions, toast }
+const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast, lakewood: lakewoodCast }
 
 const VALID_MOODS = new Set(['neutral', 'surprised', 'angry', 'smug'])
 const VALID_FX    = new Set(['wine', 'souffle', 'horns', 'sparkle'])

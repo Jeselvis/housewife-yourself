@@ -1,0 +1,533 @@
+{
+  "$schema": "../schema/adventure.schema.json",
+  "version": 1,
+  "id": "toast",
+  "label": "EP 11",
+  "episode": "SEASON 5 · EPISODE 11 · \"THIS PARTY IS TOAST\"",
+  "cast": "lakewood",
+  "tone": "Petty, escalating reality-TV chaos. Old money meets new money, everyone has a brand to protect, and nobody can let anything go. Confessionals are sharp and self-serving. Every slight is remembered. Every gift exchange becomes an incident. Someone always says what everyone else was thinking, loudly, in a hallway.",
+  "endAfter": 24,
+  "globalFlags": ["iguana_keeper", "said_it_before", "wine_ally", "chaos_agent"],
+  "acts": [
+    {
+      "goal": "Survive the holiday party — navigate Georgie, survive the Secret Santa, and pick a side in the photoshoot drama before it becomes a party-wide incident.",
+      "until": { "stats": { "drama": ">=60" } },
+      "minBeats": 3
+    },
+    {
+      "goal": "Lock in your alliance at Carla's apartment and decide whether to give Avigail the push she needs — or blow up the St. Barths plan entirely.",
+      "until": { "stats": { "drama": ">=80" } },
+      "minBeats": 3,
+      "anchor": "jannas_party"
+    },
+    {
+      "goal": "At Janna's party the wine drama has boiled over and Marceau's accent is under attack. Someone is about to scream. It should be interesting.",
+      "minBeats": 3
+    }
+  ],
+  "stats": {
+    "drama":     { "label": "Drama",        "start": 40,    "min": 0, "max": 100, "maxStep": 25, "display": "bar" },
+    "brand":     { "label": "Brand Value",  "start": 15000, "min": 0,             "maxStep": 20000, "display": "money" },
+    "alliances": { "label": "Allies",       "start": 1,     "min": 0, "max": 7,   "maxStep": 2,  "display": "number" }
+  },
+  "flags": {
+    "georgie_survived":  { "recap": "You survived an extended encounter with Georgie Chase with your dignity intact." },
+    "iguana_adopted":    { "recap": "You took custody of the iguana." },
+    "dallas_sided":      { "recap": "You sided with Dallas on the photoshoot conflict." },
+    "mimosa_sided":      { "recap": "You sided with Mimosa on the photoshoot conflict." },
+    "reed_allowed":      { "recap": "You backed Avigail bringing Reid to St. Barths." },
+    "wine_defended":     { "recap": "You defended Roxy's brand at the wine tasting incident." },
+    "accent_mocked":     { "recap": "You participated in mocking Marceau's accent." },
+    "accent_defended":   { "recap": "You defended Marceau's accent the second he left the room." },
+    "said_what_i_said":  { "recap": "You said what you said, into a camera, and did not walk it back." },
+    "made_scene":        { "recap": "You made a scene at Janna's party. It's going in the trailer." }
+  },
+  "items": {
+    "iguana":     { "label": "Clitoris Iguana" },
+    "wine_glass": { "label": "Roxy's Pinot" }
+  },
+  "scenes": {
+    "start": {
+      "place": "HOTEL GROTTO · THE BAR · 7:03 PM",
+      "narration": "Hotel Grotto: a quintessential New York watering hole where old money comes to remember when things were simpler and new money comes to pretend they always were. The holiday party is set. The table has name cards. GEORGIE CHASE — Avigail's father — is already seated and has arranged himself so there is no bad angle for the camera.",
+      "speaker": "GEORGIE CHASE",
+      "line": "Ah! A new face. Tell me: what are you drinking? No, wait — let me guess. Something expensive and misused. You know why you should sit next to me? Because it'll be the kinkiest experience you've ever had at a holiday dinner.",
+      "confessional": "I am seventy-three. I still have it. I know I still have it because someone told me to stop, and nobody tells you to stop unless you still have it.",
+      "mood": "smug",
+      "memory": ["Georgie Chase is already at the holiday party and flirting with everyone.", "Celeste de Villiers is here without her boyfriend Marceau — he's not coming tonight."],
+      "variants": [
+        {
+          "if": { "globalFlags": ["chaos_agent"] },
+          "use": {
+            "line": "I know who you are. You're the one who flipped the table. I read about it. I brought a double martini specifically for you. This is going to be the best holiday party of my life.",
+            "confessional": "I know who the interesting ones are before they walk in the room. I do research. I have a Google alert.",
+            "mood": "smug"
+          }
+        }
+      ],
+      "choices": [
+        { "text": "Sit next to Georgie. Establish your chaos tolerance early.", "next": "georgie_encounter", "delta": { "drama": 10, "alliances": 1 } },
+        { "text": "Rearrange the name cards to put Georgie next to Celeste. She looks like she can handle it.", "next": "seating_drama", "delta": { "drama": 15, "brand": 5000 } },
+        { "text": "Find Mimosa — she just arrived looking frazzled and you want the gossip.", "next": "mimosa_arrival", "delta": { "drama": 5, "alliances": 1 } }
+      ],
+      "spice": {
+        "1": { "line": "Oh, how delightful! A new face. I always say the best thing about a holiday party is the new introductions. Shall we find you a seat?", "confessional": "I am seventy-three. I am very charming. These two things are related.", "mood": "neutral" },
+        "3": { "line": "Good — you're attractive. Sit next to me. I'll make it worth your while. I know what a 'worth your while' looks like. I've been told.", "confessional": "I am seventy-three. I still have it. The camera knows.", "mood": "smug" }
+      }
+    },
+
+    "georgie_encounter": {
+      "place": "HOTEL GROTTO · THE BAR · 7:11 PM",
+      "narration": "Georgie has ordered something called a double martini, which appears to be two martinis in one glass. He is explaining why this is efficient. A boom mic descends from the ceiling. The camera is very close.",
+      "speaker": "GEORGIE CHASE",
+      "line": "If I had a martini with you, I'm afraid I might misbehave. So naturally I insist. Listen: you should come to Florida. We had a wonderful experience. The ladies told me about you. All of them.",
+      "confessional": "My daughter thinks I'm embarrassing. My daughter is right. I consider that a point in my favor.",
+      "mood": "smug",
+      "memory": ["Georgie offered a double martini and a trip to Florida.", "Georgie claims to know things about you from 'the ladies.'"],
+      "choices": [
+        { "text": "Accept the martini. You can survive anything if you're adequately lubricated.", "next": "georgie_dinner", "delta": { "drama": 10, "alliances": 1 }, "set": ["georgie_survived"] },
+        { "text": "Redirect Georgie toward the gift exchange. Force a pivot: 'Oh look, it's time for Secret Santa!'", "next": "georgie_dinner", "delta": { "drama": 5 }, "set": ["georgie_survived"] },
+        { "text": "Ask Georgie to explain Florida in detail. This buys time and the cameras love it.", "next": "generate", "hint": "Georgie describes Florida in a way that is somehow more inappropriate than the martini offer. Avigail appears around a corner and says 'Dad' in a tone that could strip paint. This becomes a confessional moment about boundaries and also about Florida.", "delta": { "drama": 20, "brand": 8000 }, "set": ["georgie_survived"] }
+      ],
+      "spice": {
+        "3": { "line": "I'll behave. No I won't. The double is for courage and also efficiency. Florida: the experience was incredible. I'll say no more in front of the cameras. Actually I'll say more. The cameras stay.", "mood": "smug" }
+      }
+    },
+
+    "seating_drama": {
+      "place": "HOTEL GROTTO · THE TABLE · 7:08 PM",
+      "narration": "You've moved Georgie's card next to Celeste. Celeste arrives, sees the card, looks at Georgie, looks at you, and smiles the smile of someone who has survived three counts, two divorces, and a documentary.",
+      "speaker": "CELESTE DE VILLIERS",
+      "line": "Georgie. How...inevitable. I see someone has arranged us. You know, Marceau is not here tonight, so I am free to be fully present. I shall be devastatingly polite.",
+      "confessional": "Georgie Chase is precisely the kind of man I have spent my life either married to or escaping from. He is charming. I am more charming. This evening is going to be interesting.",
+      "mood": "smug",
+      "memory": ["You moved Georgie's name card next to Celeste.", "Celeste has accepted this arrangement with unsettling grace."],
+      "choices": [
+        { "text": "Slide in on Georgie's other side. Hold the flanks.", "next": "celeste_georgie_match", "delta": { "drama": 10, "alliances": 1 }, "set": ["georgie_survived"] },
+        { "text": "Find your own seat at a safe distance and watch this develop.", "next": "generate", "hint": "Georgie immediately courts Celeste with the double-martini playbook. Celeste deflects with devastating grace. Each deflection encourages Georgie further. The camera crew is visibly overjoyed. You eat canapés from a safe distance as a producer whispers into an earpiece and smiles.", "delta": { "drama": 15, "brand": 6000 }, "set": ["georgie_survived"] },
+        { "text": "Move the card back and blame it on the waitstaff.", "next": "secret_santa", "delta": { "drama": 5, "alliances": -1 } }
+      ]
+    },
+
+    "georgie_dinner": {
+      "place": "HOTEL GROTTO · THE TABLE · 7:22 PM",
+      "narration": "Georgie is at the dinner table, mid-anecdote about his health regime. The regime appears to involve champagne, standing appointments, and a belief that embarrassing your children keeps you young.",
+      "speaker": "GEORGIE CHASE",
+      "line": "You know why I'm still vital at seventy-three? I never miss a holiday party. I never drink alone. And I never, ever sit next to boring people. You have passed two of three tests tonight. I'll tell you which two after dinner.",
+      "confessional": "My daughter will be horrified by everything I say tonight. She's always horrified. That's what tells me I'm doing it right.",
+      "mood": "smug",
+      "memory": ["Georgie is tracking which of his tests you have passed. He will not say which."],
+      "choices": [
+        { "text": "Ask which two tests you passed. This is either charming or a trap.", "next": "secret_santa", "delta": { "drama": 10, "alliances": 1 } },
+        { "text": "Change the subject — Roxy is approaching with gift exchange numbers.", "next": "secret_santa", "delta": { "drama": 5 } },
+        { "text": "Tell Georgie about Celeste's boyfriend Marceau and watch his face.", "next": "generate", "hint": "Georgie has opinions about Marceau. The opinions are specific. They concern the French, accents, and an unresolved property dispute in the south of France. Celeste, across the room, can tell she is being discussed. The camera is on Celeste.", "delta": { "drama": 20, "brand": 7000 } }
+      ],
+      "spice": {
+        "1": { "line": "You know, longevity is about attitude. I have never once sat next to a boring person. You appear to be non-boring. I'm making a note.", "mood": "neutral" },
+        "3": { "line": "I'll tell you which two after dinner. Actually I'll tell you now. You're attractive and you're listening to me. The third test? Don't be boring later. I think you're going to pass.", "mood": "smug" }
+      }
+    },
+
+    "celeste_georgie_match": {
+      "place": "HOTEL GROTTO · THE TABLE · 7:14 PM",
+      "narration": "Celeste is handling Georgie with terrifying grace. She's been asking him questions and listening to the answers with an expression of serene anthropological interest. Georgie is delighted. This is not what you expected.",
+      "speaker": "CELESTE DE VILLIERS",
+      "line": "Georgie was just telling me about Florida. Georgie, tell her about the boat. The boat story is important.",
+      "confessional": "If you give him a topic, he runs with it. I find this restful. I have redirected him four times. He does not know he has been redirected. This is a skill I developed during my second marriage.",
+      "mood": "smug",
+      "memory": ["Celeste has a Georgie management technique involving selective flattery and a redirect phrase.", "Georgie does not know he is being managed."],
+      "choices": [
+        { "text": "Ask about the boat.", "next": "secret_santa", "delta": { "drama": 15, "alliances": 1 } },
+        { "text": "Ask Celeste privately how she does that.", "next": "generate", "hint": "Celeste explains the technique like a field guide. She is pleased to be asked. It involves three specific questions and a redirect phrase she learned from a UN interpreter. It absolutely works. Georgie overhears part of this and is not offended. He is impressed.", "delta": { "drama": 10, "alliances": 2 } },
+        { "text": "Try the redirect technique on Georgie yourself, right now, in front of Celeste.", "next": "secret_santa", "delta": { "drama": 15, "brand": 6000 }, "set": ["georgie_survived"] }
+      ],
+      "spice": {
+        "1": { "line": "Georgie was telling me about some very lovely properties he's visited. Georgie, do tell her about the boat.", "mood": "neutral" },
+        "3": { "line": "Georgie, darling, tell her about the boat. The one with the incident. I find the incident very clarifying about who you are as a person.", "confessional": "He loves the boat story. The boat story is long. I am going to get a drink while he tells it.", "mood": "smug" }
+      }
+    },
+
+    "mimosa_arrival": {
+      "place": "HOTEL GROTTO · THE ENTRANCE · 7:06 PM",
+      "narration": "Mimosa has arrived forty-seven minutes late in full gown and immediately started explaining her toaster oven. She's describing a photoshoot she had today with Dallas Thorp and something is very wrong with the way her eye is twitching.",
+      "speaker": "MIMOSA RAINES",
+      "line": "I had a vision. I always have a vision. Dallas has a vision. The problem is her vision is not my vision and she kept saying 'I want this, I want that, this is my campaign' — it's not her campaign. I have a young uterus. The camera knows.",
+      "confessional": "I lost a lot of blood today. I'm still a little lightheaded. That is entirely unrelated to what I am about to tell you.",
+      "mood": "angry",
+      "memory": ["Mimosa is furious about how Dallas handled the toaster oven photoshoot today.", "Mimosa believes Dallas took credit for Mimosa's creative vision."],
+      "choices": [
+        { "text": "Agree immediately. Dallas absolutely steamrolled her. You weren't there but it sounds right.", "next": "mimosa_vents", "delta": { "drama": 15, "alliances": 1 }, "set": ["mimosa_sided"] },
+        { "text": "Make a mental note and go find Dallas first before forming an opinion.", "next": "generate", "hint": "Dallas gives you a very organized account with key performance indicators and bullet points. It is somehow both completely reasonable and deeply infuriating. You understand everything Mimosa was talking about. You also slightly understand why Dallas doesn't know why Mimosa cried. A producer is writing notes.", "delta": { "drama": 5, "alliances": 1 } },
+        { "text": "Ask about the toaster oven itself. Pivot to commerce.", "next": "secret_santa", "delta": { "drama": 5, "brand": 5000 } }
+      ],
+      "spice": {
+        "3": { "line": "I had a [BLEEP]ing vision. DALLAS had a vision. The visions conflicted and somehow her vision got to wear the apron. This is not over. Also I need a tampon. Do you have a tampon?", "mood": "angry" }
+      }
+    },
+
+    "mimosa_vents": {
+      "place": "HOTEL GROTTO · THE ENTRANCE · 7:14 PM",
+      "narration": "You've committed to Mimosa's side of the story. She takes this as an invitation to tell you everything. The everything is detailed. The details include the tampon, the second setup, and a creative brief she wrote in the car.",
+      "speaker": "MIMOSA RAINES",
+      "line": "She kept saying 'I want this, I want that' — in my shoot! And then at the end she said 'I know you don't think I'm doing anything.' She said that to me! She said it, which means she knows she wasn't doing anything. That's how guilt works.",
+      "confessional": "I prepared. I had a vision. I had a toaster oven. I had a man with a torso. What else does anyone need? The answer is nothing. The answer is that is everything.",
+      "mood": "angry",
+      "memory": ["Mimosa had a creative brief. Dallas apparently did not read the creative brief.", "Mimosa believes Dallas's guilt admission proves her case."],
+      "choices": [
+        { "text": "Agree that saying 'I know you don't think I'm doing anything' is a confession.", "next": "secret_santa", "delta": { "drama": 15, "alliances": 1 } },
+        { "text": "Ask to see the creative brief. You want the receipts.", "next": "generate", "hint": "The creative brief exists. It is on her phone. It is thorough. It includes a mood board, a font choice, and a column labeled 'Dallas's role (advisory only).' The advisory-only column is the problem. Dallas found out about the advisory-only column.", "delta": { "drama": 20, "brand": 8000 } },
+        { "text": "Suggest Mimosa bring this up directly with Dallas tonight. While you're watching.", "next": "secret_santa", "delta": { "drama": 25, "alliances": 1 } }
+      ],
+      "spice": {
+        "3": { "line": "She said 'I know you don't think I'm doing anything.' AT MY OWN SHOOT. I have a creative brief. I have a [BLEEP]ing mood board. I bled on set. I literally bled on set. I have a young uterus and Dallas Thorp has my creative brief.", "mood": "angry" }
+      }
+    },
+
+    "secret_santa": {
+      "place": "HOTEL GROTTO · THE TABLE · 7:34 PM",
+      "narration": "Rules explained. Numbers picked. Roxy opens first: good karma jewelry. Then Celeste: a wine coaster. Georgie examines the wine coaster for fifteen seconds and says, 'It looks like a cock ring.' Nobody disagrees. A camera zooms in.",
+      "speaker": "GEORGIE CHASE",
+      "line": "You put that in your mouth and we whip you. OR it goes to your forehead so you can think better. I'll take the coaster. For my masochistic gag. I'll wear it during dinner if Celeste puts it on me.",
+      "confessional": "I brought a gift that is not a wine coaster. I brought something better. Something alive.",
+      "mood": "smug",
+      "fx": ["sparkle"],
+      "memory": ["Georgie called Celeste's wine coaster a cock ring during Secret Santa.", "Georgie is wearing the wine coaster on his head for the rest of the evening."],
+      "choices": [
+        { "text": "Open your gift. It is a small box. It rattles.", "next": "iguana_scene", "delta": { "drama": 15 } },
+        { "text": "Steal Roxy's karma jewelry before she realizes it was a viable option.", "next": "iguana_scene", "delta": { "drama": 20, "brand": 8000, "alliances": -1 } },
+        { "text": "Clap for Georgie wearing the coaster on his head. Sometimes you encourage the chaos you want to see.", "next": "generate", "hint": "Georgie takes the applause as a standing invitation. The wine coaster speech continues. Celeste eventually puts it on his head herself, which was what he wanted all along. Something about the transaction is impossible to explain and the camera got all of it.", "delta": { "drama": 10, "alliances": 1 } }
+      ],
+      "spice": {
+        "1": { "narration": "Rules explained. Numbers picked. The coaster is passed around. Someone notes it resembles a drain cover.", "line": "How festive! I'll wear it as a crown. For the spirit of the season.", "mood": "neutral" },
+        "3": { "line": "COCK RING. That's a cock ring. Only the gay guys put that down... actually no. No, I stand corrected. I have a masochistic gag. These are compatible accessories. Celeste, your hands please.", "mood": "smug" }
+      }
+    },
+
+    "iguana_scene": {
+      "place": "HOTEL GROTTO · THE TABLE · 7:41 PM",
+      "narration": "Carla opens her gift. It is an iguana. Specifically, as Georgie immediately announces, it is a 'clitoris iguana.' Carla is holding it like she has held many strange things and this is merely the most recent. The iguana appears calm.",
+      "speaker": "CARLA RADMORE",
+      "line": "Am I keeping it or trading it? Because I feel like I could keep it. I live alone. I have no children. I have finished my manuscript. I have room for an iguana. Is that sad? Don't answer that.",
+      "confessional": "I have been to war zones, written three books, and dated a rock star. I am not intimidated by a lizard. I am a little intimidated by what Georgie called it. I'll name him something more appropriate. Something presidential.",
+      "mood": "surprised",
+      "memory": ["Carla received an iguana in Secret Santa.", "Georgie named it immediately and before Carla could."],
+      "choices": [
+        { "text": "Volunteer to take the iguana. You have a larger apartment. This is a kindness.", "next": "photoshoot_gossip", "delta": { "drama": 10, "alliances": 1 }, "give": ["iguana"], "set": ["iguana_adopted"], "setGlobal": ["iguana_keeper"] },
+        { "text": "Encourage Carla to keep it. She's right. She has room. She's ready.", "next": "photoshoot_gossip", "delta": { "drama": 5, "alliances": 1 } },
+        { "text": "Suggest Georgie should take the iguana he named.", "next": "generate", "hint": "Georgie accepts the iguana immediately. He delivers a brief speech about why the name is correct. He has a carrier bag. He brought the carrier bag. Avigail says 'Dad' three times in three different octaves. The iguana remains calm. A producer confirms they are getting all of this.", "delta": { "drama": 20, "brand": 6000 } }
+      ],
+      "spice": {
+        "1": { "narration": "Carla opens her gift. It is an iguana. It is a perfectly normal iguana.", "line": "Oh, how unusual. I suppose I could keep it. I've always wanted a pet. I'm going to name him Marcus Aurelius.", "mood": "neutral" },
+        "3": { "narration": "Carla opens the box. The iguana blinks. Georgie immediately makes a declaration that gets the camera person's undivided attention.", "line": "Keeping it. Absolutely keeping it. I'm going to name him what Georgie said and I'm not going to explain it to anyone and I'm going to love him fiercely.", "mood": "surprised", "fx": ["sparkle"] }
+      }
+    },
+
+    "photoshoot_gossip": {
+      "place": "HOTEL GROTTO · THE BAR · 8:19 PM",
+      "narration": "The table has fractured into two camps. Camp One: Roxy, whispering to Dallas that Mimosa cried about the photoshoot. Camp Two: Mimosa, whispering to Avigail that Dallas stole her creative vision. You are in a third camp of one, holding a drink, watching both.",
+      "speaker": "ROXY LARUE",
+      "line": "Can I tell you? Dallas is doing something truly tremendous for Mimosa. And Mimosa is saying Dallas steamrolled her. If she said Dallas steamrolled her, that means she knows deep down that Dallas didn't do anything wrong. That's how it works.",
+      "confessional": "I know what steamrolling looks like. I invented what steamrolling looks like. That was not steamrolling. I would have recognized it.",
+      "mood": "smug",
+      "memory": ["The holiday party has split into factions over the photoshoot conflict.", "Roxy is backing Dallas; Mimosa has been talking to Avigail."],
+      "variants": [
+        {
+          "if": ["mimosa_sided"],
+          "use": {
+            "speaker": "MIMOSA RAINES",
+            "narration": "Mimosa finds you at the bar first. Her wine glass is very full and her eyes are very bright.",
+            "line": "She was bossing me around at my own shoot. I know what I want! I have a toaster oven and I have a vision. These are the two things I require. I do not require Dallas saying 'I, I, I' at me.",
+            "confessional": "I have a young uterus. I have a mature brand. These things coexist.",
+            "mood": "angry"
+          }
+        }
+      ],
+      "choices": [
+        { "text": "Agree with Roxy. Dallas is doing Mimosa a favor and Mimosa is ungrateful.", "next": "party_drama", "delta": { "drama": 15, "alliances": 1 }, "set": ["dallas_sided"] },
+        { "text": "Find Mimosa and tell her Roxy is out here repeating everything she said.", "next": "party_drama", "delta": { "drama": 20, "alliances": 1 }, "set": ["mimosa_sided"] },
+        { "text": "Find Dallas directly and ask for her version. First person to give you the full story wins your alliance.", "next": "generate", "hint": "Dallas gives you a very organized account with key performance indicators and bullet points. It is somehow both completely reasonable and deeply infuriating. You understand everything Mimosa was talking about. A producer mouths 'gold' from across the room.", "delta": { "drama": 10, "alliances": 1 } }
+      ]
+    },
+
+    "party_drama": {
+      "place": "HOTEL GROTTO · THE BAR · 8:52 PM",
+      "narration": "The party has peaked. The factions are visible from across the room. Mimosa is describing the photoshoot to whoever will listen. Dallas is describing the same shoot in a completely different language. This is the moment where you can shape what gets carried out of the room tonight.",
+      "speaker": "DALLAS THORP",
+      "line": "Listen. I want to say something. I know you've been listening to both sides. What I did was give Mimosa a campaign. What I did not do is get the credit I deserved for it. And that matters, babe. It actually matters. Holla.",
+      "confessional": "I am a businesswoman. I produce results. I do not steam-roll. I accelerate. These are different things and I would like them noted, on camera, for the record.",
+      "mood": "smug",
+      "memory": ["Dallas believes she built Mimosa's campaign and deserves credit she is not getting.", "The party has fractured along photoshoot fault lines."],
+      "variants": [
+        {
+          "if": ["mimosa_sided"],
+          "use": {
+            "speaker": "MIMOSA RAINES",
+            "narration": "Mimosa finds you at the bar first. She has heard Dallas is talking to you. She is here to get there first.",
+            "line": "Whatever she just said to you — I need you to know that I pulled the team together. I found the photographer. I had the toaster oven. All Dallas had was opinions. That's not a campaign. That's a meeting.",
+            "confessional": "I am not asking for a war. I am asking for the correct version of the story to exist in the room.",
+            "mood": "angry"
+          }
+        }
+      ],
+      "choices": [
+        { "text": "Tell Dallas that Mimosa's name is on the product, so Mimosa's vision should lead.", "next": "carla_lunch_invite", "delta": { "drama": 15, "alliances": 1 } },
+        { "text": "Agree with Dallas. Mimosa got a free campaign and needs to say thank you.", "next": "carla_lunch_invite", "delta": { "drama": 10, "alliances": 1 } },
+        { "text": "Find Mimosa and Dallas in the same room and ask them to hash it out right here.", "next": "generate", "hint": "They hash it out at the bar in front of a camera crew that is barely pretending to be casual. Mimosa cries briefly. Dallas says holla once at the absolute wrong moment. It almost resolves. It does not resolve. Roxy is watching from the coat check and texting someone.", "delta": { "drama": 25, "brand": 10000 } },
+        { "text": "Grab Roxy and go. This is not your fight.", "next": "carla_lunch_invite", "delta": { "drama": 5, "alliances": 1 } }
+      ],
+      "spice": {
+        "1": { "line": "What I would like, actually, is simply for the work I contributed to be acknowledged. I think that's reasonable. I think 'holla' is reasonable. I think I am reasonable.", "mood": "neutral" },
+        "3": { "line": "CREDIT. I want CREDIT. I built that campaign from the vision up and Mimosa is out there saying I didn't do anything and I will not stand for that at a HOLIDAY PARTY. Holla. I mean that seriously. Holla.", "mood": "angry" }
+      }
+    },
+
+    "carla_lunch_invite": {
+      "place": "HOTEL GROTTO · THE COAT CHECK · 9:02 PM",
+      "narration": "The party is winding down. Carla corners you near the coat check. She smells like M&Ms and possibility. She is going to St. Barths and she wants you to come. She finished her manuscript. She's ready to celebrate. The iguana is in a box somewhere.",
+      "speaker": "CARLA RADMORE",
+      "line": "Come to mine tomorrow. Lunch. I'm inviting all the ladies. And then I want to pitch something. I'm going to St. Barths for a week and I want company that isn't my editor. Russel is playing the blues festival. You'd love it.",
+      "confessional": "I am not conventionally a hostess. I ordered four salads and they gave me one. Last time I had people over I served M&Ms with their names on them. The M&Ms were the most thoughtful gesture I have ever made.",
+      "mood": "smug",
+      "memory": ["Carla is inviting everyone to her apartment tomorrow for a St. Barths pitch.", "Her boyfriend Russel is playing a blues festival in St. Barths."],
+      "choices": [
+        { "text": "Accept immediately. St. Barths and also you want to see this apartment.", "next": "carla_lunch", "delta": { "drama": 5, "alliances": 1 } },
+        { "text": "Accept but warn her about Avigail's anxiety about travel. Plant the seed now.", "next": "carla_lunch", "delta": { "drama": 10 } },
+        { "text": "Accept and suggest she actually order some real food before tomorrow. The M&Ms are going to be a problem.", "next": "generate", "hint": "Carla decides to solve the food problem immediately by calling the restaurant back. The restaurant does not solve it. The restaurant makes it worse. The ladies end up eating whatever Mimosa had in her bag. This is not what anyone expected from a St. Barths pitch dinner.", "delta": { "drama": 5, "alliances": 1 } },
+        { "text": "Accept and ask if you can bring the iguana if you ended up with it.", "requires": { "hasItems": ["iguana"] }, "next": "carla_lunch", "delta": { "drama": 5, "alliances": 1 } }
+      ]
+    },
+
+    "carla_lunch": {
+      "place": "CARLA RADMORE'S APARTMENT · UPPER WEST SIDE · 1:14 PM",
+      "narration": "Carla's apartment is chic, petite, and decorated like a person who has been everywhere and kept only the essentials. On the coffee table: one bowl of M&Ms. Each M&M has a housewife's name on it. This is the entire lunch. Avigail is staring at the M&Ms.",
+      "speaker": "AVIGAIL CHASE",
+      "line": "I ate lunch. I'm sorry. I eat already. Can I get like a nice salad with chicken or something? I would have brought food! When you go to someone's home, don't you have the food there already?",
+      "confessional": "I am not judging Carla. Carla is lovely. Carla ordered four salads and they gave her one. This happens. What I am is hungry. These are separate observations.",
+      "mood": "surprised",
+      "memory": ["Carla's apartment has only personalized M&Ms as food.", "Avigail is hungry and not hiding it."],
+      "choices": [
+        { "text": "Defend Carla loudly. 'The M&Ms are a statement piece! They have our names on them!'", "next": "st_barths_pitch", "delta": { "drama": 10, "alliances": 1 } },
+        { "text": "Quietly suggest Carla order more food right now before it escalates.", "next": "st_barths_pitch", "delta": { "drama": 5, "alliances": 1 } },
+        { "text": "Eat an M&M that has someone else's name on it. All eyes on you.", "next": "generate", "hint": "Everyone looks at you. Someone identifies whose name is on the M&M. That person has feelings. The feelings are disproportionate to the incident and deeply entertaining. Carla watches from the kitchen doorway with the expression of someone whose hosting has gotten completely away from them.", "delta": { "drama": 15, "brand": 5000 } }
+      ],
+      "spice": {
+        "1": { "narration": "On the coffee table: a bowl of M&Ms and some magazines. This is the lunch.", "line": "I did have a salad in mind. It seems there was a mix-up. I do hope M&Ms are alright for now — they're personalized!", "mood": "neutral" },
+        "3": { "narration": "On the coffee table: M&Ms. Just M&Ms. The M&Ms have everyone's names on them. The names are the whole thing.", "line": "I ate already. I'm literally starving. No, Carla, I love you, but the M&Ms are not a meal. Even with our names on them.", "mood": "surprised" }
+      }
+    },
+
+    "st_barths_pitch": {
+      "place": "CARLA RADMORE'S APARTMENT · UPPER WEST SIDE · 1:29 PM",
+      "narration": "Carla pitches St. Barths. Everyone immediately mentions the small plane from the island. Dallas says it's fine. Avigail goes pale in a specific way. The small plane is a known issue with Avigail.",
+      "speaker": "AVIGAIL CHASE",
+      "line": "I want to go. I do. I really do want to go. But Reid is my best friend and I don't know if I can summon the strength to go without Reid. And the little plane. And the boats. It's not irrational! Well, it's a little irrational.",
+      "confessional": "I know it's irrational. I know. I know. I know. I went to Vassar. I survived many things. I cannot survive the small plane from St. Martin. And possibly also the boats. And airports. This is a known issue.",
+      "mood": "surprised",
+      "memory": ["Avigail is afraid of the small plane to St. Barths and possibly also boats.", "She's also worried about traveling without her husband Reid."],
+      "variants": [
+        {
+          "if": ["reed_allowed"],
+          "use": {
+            "speaker": "DALLAS THORP",
+            "narration": "Dallas has very strong feelings about women traveling independently and is expressing them.",
+            "line": "Listen. Babe. Holla. If you can't leave your husband at home for a girls trip, that is not very sexy. Men need to miss you. That is just science. That is just how marriage works. I have read exactly one relationship book.",
+            "confessional": "I support everyone's choices. Except the choices I disagree with. Which I support loudly.",
+            "mood": "smug"
+          }
+        }
+      ],
+      "choices": [
+        { "text": "Back her bringing Reid. 'If Reid being there gets Avigail to St. Barths, that's even better!'", "next": "jannas_party", "delta": { "drama": 10, "alliances": 1 }, "set": ["reed_allowed"] },
+        { "text": "Push her to go alone. 'You went to Vassar, Avigail. You can survive a plane.'", "next": "jannas_party", "delta": { "drama": 20, "alliances": -1 } },
+        { "text": "Suggest she touch the snake before she jumps in the pit of snakes. This is an exposure therapy reference.", "next": "generate", "hint": "The snake metaphor spirals immediately. Someone takes it too literally. Georgie, who was not invited but has somehow appeared, has thoughts. The iguana does not help. Avigail says 'what snake?' three times. Dallas says 'holla' at a moment it does not fit at all.", "delta": { "drama": 25, "brand": 8000 } }
+      ],
+      "spice": {
+        "1": { "line": "I'd very much like to come. It's just that some of the logistics give me pause. The travel, particularly. And Reid is so wonderful at logistics.", "mood": "neutral" },
+        "3": { "line": "I WANT TO GO. I am trapped inside an anxiety spiral that I fully recognize as irrational and I am still inside it. The plane is VERY SMALL. I have seen the plane. It is [BLEEP] tiny. And Reid is my PERSON.", "mood": "angry" }
+      }
+    },
+
+    "jannas_party": {
+      "place": "JANNA BULLOCK'S TOWNHOUSE · THE FRONT ROOM · 8:17 PM",
+      "narration": "Janna Bullock: international socialite, your friend, the star tonight. Yellow roses. Red lipstick. Celeste de Villiers in a column dress talking to her boyfriend Marceau, who is at the piano playing something he wrote himself and would like credit for. The camera crew is delighted.",
+      "speaker": "CELESTE DE VILLIERS",
+      "line": "I am trying to communicate to the ladies about the wine tasting. The wine incident with Roxy. I failed to explain. She didn't get it. Avigail thinks it was a setup. Avigail is wrong. It was a wine game.",
+      "confessional": "I covered Roxy's wine at the tasting because I wanted to show how the wine changes when you change your associations. It was an educational exercise. It was not a trap. I did not think she would fail. Well. I did not think she would fail publicly.",
+      "mood": "smug",
+      "memory": ["The wine game incident between Celeste and Roxy is now a party-wide controversy.", "Marceau is at the piano. He wrote the song himself and wants you to know."],
+      "choices": [
+        { "text": "Find Roxy and ask how she actually felt about the wine incident.", "next": "wine_drama", "delta": { "drama": 15, "alliances": 1 } },
+        { "text": "Listen to Marceau's piano song. Show support for the boyfriend.", "next": "wine_drama", "delta": { "drama": 5, "alliances": 1 } },
+        { "text": "Find Avigail. She's the one who called it a setup and you want the receipts.", "next": "generate", "hint": "Avigail has strong opinions about what Celeste did at the wine tasting and receipts in the form of a very long text thread. She shows you the thread. The thread is long. It includes Georgie. Nobody invited Georgie into this thread. Avigail cannot explain how Georgie got in the thread.", "delta": { "drama": 10 } }
+      ],
+      "spice": {
+        "1": { "line": "What we need is to put the wine incident behind us and simply enjoy Janna's lovely party. Marceau is playing something beautiful. I believe he wrote it about me.", "mood": "neutral" },
+        "3": { "line": "I am not setting Roxy up. I am not in the business of SETTING PEOPLE UP. I am in the business of elegance and occasionally wine and covering other people's wine is not a CONSPIRACY.", "mood": "angry" }
+      }
+    },
+
+    "wine_drama": {
+      "place": "JANNA BULLOCK'S TOWNHOUSE · THE BACK ROOM · 8:44 PM",
+      "narration": "Roxy has cornered Avigail and is explaining the wine tasting in detail. Roxy's theory: Celeste wanted her to say her own Pinot was bad. In public. At a master's tasting. In front of the master. This would have been a disaster for the Roxy Pinot brand. Avigail is nodding with the energy of someone who agrees with everything.",
+      "speaker": "ROXY LARUE",
+      "line": "My gut tells me Celeste wanted me to fail. And a master of wine saying good things about my wine is fantastic exposure. But what if I'd said it was bad? What if I'd said my own wine was terrible? Do you know what that does to my livelihood?",
+      "confessional": "My livelihood is wine. My wines are good. I know my wines. What I am not sure about is why someone who calls herself a Countess would cover my glass at a tasting unless she was trying to make me look like I didn't know my own product. Never underestimate a woman born in New York City.",
+      "mood": "angry",
+      "memory": ["Roxy believes Celeste deliberately set her up to fail at the wine tasting.", "Roxy's brand is her Pinot — she treats this as a serious business threat."],
+      "choices": [
+        { "text": "Defend Roxy. This was clearly an attempt to embarrass her brand. You'll say so to Celeste.", "next": "accent_scene", "delta": { "drama": 20, "alliances": 1 }, "set": ["wine_defended"], "give": ["wine_glass"], "setGlobal": ["wine_ally"] },
+        { "text": "Play devil's advocate. Celeste's boyfriend was just promoting the wine. No harm intended.", "next": "accent_scene", "delta": { "drama": 10 } },
+        { "text": "Change the subject. Tell Roxy what Avigail said about Celeste when she thought she was out of earshot.", "next": "generate", "hint": "You lean in and tell Roxy exactly what Avigail said when she thought nobody was listening. Roxy's face goes through four expressions in two seconds. She immediately needs to find Celeste. You have accelerated the confrontation by approximately forty-five minutes. A producer thanks you with their eyes.", "delta": { "drama": 25, "brand": 10000 } }
+      ],
+      "spice": {
+        "1": { "line": "I think there may have been a miscommunication. The wine tasting was perhaps not ideally structured. I simply want clarity.", "confessional": "I have clarity. The clarity is that someone tried to embarrass me in front of a master of wine. I am remaining composed about it.", "mood": "neutral" },
+        "3": { "line": "She tried to make me say my own wine was [BLEEP]! AT A MASTER TASTING. She thinks I don't KNOW MY OWN WINE? I know my wine better than I know most people and I know most people VERY WELL.", "mood": "angry" }
+      }
+    },
+
+    "accent_scene": {
+      "place": "JANNA BULLOCK'S TOWNHOUSE · THE SITTING ROOM · 9:03 PM",
+      "narration": "Marceau has just left the room. He said 'au revoir' and 'à bientôt' and there was some ambiguity about the word jacuzzi. The moment the door swings shut, Roxy says: 'His accent isn't real. He doesn't even know how to do the French accent.' Avigail says: 'That's disgusting.' Celeste is on the other side of the room. The camera is on Celeste.",
+      "speaker": "ROXY LARUE",
+      "line": "He fakes his French accent! He called a jacuzzi a jacuzzi! Get the accent right! I'm sorry but I'm just saying what everyone was thinking!",
+      "confessional": "I say what I say. I stand behind what I say. I always say what I say. I am from New York City and I say what I say.",
+      "mood": "smug",
+      "memory": ["Roxy accused Marceau of faking his French accent the moment he left the room.", "Celeste heard this. The camera is on her face."],
+      "variants": [
+        {
+          "if": ["wine_defended"],
+          "use": {
+            "speaker": "ROXY LARUE",
+            "narration": "Roxy is fully in the groove now. The wine thing gave her energy. She is using all of it.",
+            "line": "And I'll say it louder! He fakes the accent! I know a fake accent! Never underestimate a woman born and raised in New York City! Holla!",
+            "confessional": "I adopted that last one from Dallas. It felt right.",
+            "mood": "angry"
+          }
+        }
+      ],
+      "choices": [
+        { "text": "Agree with Roxy. The jacuzzi thing WAS suspicious.", "next": "confrontation", "delta": { "drama": 20, "alliances": -1 }, "set": ["accent_mocked"] },
+        { "text": "Defend Marceau. 'His accent is part of his charm and you're doing this the second he walks out!'", "next": "confrontation", "delta": { "drama": 25, "alliances": 1 }, "set": ["accent_defended"] },
+        { "text": "Find Celeste immediately and tell her what just happened before she hears it from someone else.", "next": "confrontation", "delta": { "drama": 30, "brand": 12000, "alliances": 1 }, "set": ["accent_defended"] }
+      ],
+      "spice": {
+        "1": { "narration": "Marceau leaves the room. Someone mentions his pronunciation of jacuzzi. It is noted.", "line": "His accent is quite charming actually. Very continental.", "mood": "neutral" },
+        "3": { "line": "FAKE. ACCENT. I called it at the first 'au revoir'! He said 'jacuzzi' like a person who learned French from a hotel brochure! I said it! I said what I said!", "mood": "angry", "fx": ["horns"] }
+      }
+    },
+
+    "confrontation": {
+      "place": "JANNA BULLOCK'S TOWNHOUSE · THE HALLWAY · 9:19 PM",
+      "narration": "Celeste has heard. Celeste is walking toward Roxy. Roxy is saying 'you talk behind my f-ing back' before Celeste has taken three steps. Dallas is saying 'this is her modus operandi.' Avigail is saying 'that's not nice.' Someone's husband is involved somehow. The boom mics are practically touching the ceiling for more room.",
+      "speaker": "CELESTE DE VILLIERS",
+      "line": "What I think is disgusting is that he walked around the corner and you said he doesn't even speak French! That is hurtful. That is below us. If you have a problem with me — tell me! Don't do this!",
+      "confessional": "I am not here to pick a fight with someone making fun of Marceau's accent, which is charming and part of his charm. But I am also not here to let it go. I contain multitudes. I am a Countess.",
+      "mood": "angry",
+      "fx": ["horns"],
+      "memory": ["Celeste and Roxy are in a full hallway confrontation.", "Dallas called Roxy 'crazy' to someone's husband — a separate incident happening simultaneously."],
+      "variants": [
+        {
+          "if": ["accent_defended"],
+          "use": {
+            "speaker": "CELESTE DE VILLIERS",
+            "narration": "Celeste finds you first. She grabs your arm exactly the way people do at the beginning of things.",
+            "line": "You said something. When they were talking about Marceau. You said something decent. I need a witness for what I am about to do. Are you available?",
+            "confessional": "I know who is on what side. I always know. The camera does not lie about these things and neither do people who defend your boyfriend's accent.",
+            "mood": "surprised"
+          }
+        },
+        {
+          "if": ["accent_mocked"],
+          "use": {
+            "speaker": "ROXY LARUE",
+            "narration": "Roxy has seen you and is pulling you into the confrontation zone as evidence.",
+            "line": "She agrees with me! She was there! Ask her! Ask her what I said! I said what I said and I will say it again! I say what I say!",
+            "confessional": "I may have overplayed my hand here. The Countess has found me. I am not afraid.",
+            "mood": "angry"
+          }
+        }
+      ],
+      "choices": [
+        { "text": "Hand Celeste the glass of Roxy's wine. No words. Just the glass.", "requires": { "hasItems": ["wine_glass"] }, "next": "END", "delta": { "drama": 25, "brand": 25000, "alliances": 2 }, "consume": ["wine_glass"], "set": ["made_scene"] },
+        { "text": "Step between them. 'I said what I said, and I'm saying it now: everyone stop.'", "next": "END", "delta": { "drama": 30, "brand": 20000, "alliances": 2 }, "set": ["said_what_i_said"], "setGlobal": ["said_it_before"] },
+        { "text": "Find Dallas and ask why she told someone their wife was crazy. Add a second front to this war.", "next": "END", "delta": { "drama": 35, "brand": 15000 }, "set": ["made_scene"] },
+        { "text": "Walk to the nearest camera. Look directly into it. Say nothing. Wait for the music to swell.", "next": "END", "delta": { "drama": 20, "brand": 18000 } },
+        { "text": "Back away into the crowd, pick up a glass of champagne, and watch from a safe distance while everything burns.", "next": "generate", "hint": "Something escalates that you could not have predicted even from your safe distance. It involves Mario's plus-one, the iguana if present, or the wine coaster Georgie wore all night. The camera catches your face perfectly. A producer whispers 'stay right there, don't move.'", "delta": { "drama": 15, "brand": 10000 } }
+      ],
+      "spice": {
+        "1": {
+          "narration": "Voices have been raised. Everyone is now technically in the same conversation.",
+          "line": "I simply wish we could have this discussion privately. This is a party.",
+          "mood": "neutral"
+        },
+        "3": {
+          "narration": "Celeste is in the hallway. Roxy is in the hallway. The hallway has never been more important.",
+          "line": "You TALK BEHIND MY [BLEEP]ING BACK. I am SICK of it! STOP IT. I am from New York City, I am a Countess, and I will not be doing this in Janna's hallway unless I am getting a confessional out of it!",
+          "confessional": "I regret nothing. I regret the hallway. I do not regret my position.",
+          "mood": "angry",
+          "fx": ["horns", "wine"]
+        }
+      }
+    }
+  },
+
+  "endings": [
+    {
+      "if": { "flags": ["said_what_i_said", "wine_defended"], "stats": { "drama": ">=70" } },
+      "title": "FRANCHISE PLAYER",
+      "text": "You stepped into the hallway confrontation, defended Roxy's wine, and delivered a line that the editors will put over a slow-motion shot of three different facial reactions. The network calls you 'a natural.' Your tagline is rewritten to 'I said what I said.' The M&Ms were your favorite part.",
+      "spice": {
+        "3": { "text": "You stepped in, delivered the line, and three people quoted it back to you at the reunion. The editors put it over a dramatic instrumental. You have a tagline, a fan account, and a wine deal pending. The iguana came to the reunion. It was the calmest one there." }
+      }
+    },
+    {
+      "if": { "flags": ["made_scene", "accent_defended"], "stats": { "drama": ">=65" } },
+      "title": "LOYAL TO THE END",
+      "text": "You went to Celeste's side when it mattered and then opened a second front by going after Dallas. By the end of the night, three separate parties are in various stages of not speaking. The network calls it 'the best episode this season.' You're in every promo.",
+      "spice": {
+        "3": { "text": "You added two fronts. That's not normal. That's unprecedented. The network is calling it 'the best episode in five seasons.' Your tagline is 'I do not start fires. I accelerate them.' You are very comfortable with this." }
+      }
+    },
+    {
+      "if": { "flags": ["iguana_adopted"], "stats": { "drama": ">=50" } },
+      "title": "YOU HAVE THE IGUANA NOW",
+      "text": "You left Janna's party early, with the iguana and a glass of champagne. You missed the worst of it. You are, depending on who you ask, either 'above it' or 'exactly the kind of person who takes a lizard home from a holiday party.' Both are true. The iguana is adjusting.",
+      "spice": {
+        "1": { "text": "You left with the iguana. You missed the confrontation. You have no regrets. The iguana is thriving. You named him something sensible." },
+        "3": { "text": "You left with the iguana named what Georgie named it. You missed the hallway confrontation. You missed Dallas calling someone crazy. You missed nothing — the production assistants texted you everything. The iguana is thriving. Season 6 is confirmed." }
+      }
+    },
+    {
+      "if": { "flags": ["wine_defended"], "stats": { "brand": ">=30000" } },
+      "title": "THE BUSINESSWOMAN",
+      "text": "Roxy's wine brand is intact. Your brand is elevated. The word 'livelihood' was used nine times tonight and you used it three of them. The network wants to know if you have a product. You are considering a toaster oven.",
+      "spice": {
+        "1": { "text": "Everyone respected your business instincts. The network was impressed. You're being promoted from 'friend of' to full housewife with a tagline." }
+      }
+    },
+    {
+      "if": { "stats": { "drama": ">=60", "alliances": ">=3" } },
+      "title": "MOST POPULAR HOUSEWIFE",
+      "text": "You came in with no allies and left with half the table. Everyone told you something they didn't tell anyone else. You didn't necessarily use any of it, but you could. The editors give you a lot of confessional time. The network says 'we can work with this.'",
+      "spice": {
+        "3": { "text": "You have all the information and nobody knows you have all the information. This is the most powerful position in a reality television ensemble cast. You are going to be fine. Everyone else might not be." }
+      }
+    },
+    {
+      "if": { "stats": { "drama": ">=50" } },
+      "title": "RENEWED FOR ANOTHER SEASON",
+      "text": "You were there for all of it. Some of it was your fault. The network is pleased. Georgie has asked for your number via three separate ladies. The iguana question was never fully resolved. The St. Barths trip is happening.",
+      "spice": {
+        "3": { "text": "You were there. Some of it was your fault. The confessionals were strong. Georgie sent flowers with a note that just said 'Florida.' Season 6 confirmed. St. Barths in four episodes." }
+      }
+    },
+    {
+      "title": "FRIEND OF THE SHOW",
+      "text": "You ate the M&Ms. You watched the confrontation from a safe distance with your champagne. The iguana is someone else's problem. Dallas and Roxy are still arguing. You are described in the press as 'a calming presence,' which is television for 'not enough drama.' Your invitation to St. Barths is pending.",
+      "spice": {
+        "1": { "text": "A calming presence. A solid evening. The M&Ms were excellent. The iguana went to Carla." },
+        "3": { "text": "You ate M&Ms and watched chaos from a safe distance like a nature documentary. 'Friend of the show.' That's not nothing. That's a step. St. Barths will tell us more." }
+      }
+    }
+  ]
+}

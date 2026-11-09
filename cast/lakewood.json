@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/cast.schema.json",
+  "version": 1,
+  "id": "lakewood",
+  "name": "The Housewives of Lake Sparkle (Season 5)",
+  "characters": {
+    "MIMOSA RAINES": {
+      "look": { "style": "big", "hair": "#f2d880", "skin": "#f5dcbc", "outfit": "#d4a040", "lips": "#c05070", "accent": "#ffd54a" },
+      "voice": "Old money turned scrappy entrepreneur. Streams of consciousness. Chronically late, always mid-vision, somehow charming. Has a countertop appliance brand and feelings about creative direction.",
+      "secret": "She arrived ninety minutes late to her own photoshoot and blames the tampon industry.",
+      "spice": 2
+    },
+    "DALLAS THORP": {
+      "look": { "style": "bob", "hair": "#3a1a08", "skin": "#c08048", "outfit": "#1fb5a6", "lips": "#c05040", "accent": "#ff6fb1" },
+      "voice": "Fitness brand CEO. Says 'babe' and 'holla' as punctuation. Organized, well-intentioned, steamrolls without noticing. Would describe herself as 'the professional one.'",
+      "secret": "She's been saying 'holla' unironically since 2007 and no one has stopped her.",
+      "spice": 2
+    },
+    "ROXY LARUE": {
+      "look": { "style": "big", "hair": "#e0cc60", "skin": "#f5d0a0", "outfit": "#e02870", "lips": "#c01848", "accent": "#ffd54a" },
+      "voice": "Wine entrepreneur. Paranoid about her brand. Says what she thinks immediately and at volume. Never underestimates a woman born in New York City, particularly herself.",
+      "secret": "She has tasted her own wine blind and rated it a 7. She will never admit this.",
+      "spice": 3
+    },
+    "CELESTE DE VILLIERS": {
+      "look": { "style": "long", "hair": "#2a1510", "skin": "#d8b070", "outfit": "#2838a0", "lips": "#a06850", "accent": "#ffffff" },
+      "voice": "Former model, possible minor nobility, definitely a Countess by her own accounting. Sophisticated, slightly condescending, plays the piano by proxy via her boyfriend Marceau.",
+      "secret": "She covered Roxy's wine at the tasting partly to protect her and partly because she couldn't resist the experiment.",
+      "spice": 1
+    },
+    "CARLA RADMORE": {
+      "look": { "style": "bob", "hair": "#1a1020", "skin": "#f0d4c8", "outfit": "#1a1020", "lips": "#b08880", "accent": "#5ee6d6" },
+      "voice": "Writer. Chic minimalism. Single by design. Orders food for four and receives one salad. Considers personalized M&Ms a full hosting statement.",
+      "secret": "She just finished her manuscript and doesn't know what to do with herself.",
+      "spice": 2
+    },
+    "AVIGAIL CHASE": {
+      "look": { "style": "long", "hair": "#e8d890", "skin": "#f5dcc8", "outfit": "#a02050", "lips": "#c07090", "accent": "#ff6fb1" },
+      "voice": "Anxiety about travel, small planes, boats, and airports. Very much in love with husband Reid. Knows her fears are irrational. This knowledge does not help.",
+      "secret": "She went to Vassar. She survived Vassar. She cannot survive a small propeller plane and she doesn't know why.",
+      "spice": 1
+    },
+    "GEORGIE CHASE": {
+      "look": { "style": "slick", "hair": "#c8c8d0", "skin": "#e0c098", "outfit": "#2a2838", "lips": "#906860", "accent": "#ffd54a" },
+      "voice": "Avigail's father. Seventy-three. Still has it. Would like you to know he still has it. Tells you in the first thirty seconds. Gets seated next to whoever the production team finds most interesting.",
+      "secret": "He brought the iguana himself. He named it immediately.",
+      "spice": 3
+    }
+  }
+}

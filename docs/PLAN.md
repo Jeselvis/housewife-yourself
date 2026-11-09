@@ -80,9 +80,9 @@ Phone (PWA)                        Serverless function              LLM API
 
 ## 10. Build phases
 
-1. **Phase 0 (done):** this repo's specs, schemas, validator, engine, portrait layers, two adventures, tests.
-2. **Phase 1:** playable scripted app on your phone. Mobile-first UI from the mockup; portrait component; spice and episode switchers; ending screen with recap; save and resume. No API key.
-3. **Phase 2:** LLM endpoint and `generate` beats, with validation, sanitizing, retry, fallback, rate limit.
+1. **Phase 0 (done):** specs, schemas, validator, engine, portrait layers, two adventures, tests.
+2. **Phase 1 (done):** playable scripted app on your phone. Mobile-first UI from the mockup; portrait component; spice and episode switchers (spice level persisted to `localStorage` as `lsa_spice` so it survives reloads); ending screen with recap; save and resume; global flags seeded from `lsa_global_flags` in `localStorage` and written back after each `choose()` call. No API key.
+3. **Phase 2 (done):** LLM endpoint at `functions/api/scene.mjs`; Magica + Gemini providers; prompt builder; validate + sanitize + retry once + fallback; "crazy choice" rule in system prompt; rate limit and daily cap. `?scripted=1` mode available.
 4. **Phase 3:** memory and callbacks tuned in the prompt; recent-beats list; an eval script.
 5. **Phase 4:** PWA install and offline, shareable recap card, more adventures and casts.
 

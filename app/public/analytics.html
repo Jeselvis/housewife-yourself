@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lake Sparkle · LLM Eval Analytics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #170a21;
+      --panel: #24112f;
+      --pink: #ff6fb1;
+      --gold: #ffd54a;
+      --teal: #5ee6d6;
+      --green: #7dff9b;
+      --cream: #f6ead8;
+      --lav: #c9b3d6;
+      --dim: #3a1a4d;
+      --red: #ff5555;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 1px, transparent 4px);
+      color: var(--cream);
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+    h1 { font-family: 'Press Start 2P', monospace; font-size: 13px; color: var(--gold); margin-bottom: 4px; }
+    h2 { font-family: 'Press Start 2P', monospace; font-size: 10px; color: var(--pink); margin: 24px 0 12px; }
+    .subtitle { color: var(--lav); font-size: 16px; margin-bottom: 24px; }
+    .error { color: var(--red); border: 2px solid var(--red); padding: 12px; margin-bottom: 24px; }
+
+    /* summary cards */
+    .cards { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+    .card {
+      background: var(--panel);
+      border: 3px solid var(--gold);
+      padding: 12px 16px;
+      min-width: 140px;
+      flex: 1;
+    }
+    .card-label { font-size: 13px; color: var(--lav); display: block; margin-bottom: 4px; }
+    .card-value { font-family: 'Press Start 2P', monospace; font-size: 16px; }
+    .card-value.good { color: var(--green); }
+    .card-value.warn { color: var(--gold); }
+    .card-value.bad  { color: var(--red); }
+
+    /* controls */
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; align-items: center; }
+    select, button {
+      background: var(--panel);
+      color: var(--cream);
+      border: 2px solid var(--gold);
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      padding: 4px 10px;
+      cursor: pointer;
+    }
+    select:focus, button:focus { outline: 2px solid var(--pink); }
+    button:hover { background: var(--dim); }
+    label { color: var(--lav); font-size: 16px; }
+
+    /* histogram */
+    .histogram { display: flex; align-items: flex-end; gap: 3px; height: 80px; margin-bottom: 24px; }
+    .bar-wrap { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; }
+    .bar { width: 100%; background: var(--teal); min-height: 2px; transition: height .2s; }
+    .bar-label { font-size: 11px; color: var(--lav); margin-top: 2px; white-space: nowrap; }
+
+    /* table */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 16px; }
+    thead { background: var(--dim); }
+    th { font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--gold); padding: 8px 6px; text-align: left; white-space: nowrap; }
+    td { padding: 6px 6px; border-bottom: 1px solid var(--dim); vertical-align: top; }
+    tr:hover td { background: rgba(255,255,255,.04); }
+    .pill {
+      display: inline-block; padding: 1px 7px; font-size: 14px;
+      border-radius: 2px; white-space: nowrap;
+    }
+    .pill.success { background: rgba(125,255,155,.15); color: var(--green); border: 1px solid var(--green); }
+    .pill.fallback { background: rgba(255,85,85,.15); color: var(--red); border: 1px solid var(--red); }
+    .pill.error { background: rgba(255,85,85,.15); color: var(--red); border: 1px solid var(--red); }
+    .scene-preview { max-width: 320px; color: var(--lav); cursor: pointer; }
+    .scene-preview summary { color: var(--teal); list-style: none; }
+    .scene-preview summary::before { content: '▶ '; }
+    details[open] summary::before { content: '▼ '; }
+    .scene-line { margin: 4px 0; }
+    .scene-choices { margin-top: 4px; }
+    .scene-choices li { color: var(--cream); margin-left: 12px; }
+    .latency { color: var(--lav); }
+    .latency.slow { color: var(--gold); }
+    .latency.very-slow { color: var(--red); }
+    .ts { font-size: 13px; color: var(--dim); }
+    .empty { text-align: center; color: var(--lav); padding: 48px; }
+
+    /* summary history */
+    .history { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+    .hist-item {
+      background: var(--panel); border: 2px solid var(--dim);
+      padding: 8px 12px; font-size: 14px; min-width: 160px;
+    }
+    .hist-item .hi-rate { font-family: 'Press Start 2P', monospace; font-size: 12px; color: var(--green); }
+    .hist-item .hi-rate.warn { color: var(--gold); }
+    .hist-item .hi-rate.bad { color: var(--red); }
+    .hist-item .hi-meta { color: var(--lav); font-size: 13px; margin-top: 2px; }
+  </style>
+</head>
+<body>
+  <h1>LAKE SPARKLE · LLM EVAL</h1>
+  <p class="subtitle">Run <code>EVAL_ENDPOINT=https://your-site.pages.dev EVAL_TOKEN=xxx node scripts/eval.mjs</code> to populate.</p>
+
+  <div id="error-box" class="error" style="display:none"></div>
+  <div id="no-data" class="empty" style="display:none">No eval-results.json yet. Run the eval script first.</div>
+
+  <div id="app" style="display:none">
+    <h2>LATEST RUN</h2>
+    <div id="cards" class="cards"></div>
+
+    <h2>LATENCY DISTRIBUTION</h2>
+    <div id="histogram" class="histogram"></div>
+
+    <h2>PAST SUMMARIES</h2>
+    <div id="history" class="history"></div>
+
+    <h2>INDIVIDUAL RUNS</h2>
+    <div class="controls">
+      <label>Adventure <select id="filter-adv"><option value="">All</option></select></label>
+      <label>Outcome <select id="filter-outcome"><option value="">All</option><option value="success">Success</option><option value="fallback">Fallback</option><option value="error">Error</option></select></label>
+      <label>Spice <select id="filter-spice"><option value="">All</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>
+      <button id="clear-btn">CLEAR ALL</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fixture</th><th>Adv</th><th>Spice</th><th>Beat</th><th>Outcome</th>
+            <th>Latency</th><th>Provider / Model</th><th>Scene</th><th>Time</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+const SLOW = 3000, VERY_SLOW = 6000;
+
+function latencyClass(ms) {
+  return ms > VERY_SLOW ? 'very-slow' : ms > SLOW ? 'slow' : '';
+}
+
+function pct(n, total) { return total ? Math.round(n / total * 100) : 0; }
+
+function summaryCard(label, value, cls = '') {
+  return `<div class="card"><span class="card-label">${label}</span><span class="card-value ${cls}">${value}</span></div>`;
+}
+
+function renderHistogram(runs) {
+  const bucketMs = 500;
+  const max = Math.max(...runs.map(r => r.latencyMs), 1);
+  const buckets = Math.ceil(max / bucketMs) + 1;
+  const counts = new Array(buckets).fill(0);
+  runs.forEach(r => counts[Math.floor(r.latencyMs / bucketMs)]++);
+  const peak = Math.max(...counts, 1);
+  return counts.map((c, i) => {
+    const h = Math.round(c / peak * 72);
+    return `<div class="bar-wrap"><div class="bar" style="height:${h}px" title="${c} runs"></div><span class="bar-label">${i * bucketMs / 1000}s</span></div>`;
+  }).join('');
+}
+
+function renderScene(scene) {
+  if (!scene) return '—';
+  const choices = (scene.choices ?? []).map(c => `<li>${esc(c.text)}</li>`).join('');
+  return `<details class="scene-preview"><summary>${esc(scene.speaker || '?')}</summary>
+    <div class="scene-line" style="color:var(--cream)">"${esc(scene.line || '')}"</div>
+    ${scene.confessional ? `<div class="scene-line"><em>${esc(scene.confessional)}</em></div>` : ''}
+    <ul class="scene-choices">${choices}</ul>
+  </details>`;
+}
+
+function esc(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function renderRow(r) {
+  const latCls = latencyClass(r.latencyMs);
+  const ts = r.timestamp ? new Date(r.timestamp).toLocaleString() : '';
+  return `<tr>
+    <td>${esc(r.fixture)}</td>
+    <td>${esc(r.adventureId)}</td>
+    <td>${r.spice}</td>
+    <td>${r.beat}</td>
+    <td><span class="pill ${r.outcome}">${r.outcome}</span>${r.error ? `<br><span style="color:var(--red);font-size:13px">${esc(r.error.slice(0,80))}</span>` : ''}</td>
+    <td><span class="latency ${latCls}">${r.latencyMs}ms</span></td>
+    <td style="font-size:14px">${esc(r.provider)}<br><span style="color:var(--lav)">${esc(r.model)}</span></td>
+    <td>${renderScene(r.scene)}</td>
+    <td class="ts">${esc(ts)}</td>
+  </tr>`;
+}
+
+function renderSummaryHistory(summaries) {
+  return summaries.slice().reverse().slice(0, 10).map(s => {
+    const rateCls = s.successRate >= 0.9 ? '' : s.successRate >= 0.7 ? 'warn' : 'bad';
+    return `<div class="hist-item">
+      <div class="hi-rate ${rateCls}">${Math.round(s.successRate * 100)}% ok</div>
+      <div class="hi-meta">${s.total} runs · ${s.avgLatencyMs}ms avg</div>
+      <div class="hi-meta">${esc(s.provider)} / ${esc(s.model)}</div>
+      <div class="hi-meta">${new Date(s.generatedAt).toLocaleString()}</div>
+    </div>`;
+  }).join('');
+}
+
+async function load() {
+  let data;
+  try {
+    const res = await fetch('/api/eval-results?_=' + Date.now());
+    if (res.status === 404 || res.status === 503) { document.getElementById('no-data').style.display = ''; return; }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    data = await res.json();
+  } catch (e) {
+    document.getElementById('error-box').textContent = 'Could not load eval-results.json: ' + e.message;
+    document.getElementById('error-box').style.display = '';
+    return;
+  }
+
+  const { runs = [], summaries = [] } = data;
+  if (!runs.length) { document.getElementById('no-data').style.display = ''; return; }
+
+  document.getElementById('app').style.display = '';
+
+  // populate adventure filter
+  const advs = [...new Set(runs.map(r => r.adventureId))].sort();
+  const sel = document.getElementById('filter-adv');
+  advs.forEach(a => { const o = document.createElement('option'); o.value = a; o.textContent = a; sel.appendChild(o); });
+
+  // summary from latest batch (last N runs where N = most recent summary total)
+  const latestN = summaries.length ? summaries[summaries.length - 1].total : runs.length;
+  const latest  = runs.slice(-latestN);
+  const lSucc   = latest.filter(r => r.outcome === 'success').length;
+  const lFall   = latest.filter(r => r.outcome !== 'success').length;
+  const lats    = latest.map(r => r.latencyMs).sort((a,b) => a-b);
+  const avg     = Math.round(lats.reduce((a,b) => a+b,0) / lats.length);
+  const p95     = lats[Math.ceil(lats.length * 0.95) - 1] ?? 0;
+
+  const succRate = pct(lSucc, latest.length);
+  document.getElementById('cards').innerHTML = [
+    summaryCard('SUCCESS RATE', `${succRate}%`, succRate >= 90 ? 'good' : succRate >= 70 ? 'warn' : 'bad'),
+    summaryCard('FALLBACKS', `${lFall}`, lFall === 0 ? 'good' : lFall < 3 ? 'warn' : 'bad'),
+    summaryCard('AVG LATENCY', `${avg}ms`, avg < 2000 ? 'good' : avg < 4000 ? 'warn' : 'bad'),
+    summaryCard('P95 LATENCY', `${p95}ms`, p95 < 4000 ? 'good' : p95 < 7000 ? 'warn' : 'bad'),
+    summaryCard('TOTAL RUNS', String(runs.length), ''),
+  ].join('');
+
+  document.getElementById('histogram').innerHTML = renderHistogram(latest);
+  document.getElementById('history').innerHTML = renderSummaryHistory(summaries);
+
+  function renderTable() {
+    const advFilter     = document.getElementById('filter-adv').value;
+    const outcomeFilter = document.getElementById('filter-outcome').value;
+    const spiceFilter   = document.getElementById('filter-spice').value;
+    const filtered = runs.slice().reverse().filter(r =>
+      (!advFilter     || r.adventureId === advFilter) &&
+      (!outcomeFilter || r.outcome === outcomeFilter) &&
+      (!spiceFilter   || String(r.spice) === spiceFilter)
+    );
+    document.getElementById('tbody').innerHTML = filtered.length
+      ? filtered.map(renderRow).join('')
+      : `<tr><td colspan="9" class="empty">No runs match the filter.</td></tr>`;
+  }
+
+  ['filter-adv','filter-outcome','filter-spice'].forEach(id =>
+    document.getElementById(id).addEventListener('change', renderTable));
+
+  document.getElementById('clear-btn').addEventListener('click', async () => {
+    if (!confirm('Delete all eval results?')) return;
+    await fetch('/eval-results.json', { method: 'DELETE' }).catch(() => {});
+    window.location.reload();
+  });
+
+  renderTable();
+}
+
+load();
+</script>
+</body>
+</html>

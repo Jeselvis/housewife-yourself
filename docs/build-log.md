@@ -1,5 +1,24 @@
 # Build Log
 
+## 2026-11-09 — Cross-adventure global flags
+
+**What:** A lightweight persistent flag system letting any adventure read or write a small shared set of flags stored separately from per-episode state (`state.globalFlags`, seeded and persisted to `localStorage` by the app layer).
+
+**Why:** Players who replay episodes or play multiple adventures should see the world react to their history. If you took the iguana in EP 11, Magdalena should know at the wedding. If you flipped a table in the Wedding Special, Georgie Chase should recognise you at the holiday party.
+
+**Order-independence:** Global flags only gate bonus variants and optional choices. Every scene always has at least 3 ungated choices — game is fully playable without any global flags set. Play adventures in any order; replay old ones to earn callbacks.
+
+**Current flags:**
+
+| Flag | Set by | Read by | Trigger |
+|---|---|---|---|
+| `iguana_keeper` | toast (EP 11) | passions (Wedding Special) | Take the iguana at Secret Santa |
+| `wine_ally` | toast (EP 11) | passions (Wedding Special) | Defend Roxy's brand at Janna's party |
+| `said_it_before` | toast or passions | both | Say what you said, on camera |
+| `chaos_agent` | passions (Wedding Special) | toast (EP 11) | Flip the buffet table |
+
+**Files changed:** `globals.json` (new), `schema/globals.schema.json` (new), `schema/adventure.schema.json`, `src/engine/conditions.js`, `src/engine/engine.js`, `src/validate/validate.js`, `scripts/validate-adventures.mjs`, `testkit/helpers.mjs`, `adventures/toast.json`, `adventures/passions.json`
+
 ## 2026-11-07 — Replaced Ajv with inline validator in Worker
 
 **What changed:** `functions/api/scene.mjs` no longer imports `ajv` or `src/validate/validate.js`. Schema validation is now a simple inline function checking property existence and allowlists.

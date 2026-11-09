@@ -23,7 +23,7 @@ const SCENE_DEFAULTS = {
   choices: [],
 };
 
-export function createState(adventure, { spice = 2 } = {}) {
+export function createState(adventure, { spice = 2, globalFlags = [] } = {}) {
   const stats = {};
   for (const [key, def] of Object.entries(adventure.stats)) stats[key] = def.start;
   const state = {
@@ -31,8 +31,9 @@ export function createState(adventure, { spice = 2 } = {}) {
     sceneId: 'start',
     spice,
     stats,
-    flags: [],     // ordered, so the recap reads in story order
-    inventory: [], // items currently held
+    flags:       [],               // ordered, so the recap reads in story order
+    globalFlags: [...globalFlags], // persistent across episodes; seeded from localStorage by the app
+    inventory:   [],               // items currently held
     memory: [],    // short facts the cast remembers; fed to the LLM
     history: [],   // [{ sceneId, choice, text }]
     beat: 0,
@@ -125,9 +126,10 @@ export function choose(adventure, state, choiceIndex) {
 
   let next = {
     ...state,
-    stats:     applyDelta(adventure, state.stats, choice.delta),
-    flags:     addFlags(state.flags, choice.set),
-    inventory: updateInventory(state.inventory ?? [], choice.give, choice.consume),
+    stats:       applyDelta(adventure, state.stats, choice.delta),
+    flags:       addFlags(state.flags, choice.set),
+    globalFlags: addFlags(state.globalFlags ?? [], choice.setGlobal),
+    inventory:   updateInventory(state.inventory ?? [], choice.give, choice.consume),
     history:   [...state.history, { sceneId: state.sceneId, choice: choiceIndex, text: choice.text }],
     beat:      state.beat + 1,
     act:       state.act ?? 0,

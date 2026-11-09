@@ -7,10 +7,11 @@ import { renderPortraitSVG, renderGestureSVG, renderMouthOpenSVG } from '../../s
 import layers from '../../src/portrait/layers.json'
 import lakeSparkleCast from '../../cast/lake-sparkle.json'
 import briarwoodCast from '../../cast/briarwood.json'
+import lakewoodCast from '../../cast/lakewood.json'
 
 const _adventureMods = import.meta.glob('../../adventures/*.json', { eager: true })
 const ADVENTURES = Object.values(_adventureMods).map(m => m.default)
-const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast }
+const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast, lakewood: lakewoodCast }
 const SAVE_KEY = 'lsa'
 
 const C = {

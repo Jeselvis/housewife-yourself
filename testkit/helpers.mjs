@@ -10,12 +10,14 @@ export const goat = () => load('adventures/archived/goat.json');
 export const reunion = () => load('adventures/archived/reunion.json');
 export const cast = () => load('cast/lake-sparkle.json');
 export const layers = () => load('src/portrait/layers.json');
+export const globals = () => load('globals.json');
 
-export const validator = () =>
+export const validator = ({ withGlobals = false } = {}) =>
   createValidator({
     adventureSchema: load('schema/adventure.schema.json'),
     castSchema: load('schema/cast.schema.json'),
     generatedSceneSchema: load('schema/generated-scene.schema.json'),
+    globalsData: withGlobals ? globals() : null,
   });
 
 /** Play a list of visible-choice indices from the start; returns the last result. */

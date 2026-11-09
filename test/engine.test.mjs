@@ -138,6 +138,30 @@ test('full run: wine on Bunny, cake duel, top ending with recap', async () => {
   assert.throws(() => engine.choose(adv, r.state, 0), /already ended/);
 });
 
+// --- Global flags -----------------------------------------------------------
+
+test('createState seeds globalFlags from option; choose applies setGlobal', () => {
+  const adv = goat();
+  adv.globalFlags = ['iguana_keeper', 'chaos_agent'];
+  adv.scenes.start.choices[0].setGlobal = ['chaos_agent'];
+  const s0 = engine.createState(adv, { globalFlags: ['iguana_keeper'] });
+  assert.deepEqual(s0.globalFlags, ['iguana_keeper']);
+  const { state: s1 } = engine.choose(adv, s0, 0);
+  assert.deepEqual(s1.globalFlags, ['iguana_keeper', 'chaos_agent']);
+  // idempotent: setting an already-set global flag does not duplicate it
+  const { state: s2 } = engine.choose(adv, s1, 0);
+  assert.equal(s2.globalFlags.filter((f) => f === 'chaos_agent').length, 1);
+});
+
+test('globalFlags and notGlobalFlags conditions are evaluated correctly', () => {
+  const s = { flags: [], globalFlags: ['iguana_keeper'], stats: {}, inventory: [] };
+  assert.equal(engine.evalCondition({ globalFlags: ['iguana_keeper'] }, s), true);
+  assert.equal(engine.evalCondition({ globalFlags: ['chaos_agent'] }, s), false);
+  assert.equal(engine.evalCondition({ notGlobalFlags: ['chaos_agent'] }, s), true);
+  assert.equal(engine.evalCondition({ notGlobalFlags: ['iguana_keeper'] }, s), false);
+  assert.equal(engine.evalCondition({ globalFlags: ['iguana_keeper'], notGlobalFlags: ['chaos_agent'] }, s), true);
+});
+
 test('endings change with spice level', async () => {
   const adv = goat();
   const path = [0, 0, 1, 0, 0];

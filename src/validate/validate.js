@@ -6,7 +6,7 @@
 import Ajv from 'ajv';
 import { normalizeCondition } from '../engine/conditions.js';
 
-export function createValidator({ adventureSchema, castSchema, generatedSceneSchema }) {
+export function createValidator({ adventureSchema, castSchema, generatedSceneSchema, globalsData = null }) {
   // strictRequired/strictTypes off: bare "required" (no sibling "properties"/"type") is how the
   // schemas say "scenes must contain start" and express the allOf "required" overlays.
   // Unknown keywords still fail (strict: true).
@@ -32,7 +32,7 @@ export function createValidator({ adventureSchema, castSchema, generatedSceneSch
     if (!schemaAdventure(adv)) {
       return { errors: fmt(schemaAdventure.errors), warnings };
     }
-    semanticChecks(adv, cast, errors, warnings);
+    semanticChecks(adv, cast, errors, warnings, globalsData);
     return { errors, warnings };
   }
 
@@ -75,11 +75,13 @@ export function sanitizeGeneratedScene(scene, adv) {
 function condFlags(cond) {
   const c = normalizeCondition(cond);
   return {
-    positive: c.flags ?? [],
-    negative: c.notFlags ?? [],
-    stats:    Object.keys(c.stats ?? {}),
-    hasItems: c.hasItems ?? [],
-    notItems: c.notItems ?? [],
+    positive:         c.flags ?? [],
+    negative:         c.notFlags ?? [],
+    stats:            Object.keys(c.stats ?? {}),
+    hasItems:         c.hasItems ?? [],
+    notItems:         c.notItems ?? [],
+    globalPositive:   c.globalFlags ?? [],
+    globalNegative:   c.notGlobalFlags ?? [],
   };
 }
 
@@ -87,12 +89,17 @@ function targetsOf(next) {
   return typeof next === 'string' ? [next] : next.map((r) => r.go);
 }
 
-function semanticChecks(adv, cast, errors, warnings) {
+function semanticChecks(adv, cast, errors, warnings, globalsData) {
   const sceneIds = new Set(Object.keys(adv.scenes));
   const flagDefs = adv.flags ?? {};
   const itemDefs = adv.items ?? {};
   const statKeys  = new Set(Object.keys(adv.stats));
   const itemKeys  = new Set(Object.keys(itemDefs));
+  const globalFlagDefs = globalsData?.flags ?? {};
+  const advGlobalFlags = new Set(adv.globalFlags ?? []);
+  for (const f of advGlobalFlags) {
+    if (globalsData && !globalFlagDefs[f]) errors.push(`globalFlags: "${f}" is not in globals.json`);
+  }
   const flagsSet     = new Set();
   const flagsRead    = new Set(); // positive reads
   const flagsReadNeg = new Set();
@@ -108,7 +115,7 @@ function semanticChecks(adv, cast, errors, warnings) {
   if (sceneIds.has('generate')) errors.push('scene id "generate" is reserved');
 
   const checkCondition = (cond, where) => {
-    const { positive, negative, stats, hasItems, notItems } = condFlags(cond);
+    const { positive, negative, stats, hasItems, notItems, globalPositive, globalNegative } = condFlags(cond);
     for (const f of positive) {
       flagsRead.add(f);
       if (!flagDefs[f]) errors.push(`${where}: flag "${f}" is not declared in "flags"`);
@@ -121,6 +128,10 @@ function semanticChecks(adv, cast, errors, warnings) {
     for (const item of [...hasItems, ...notItems]) {
       itemsRead.add(item);
       if (!itemKeys.has(item)) errors.push(`${where}: item "${item}" is not declared in "items"`);
+    }
+    for (const f of [...globalPositive, ...globalNegative]) {
+      if (!advGlobalFlags.has(f)) errors.push(`${where}: globalFlag "${f}" is not in the adventure's "globalFlags" declaration`);
+      if (globalsData && !globalFlagDefs[f]) errors.push(`${where}: globalFlag "${f}" is not in globals.json`);
     }
   };
 
@@ -141,6 +152,10 @@ function semanticChecks(adv, cast, errors, warnings) {
       for (const f of c.set ?? []) {
         flagsSet.add(f);
         if (!flagDefs[f]) errors.push(`${at}: sets undeclared flag "${f}"`);
+      }
+      for (const f of c.setGlobal ?? []) {
+        if (!advGlobalFlags.has(f)) errors.push(`${at}: setGlobal "${f}" is not in the adventure's "globalFlags" declaration`);
+        if (globalsData && !globalFlagDefs[f]) errors.push(`${at}: setGlobal "${f}" is not in globals.json`);
       }
       for (const item of c.give ?? []) {
         itemsGiven.add(item);

@@ -44,6 +44,12 @@
       "minItems": 1,
       "items": { "$ref": "#/definitions/act" },
       "description": "Ordered story acts. All must complete before endings unlock. END is blocked while any act is incomplete."
+    },
+    "globalFlags": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/definitions/flagName" },
+      "description": "Global flags this adventure may read (globalFlags/notGlobalFlags conditions) or write (setGlobal). Every entry must be declared in globals.json."
     }
   },
   "definitions": {
@@ -97,8 +103,10 @@
           "additionalProperties": false,
           "minProperties": 1,
           "properties": {
-            "flags":    { "type": "array", "items": { "$ref": "#/definitions/flagName" } },
-            "notFlags": { "type": "array", "items": { "$ref": "#/definitions/flagName" } },
+            "flags":         { "type": "array", "items": { "$ref": "#/definitions/flagName" } },
+            "notFlags":      { "type": "array", "items": { "$ref": "#/definitions/flagName" } },
+            "globalFlags":    { "type": "array", "items": { "$ref": "#/definitions/flagName" } },
+            "notGlobalFlags": { "type": "array", "items": { "$ref": "#/definitions/flagName" } },
             "stats": {
               "type": "object",
               "additionalProperties": { "type": "string", "pattern": "^(>=|<=|==|!=|>|<)\\s*-?\\d+(\\.\\d+)?$" }
@@ -132,7 +140,8 @@
         "text": { "type": "string", "minLength": 1, "maxLength": 160 },
         "next": { "$ref": "#/definitions/next" },
         "delta": { "$ref": "#/definitions/delta" },
-        "set":     { "type": "array", "uniqueItems": true, "items": { "$ref": "#/definitions/flagName" } },
+        "set":       { "type": "array", "uniqueItems": true, "items": { "$ref": "#/definitions/flagName" } },
+        "setGlobal": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/definitions/flagName" }, "description": "Global flags to set when this choice is taken. Must be declared in the adventure's globalFlags and in globals.json." },
         "give":    { "type": "array", "uniqueItems": true, "items": { "$ref": "#/definitions/itemName" } },
         "consume": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/definitions/itemName" } },
         "requires": { "$ref": "#/definitions/condition" },

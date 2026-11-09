@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { sanitizeGeneratedScene } from '../src/validate/validate.js';
-import { goat, reunion, cast, validator, load } from '../testkit/helpers.mjs';
+import { goat, reunion, cast, globals, validator, load } from '../testkit/helpers.mjs';
 
 const v = validator();
+const vg = validator({ withGlobals: true });
 
 test('shipped cast and adventures validate with no errors or warnings', () => {
   assert.deepEqual(v.validateCast(cast()), []);
@@ -78,6 +79,39 @@ test('generated scenes with unknown mood, 2 choices, or a stranger speaker fail'
   assert.ok(v.validateGeneratedScene({ ...good, choices: good.choices.slice(0, 2) }, reunion(), cast()).length > 0);
   assert.ok(v.validateGeneratedScene({ ...good, speaker: 'A NEW GUY' }, reunion(), cast()).some((e) => /not in the cast/.test(e)));
   assert.ok(v.validateGeneratedScene({ ...good, choices: good.choices.map((c) => ({ ...c, next: 'dessert' })) }, reunion(), cast()).length > 0);
+});
+
+// --- Global flags -----------------------------------------------------------
+
+test('setGlobal and globalFlags conditions pass when properly declared', () => {
+  const adv = goat();
+  adv.globalFlags = ['iguana_keeper'];
+  adv.scenes.start.choices[0].setGlobal = ['iguana_keeper'];
+  adv.scenes.start.choices[1].requires = { globalFlags: ['iguana_keeper'] };
+  const { errors } = vg.validateAdventure(adv, cast());
+  assert.ok(!errors.some((e) => /iguana_keeper/.test(e)), errors.join('\n'));
+});
+
+test('setGlobal with flag not in adventure globalFlags declaration errors', () => {
+  const adv = goat();
+  adv.scenes.start.choices[0].setGlobal = ['iguana_keeper'];
+  const { errors } = vg.validateAdventure(adv, cast());
+  assert.ok(errors.some((e) => /setGlobal.*not in the adventure/.test(e)));
+});
+
+test('globalFlags condition referencing undeclared global errors', () => {
+  const adv = goat();
+  adv.globalFlags = ['iguana_keeper'];
+  adv.scenes.start.choices[1].requires = { globalFlags: ['chaos_agent'] };
+  const { errors } = vg.validateAdventure(adv, cast());
+  assert.ok(errors.some((e) => /globalFlag "chaos_agent" is not in the adventure/.test(e)));
+});
+
+test('globalFlags declaration referencing unknown globals.json entry errors', () => {
+  const adv = goat();
+  adv.globalFlags = ['made_up_flag'];
+  const { errors } = vg.validateAdventure(adv, cast());
+  assert.ok(errors.some((e) => /made_up_flag.*not in globals\.json/.test(e)));
 });
 
 test('sanitize drops unapproved flags and unknown stats, and clamps deltas to maxStep', () => {

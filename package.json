@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "description": "Retro choose-your-own-adventure reality-TV parody with an LLM-driven story engine.",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "validate": "node scripts/validate-adventures.mjs",
     "test": "node --test",
@@ -13,5 +15,8 @@
   },
   "devDependencies": {
     "ajv": "^8.17.1"
+  },
+  "dependencies": {
+    "playwright": "^1.65.0"
   }
 }

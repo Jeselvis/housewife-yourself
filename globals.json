@@ -1,0 +1,22 @@
+{
+  "$schema": "./schema/globals.schema.json",
+  "version": 1,
+  "flags": {
+    "iguana_keeper": {
+      "label": "Iguana Owner",
+      "description": "You left a holiday party with an iguana. Georgie Chase named it. You kept it anyway."
+    },
+    "said_it_before": {
+      "label": "On Record",
+      "description": "You have a reputation across Lake Sparkle for saying exactly what you mean, on camera, without walking it back."
+    },
+    "wine_ally": {
+      "label": "Roxy's Ally",
+      "description": "You went to bat for Roxy's brand when it mattered. She remembers. Word travels."
+    },
+    "chaos_agent": {
+      "label": "Known Chaos Agent",
+      "description": "You have made a scene at a Lake Sparkle event in a way that preceded you into every subsequent room."
+    }
+  }
+}
