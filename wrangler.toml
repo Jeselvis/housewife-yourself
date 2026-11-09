@@ -6,6 +6,6 @@ compatibility_date = "2026-11-06"
 directory = "./app/dist"
 
 [[kv_namespaces]]
-binding = "EVAL_STORE"
-id = ""        # fill in after: wrangler kv namespace create EVAL_STORE
-preview_id = ""
+binding    = "EVAL_STORE"
+id         = "44a79509c4d742a48eaa6688a686efbb"   # production namespace id
+preview_id = "339e19245cef41bf8c48b5364a4d3c7c"   # preview namespace id
