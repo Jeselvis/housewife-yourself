@@ -13,6 +13,7 @@ const _adventureMods = import.meta.glob('../../adventures/*.json', { eager: true
 const ADVENTURES = Object.values(_adventureMods).map(m => m.default)
 const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast, lakewood: lakewoodCast }
 const SAVE_KEY = 'lsa'
+const ADVENTURE_IMAGES = { toast: '/toast.webp', passions: '/wedding.webp' }
 
 const C = {
   bg: '#170a21',
@@ -160,6 +161,10 @@ function EpisodeSelect({ onSelect, onNewGame, spice, onSpice }) {
           const tease = adv.tone ? adv.tone.split('. ').slice(0, 2).join('. ') + '.' : ''
           return (
             <div key={adv.id} style={{ background: C.panel, border: `3px solid ${C.gold}`, padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {ADVENTURE_IMAGES[adv.id] && (
+                <img src={ADVENTURE_IMAGES[adv.id]} alt="" aria-hidden="true"
+                  style={{ display: 'block', width: 'calc(100% + 28px)', height: 180, objectFit: 'cover', objectPosition: 'top', imageRendering: 'pixelated', margin: '-16px -14px 0' }} />
+              )}
               <div style={{ fontFamily: press, fontSize: 8, color: C.pink }}>{adv.label}</div>
               <div style={{ fontSize: 18, color: C.lavender }}>{castName}</div>
               <div style={{ fontSize: 20, color: C.gold, lineHeight: 1.3 }}>{adv.episode}</div>
