@@ -11,13 +11,16 @@ const MAX_RUNS = 500;
 
 export async function onRequestGet({ env }) {
   if (!env.EVAL_STORE) {
-    return new Response(JSON.stringify({ error: 'KV not bound' }), { status: 503, headers: HEADERS_JSON });
-  }
-  const raw = await env.EVAL_STORE.get('eval');
-  if (!raw) {
     return new Response(JSON.stringify({ runs: [], summaries: [] }), { headers: HEADERS_JSON });
   }
-  return new Response(raw, { headers: HEADERS_JSON });
+  try {
+    const raw = await env.EVAL_STORE.get('eval');
+    if (!raw) return new Response(JSON.stringify({ runs: [], summaries: [] }), { headers: HEADERS_JSON });
+    return new Response(raw, { headers: HEADERS_JSON });
+  } catch (err) {
+    console.error('[eval-results] GET:', err?.message);
+    return new Response(JSON.stringify({ runs: [], summaries: [] }), { headers: HEADERS_JSON });
+  }
 }
 
 export async function onRequestPost({ request, env }) {
@@ -41,14 +44,18 @@ export async function onRequestPost({ request, env }) {
     return new Response(JSON.stringify({ error: 'runs must be a non-empty array' }), { status: 400, headers: HEADERS_JSON });
   }
 
-  // load existing
-  const raw = await env.EVAL_STORE.get('eval');
-  const existing = raw ? JSON.parse(raw) : { runs: [], summaries: [] };
+  try {
+    const raw = await env.EVAL_STORE.get('eval');
+    const existing = raw ? JSON.parse(raw) : { runs: [], summaries: [] };
 
-  existing.runs.push(...newRuns);
-  if (existing.runs.length > MAX_RUNS) existing.runs = existing.runs.slice(-MAX_RUNS);
-  if (summary) existing.summaries.push(summary);
+    existing.runs.push(...newRuns);
+    if (existing.runs.length > MAX_RUNS) existing.runs = existing.runs.slice(-MAX_RUNS);
+    if (summary) existing.summaries.push(summary);
 
-  await env.EVAL_STORE.put('eval', JSON.stringify(existing));
-  return new Response(JSON.stringify({ ok: true, total: existing.runs.length }), { headers: HEADERS_JSON });
+    await env.EVAL_STORE.put('eval', JSON.stringify(existing));
+    return new Response(JSON.stringify({ ok: true, total: existing.runs.length }), { headers: HEADERS_JSON });
+  } catch (err) {
+    console.error('[eval-results] POST:', err?.message);
+    return new Response(JSON.stringify({ error: 'KV write failed', detail: err?.message }), { status: 500, headers: HEADERS_JSON });
+  }
 }
