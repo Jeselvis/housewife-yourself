@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   createState, resolveScene, visibleChoices,
   choose, fallbackScene, provideGeneratedScene, setSpice as engineSetSpice, currentAct,
@@ -270,6 +270,7 @@ export default function App() {
   const [ending, setEnding]             = useState(null)
   const [loading, setLoading]           = useState(false)
   const [appSpice, setAppSpice]         = useState(2)
+  const fetchIdRef = useRef(0)
 
   const adventure = adventureIdx !== null ? ADVENTURES[adventureIdx] : null
 
@@ -297,15 +298,18 @@ export default function App() {
       setGameState(result.state)
     } else if (result.status === 'generate') {
       setLoading(true)
+      const fetchId = ++fetchIdRef.current
       try {
         const generatedScene = await fetchScene(adventure, gameState, lastScene, result.choice, result.state)
+        if (fetchId !== fetchIdRef.current) return
         const scene = generatedScene ?? fallbackScene(result.state)
         setGameState(provideGeneratedScene(adventure, result.state, scene))
       } catch {
+        if (fetchId !== fetchIdRef.current) return
         const fb = fallbackScene(result.state)
         setGameState(provideGeneratedScene(adventure, result.state, fb))
       } finally {
-        setLoading(false)
+        if (fetchId === fetchIdRef.current) setLoading(false)
       }
     } else if (result.status === 'end') {
       setGameState(result.state)
@@ -314,9 +318,15 @@ export default function App() {
     }
   }, [adventure, gameState, loading])
 
-  const handleGoToSelect = useCallback(() => setAdventureIdx(null), [])
+  const handleGoToSelect = useCallback(() => {
+    fetchIdRef.current++
+    setLoading(false)
+    setAdventureIdx(null)
+  }, [])
 
   const handleSelectAdventure = useCallback((idx) => {
+    fetchIdRef.current++
+    setLoading(false)
     setAdventureIdx(idx)
     setEnding(null)
   }, [])
