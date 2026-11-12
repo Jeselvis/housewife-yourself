@@ -11,6 +11,16 @@ function authorized(request, env) {
   } catch { return false }
 }
 
+function getUsername(request) {
+  const header = request.headers.get('Authorization') ?? ''
+  const [scheme, encoded] = header.split(' ')
+  if (scheme !== 'Basic' || !encoded) return null
+  try {
+    const [user] = atob(encoded).split(':')
+    return user || null
+  } catch { return null }
+}
+
 export default {
   async fetch(request, env) {
     if (!authorized(request, env)) {
@@ -21,6 +31,17 @@ export default {
     }
 
     const url = new URL(request.url)
+
+    if (url.pathname === '/api/ping') {
+      const player = getUsername(request)
+      if (player && env.EVAL_STORE) {
+        env.EVAL_STORE.put(`player:${player}`, JSON.stringify({ lastSeen: Date.now() })).catch(() => {})
+      }
+      return new Response(JSON.stringify({ ok: true, player: player ?? 'anonymous' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
 
     if (url.pathname === '/api/scene') {
       if (request.method !== 'POST') {

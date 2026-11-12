@@ -13,6 +13,7 @@ const _adventureMods = import.meta.glob('../../adventures/*.json', { eager: true
 const ADVENTURES = Object.values(_adventureMods).map(m => m.default)
 const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast, lakewood: lakewoodCast }
 const SAVE_KEY = 'lsa'
+const AUTH_KEY  = 'lsa-auth'
 const ADVENTURE_IMAGES = { toast: '/toast.webp', passions: '/wedding.webp' }
 
 const C = {
@@ -32,6 +33,59 @@ const press = "'Press Start 2P', monospace"
 const vt = "'VT323', monospace"
 
 // ── sub-components ───────────────────────────────────────────────────────────
+
+function LoginModal({ onSuccess }) {
+  const [name, setName]         = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError]       = useState(null)
+  const [busy, setBusy]         = useState(false)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!name.trim()) return
+    setBusy(true)
+    setError(null)
+    const authHeader = 'Basic ' + btoa(`${name.trim()}:${password}`)
+    try {
+      const res = await fetch('/api/ping', { headers: { Authorization: authHeader } })
+      if (res.ok) {
+        onSuccess({ name: name.trim(), authHeader })
+      } else {
+        setError('Wrong password, darling.')
+      }
+    } catch {
+      setError('Network error. Try again.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(23,10,33,.88)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '0 16px' }}>
+      <div style={{ background: C.panel, border: `3px solid ${C.gold}`, padding: '24px 20px', width: '100%', maxWidth: 380, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ fontFamily: press, fontSize: 10, color: C.gold, lineHeight: 1.8 }}>WHO ARE YOU?</div>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <input
+            value={name} onChange={e => setName(e.target.value)}
+            placeholder="Your housewife name"
+            autoFocus
+            style={{ background: C.dim, border: `2px solid ${C.pink}`, color: C.cream, fontFamily: vt, fontSize: 22, padding: '10px 12px', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+          />
+          <input
+            type="password" value={password} onChange={e => setPassword(e.target.value)}
+            placeholder="Password"
+            style={{ background: C.dim, border: `2px solid ${C.lavender}`, color: C.cream, fontFamily: vt, fontSize: 22, padding: '10px 12px', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+          />
+          {error && <div style={{ fontFamily: press, fontSize: 8, color: C.pink }}>{error}</div>}
+          <button type="submit" disabled={busy || !name.trim()}
+            style={{ background: C.pink, color: C.bg, fontFamily: press, fontSize: 10, padding: '14px', border: 'none', cursor: busy ? 'default' : 'pointer', opacity: busy ? 0.6 : 1, minHeight: 44 }}>
+            {busy ? 'CHECKING…' : 'ENTER THE VILLA'}
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
 
 
 function Portrait({ look, mood, fx, name }) {
@@ -238,7 +292,7 @@ function EndingScreen({ ending, adventure, onRestart, onGoToSelect }) {
 
 // ── main app ─────────────────────────────────────────────────────────────────
 
-async function fetchScene(adventure, gameState, lastScene, choice, newState) {
+async function fetchScene(adventure, gameState, lastScene, choice, newState, authHeader) {
   const recentBeats = gameState.history.slice(-4).map((h) => `You: "${h.text}"`)
   const act = currentAct(adventure, newState)
   const body = {
@@ -254,11 +308,9 @@ async function fetchScene(adventure, gameState, lastScene, choice, newState) {
     beat:        newState.beat,
     actGoal:     act?.goal ?? null,
   }
-  const res = await fetch('/api/scene', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  })
+  const headers = { 'Content-Type': 'application/json' }
+  if (authHeader) headers['Authorization'] = authHeader
+  const res = await fetch('/api/scene', { method: 'POST', headers, body: JSON.stringify(body) })
   if (!res.ok) return null
   const data = await res.json()
   return data.scene ?? null
@@ -270,7 +322,12 @@ export default function App() {
   const [ending, setEnding]             = useState(null)
   const [loading, setLoading]           = useState(false)
   const [appSpice, setAppSpice]         = useState(2)
-  const fetchIdRef = useRef(0)
+  const [playerAuth, setPlayerAuth]     = useState(() => {
+    try { return JSON.parse(localStorage.getItem(AUTH_KEY)) } catch { return null }
+  })
+  const [showLogin, setShowLogin]       = useState(false)
+  const fetchIdRef         = useRef(0)
+  const pendingAdvIdx      = useRef(null)
 
   const adventure = adventureIdx !== null ? ADVENTURES[adventureIdx] : null
 
@@ -300,7 +357,7 @@ export default function App() {
       setLoading(true)
       const fetchId = ++fetchIdRef.current
       try {
-        const generatedScene = await fetchScene(adventure, gameState, lastScene, result.choice, result.state)
+        const generatedScene = await fetchScene(adventure, gameState, lastScene, result.choice, result.state, playerAuth?.authHeader)
         if (fetchId !== fetchIdRef.current) return
         const scene = generatedScene ?? fallbackScene(result.state)
         setGameState(provideGeneratedScene(adventure, result.state, scene))
@@ -316,7 +373,7 @@ export default function App() {
       setEnding(result.ending)
       localStorage.removeItem(`${SAVE_KEY}-${adventure.id}`)
     }
-  }, [adventure, gameState, loading])
+  }, [adventure, gameState, loading, playerAuth])
 
   const handleGoToSelect = useCallback(() => {
     fetchIdRef.current++
@@ -324,20 +381,41 @@ export default function App() {
     setAdventureIdx(null)
   }, [])
 
+  const handleLoginSuccess = useCallback(({ name, authHeader }) => {
+    const auth = { name, authHeader }
+    localStorage.setItem(AUTH_KEY, JSON.stringify(auth))
+    setPlayerAuth(auth)
+    setShowLogin(false)
+    if (pendingAdvIdx.current !== null) {
+      setAdventureIdx(pendingAdvIdx.current)
+      pendingAdvIdx.current = null
+    }
+  }, [])
+
   const handleSelectAdventure = useCallback((idx) => {
     fetchIdRef.current++
     setLoading(false)
-    setAdventureIdx(idx)
     setEnding(null)
-  }, [])
+    if (!playerAuth) {
+      pendingAdvIdx.current = idx
+      setShowLogin(true)
+      return
+    }
+    setAdventureIdx(idx)
+  }, [playerAuth])
 
   const handleNewGameSelect = useCallback((idx) => {
+    if (!playerAuth) {
+      pendingAdvIdx.current = idx
+      setShowLogin(true)
+      return
+    }
     const adv = ADVENTURES[idx]
     localStorage.removeItem(`${SAVE_KEY}-${adv.id}`)
     setGameState(engineSetSpice(createState(adv), appSpice))
     setEnding(null)
     setAdventureIdx(idx)
-  }, [])
+  }, [playerAuth, appSpice])
 
   const handleRestart = useCallback(() => {
     if (!adventure) return
@@ -347,7 +425,12 @@ export default function App() {
   }, [adventure])
 
   if (adventureIdx === null) {
-    return <EpisodeSelect onSelect={handleSelectAdventure} onNewGame={handleNewGameSelect} spice={appSpice} onSpice={setAppSpice} />
+    return (
+      <>
+        <EpisodeSelect onSelect={handleSelectAdventure} onNewGame={handleNewGameSelect} spice={appSpice} onSpice={setAppSpice} />
+        {showLogin && <LoginModal onSuccess={handleLoginSuccess} />}
+      </>
+    )
   }
 
   if (!gameState) return null
@@ -452,7 +535,10 @@ export default function App() {
 
       {/* ── footer ── */}
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', paddingTop: 10, borderTop: `2px solid ${C.dim}` }}>
-        <span style={{ fontSize: 18, color: C.lavender, flex: 1 }}>{adventure.label} · {adventure.episode.split('·')[0].trim()}</span>
+        <span style={{ fontSize: 18, color: C.lavender, flex: 1 }}>
+          {playerAuth?.name && <span style={{ color: C.pink }}>{playerAuth.name} · </span>}
+          {adventure.label} · {adventure.episode.split('·')[0].trim()}
+        </span>
         <button className="ep-btn" onClick={handleGoToSelect}
           style={{ fontFamily: press, fontSize: 9, padding: '0 12px', minHeight: 44, background: C.dim, color: C.lavender, border: `2px solid ${C.lavender}`, cursor: 'pointer' }}>
           EPISODES
