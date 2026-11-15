@@ -217,6 +217,9 @@ function EpisodeSelect({ onSelect, onNewGame, spice, onSpice }) {
           const hasSave = !!localStorage.getItem(`${SAVE_KEY}-${adv.id}`)
           const castName = (CASTS[adv.cast]?.name ?? '').toUpperCase()
           const tease = adv.tone ? adv.tone.split('. ').slice(0, 2).join('. ') + '.' : ''
+          const epBadge = adv.season && adv.episodeNumber
+            ? `S${adv.season} · EP ${adv.episodeNumber}`
+            : adv.label
           return (
             <div key={adv.id} style={{ background: C.panel, border: `3px solid ${C.gold}`, padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 0 }}>
               <div className="adv-card-body">
@@ -224,7 +227,7 @@ function EpisodeSelect({ onSelect, onNewGame, spice, onSpice }) {
                   <img src={ADVENTURE_IMAGES[adv.id]} alt="" aria-hidden="true" className="adv-card-img" />
                 )}
                 <div className="adv-card-text">
-                  <div style={{ fontFamily: press, fontSize: 8, color: C.pink }}>{adv.label}</div>
+                  <div style={{ fontFamily: press, fontSize: 8, color: C.pink }}>{epBadge}</div>
                   <div style={{ fontSize: 18, color: C.lavender }}>{castName}</div>
                   <div style={{ fontSize: 20, color: C.gold, lineHeight: 1.3 }}>{adv.episode}</div>
                   <div style={{ fontSize: 18, color: C.cream, lineHeight: 1.3 }}>{tease}</div>
@@ -696,7 +699,12 @@ export default function App() {
           <img src="/icon-512.png" alt="" aria-hidden="true" style={{ height: 56, width: 56, imageRendering: 'pixelated', flexShrink: 0 }} />
           <img src="/title.png" alt="Real You-wives" style={{ flex: 1, minWidth: 0, imageRendering: 'pixelated' }} />
         </div>
-        <div style={{ fontSize: 20, color: C.gold }}>{adventure.episode}</div>
+        <div style={{ fontSize: 20, color: C.gold }}>
+          {adventure.season && adventure.episodeNumber
+            ? <span style={{ fontFamily: press, fontSize: 8, color: C.pink, marginRight: 8 }}>S{adventure.season} · EP {adventure.episodeNumber}</span>
+            : null}
+          {adventure.episode}
+        </div>
       </div>
 
       {/* ── stats ── */}
@@ -786,7 +794,9 @@ export default function App() {
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', paddingTop: 10, borderTop: `2px solid ${C.dim}` }}>
         <span style={{ fontSize: 18, color: C.lavender, flex: 1 }}>
           {playerAuth?.name && <span style={{ color: C.pink }}>{playerAuth.name} · </span>}
-          {adventure.label} · {adventure.episode.split('·')[0].trim()}
+          {adventure.season && adventure.episodeNumber
+            ? `S${adventure.season} · EP ${adventure.episodeNumber}`
+            : adventure.label}
         </span>
         <button className="ep-btn" onClick={handleGoToSelect}
           style={{ fontFamily: press, fontSize: 9, padding: '0 12px', minHeight: 44, background: C.dim, color: C.lavender, border: `2px solid ${C.lavender}`, cursor: 'pointer' }}>
