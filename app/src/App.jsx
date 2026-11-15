@@ -218,16 +218,19 @@ function EpisodeSelect({ onSelect, onNewGame, spice, onSpice }) {
           const castName = (CASTS[adv.cast]?.name ?? '').toUpperCase()
           const tease = adv.tone ? adv.tone.split('. ').slice(0, 2).join('. ') + '.' : ''
           return (
-            <div key={adv.id} style={{ background: C.panel, border: `3px solid ${C.gold}`, padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {ADVENTURE_IMAGES[adv.id] && (
-                <img src={ADVENTURE_IMAGES[adv.id]} alt="" aria-hidden="true"
-                  style={{ display: 'block', width: 'calc(100% + 28px)', height: 180, objectFit: 'cover', objectPosition: 'top', imageRendering: 'pixelated', margin: '-16px -14px 0' }} />
-              )}
-              <div style={{ fontFamily: press, fontSize: 8, color: C.pink }}>{adv.label}</div>
-              <div style={{ fontSize: 18, color: C.lavender }}>{castName}</div>
-              <div style={{ fontSize: 20, color: C.gold, lineHeight: 1.3 }}>{adv.episode}</div>
-              <div style={{ fontSize: 18, color: C.cream, lineHeight: 1.3 }}>{tease}</div>
-              <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+            <div key={adv.id} style={{ background: C.panel, border: `3px solid ${C.gold}`, padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+              <div className="adv-card-body">
+                {ADVENTURE_IMAGES[adv.id] && (
+                  <img src={ADVENTURE_IMAGES[adv.id]} alt="" aria-hidden="true" className="adv-card-img" />
+                )}
+                <div className="adv-card-text">
+                  <div style={{ fontFamily: press, fontSize: 8, color: C.pink }}>{adv.label}</div>
+                  <div style={{ fontSize: 18, color: C.lavender }}>{castName}</div>
+                  <div style={{ fontSize: 20, color: C.gold, lineHeight: 1.3 }}>{adv.episode}</div>
+                  <div style={{ fontSize: 18, color: C.cream, lineHeight: 1.3 }}>{tease}</div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
                 <button className="ep-btn" onClick={() => onSelect(i)}
                   style={{ flex: 1, fontFamily: press, fontSize: 10, padding: '12px 10px', minHeight: 44, background: C.pink, color: C.bg, border: `2px solid ${C.pink}`, cursor: 'pointer' }}>
                   {hasSave ? 'CONTINUE ▶' : 'PLAY'}

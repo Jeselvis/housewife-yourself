@@ -89,3 +89,47 @@ button { font-family: inherit; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* ── adventure card responsive layout ───────────────────────────────────────── */
+.adv-card-body {
+  display: flex;
+  flex-direction: column;
+}
+.adv-card-img {
+  width: calc(100% + 28px);
+  height: 180px;
+  object-fit: cover;
+  object-position: top;
+  image-rendering: pixelated;
+  margin: -16px -14px 0;
+  display: block;
+  flex-shrink: 0;
+}
+.adv-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+@media (min-width: 500px) {
+  .adv-card-body {
+    flex-direction: row-reverse;
+    gap: 14px;
+    align-items: stretch;
+  }
+  .adv-card-img {
+    width: 42%;
+    height: auto;
+    min-height: 160px;
+    margin: -16px -14px -16px 0;
+    border-left: 3px solid #ffd54a;
+    align-self: stretch;
+    object-position: center top;
+  }
+  .adv-card-text {
+    flex: 1;
+    padding-top: 0;
+    justify-content: center;
+  }
+}
