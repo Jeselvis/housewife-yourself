@@ -96,6 +96,17 @@ function applyDelta(adventure, stats, delta = {}) {
   return out;
 }
 
+function applyDecay(adventure, stats) {
+  const out = { ...stats };
+  for (const [key, def] of Object.entries(adventure.stats)) {
+    if (!def.decay) continue;
+    let v = out[key] - def.decay;
+    if (def.min !== undefined) v = Math.max(def.min, v);
+    out[key] = v;
+  }
+  return out;
+}
+
 function addFlags(flags, toSet = []) {
   const out = [...flags];
   for (const f of toSet) if (!out.includes(f)) out.push(f);
@@ -126,7 +137,7 @@ export function choose(adventure, state, choiceIndex) {
 
   let next = {
     ...state,
-    stats:       applyDelta(adventure, state.stats, choice.delta),
+    stats:       applyDecay(adventure, applyDelta(adventure, state.stats, choice.delta)),
     flags:       addFlags(state.flags, choice.set),
     globalFlags: addFlags(state.globalFlags ?? [], choice.setGlobal),
     inventory:   updateInventory(state.inventory ?? [], choice.give, choice.consume),

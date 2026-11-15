@@ -43,6 +43,19 @@ test('stats clamp to min and max', () => {
   assert.equal(state.stats.glasses, 0);
 });
 
+test('decay subtracts from stats each beat, clamping at min', () => {
+  const adv = goat();
+  adv.stats.drama.decay = 10;
+  adv.scenes.start.choices[0].delta = { drama: 5 }; // +5 then -10 decay = net -5
+  const { state } = engine.choose(adv, engine.createState(adv), 0);
+  assert.equal(state.stats.drama, 62 + 5 - 10); // 57
+  // clamp: decay on a stat already at min stays at min
+  adv.stats.drama.decay = 999;
+  adv.scenes.start.choices[0].delta = {};
+  const { state: floored } = engine.choose(adv, engine.createState(adv), 0);
+  assert.equal(floored.stats.drama, 0);
+});
+
 test('spice overrides replace scene fields; level 2 is the base text', () => {
   const adv = goat();
   const base = engine.resolveScene(adv, engine.createState(adv, { spice: 2 }));

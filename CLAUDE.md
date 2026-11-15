@@ -63,7 +63,7 @@ The mockup is a fixed 960px board. **The real app must be mobile-first** (390px 
 - [x] **Phase 0:** specs, schemas, validator, engine core, portrait layers + renderer, two adventures, 29 tests
 - [ ] **Phase 1:** playable app, scripted only (no LLM, no API key). Mobile-first UI from the mockup, `Portrait` component, stats row, flags + branching via the engine, spice switcher, episode picker, ending screen with recap, save/resume in localStorage. `"generate"` beats use `fallbackScene` for now.
 - [ ] **Phase 2:** LLM endpoint per `docs/LLM_CONTRACT.md`: prompt builder, provider call, validate, sanitize, retry once, fallback. Rate limit and daily cap. A `?scripted=1` mode that never calls the model.
-- [ ] **Phase 3:** cast memory and callbacks tuned in the prompt; recent-beats list to avoid repeated jokes; a small eval script that plays N choices through the model and reports JSON validity.
+- [x] **Phase 3:** cast memory and callbacks tuned in the prompt; recent-beats list to avoid repeated jokes; a small eval script that plays N choices through the model and reports JSON validity.
 - [ ] **Phase 4:** PWA (manifest, service worker, offline for scripted adventures), shareable recap card, more adventures and a second cast.
 
 ## Definition of done for a change
