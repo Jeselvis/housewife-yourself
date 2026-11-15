@@ -2,9 +2,13 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   createState, resolveScene, visibleChoices,
   choose, fallbackScene, provideGeneratedScene, setSpice as engineSetSpice, currentAct,
+  dropItem as engineDropItem, useItem as engineUseItem, resolveItemUse,
+  acceptInventoryOffer, declineInventoryOffer,
 } from '../../src/engine/engine.js'
 import { renderPortraitSVG, renderGestureSVG, renderMouthOpenSVG } from '../../src/portrait/render.js'
+import { renderItemSVG } from '../../src/portrait/item-render.js'
 import layers from '../../src/portrait/layers.json'
+import itemLayers from '../../src/portrait/item-layers.json'
 import lakeSparkleCast from '../../cast/lake-sparkle.json'
 import briarwoodCast from '../../cast/briarwood.json'
 import lakewoodCast from '../../cast/lakewood.json'
@@ -243,6 +247,178 @@ function EpisodeSelect({ onSelect, onNewGame, spice, onSpice }) {
   )
 }
 
+function normalizeInventoryItem(item, adventure) {
+  if (typeof item !== 'string') return item
+  const def = adventure.items?.[item]
+  return def
+    ? { id: item, label: def.label, description: def.description ?? null, hint: def.hint ?? null, sprite: def.sprite ?? null }
+    : { label: item, sprite: null }
+}
+
+function ItemSprite({ sprite, size = 32, label = '' }) {
+  if (!sprite) {
+    return (
+      <div style={{ width: size, height: size, background: C.dim, border: `2px solid ${C.lavender}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontFamily: press, fontSize: 7, color: C.lavender }}>?</span>
+      </div>
+    )
+  }
+  const svg = renderItemSVG(itemLayers, sprite, { size, label })
+  return <div style={{ lineHeight: 0 }} dangerouslySetInnerHTML={{ __html: svg }} />
+}
+
+function InventoryScreen({ inventory, adventure, onDrop, onUse, onBack }) {
+  const [selected, setSelected] = useState(null)
+  const items = inventory.map(i => normalizeInventoryItem(i, adventure))
+
+  const cells = Array.from({ length: Math.max(items.length, 6) }, (_, i) => items[i] ?? null)
+  const sel = selected !== null ? items[selected] : null
+
+  return (
+    <div style={{ background: scanlines, minHeight: '100dvh', padding: '20px 16px max(20px, env(safe-area-inset-bottom, 20px))', display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 600, margin: '0 auto' }}>
+
+      {/* ── heading ── */}
+      <div style={{ fontFamily: press, fontSize: 11, color: C.gold, borderBottom: `4px double ${C.gold}`, paddingBottom: 12, letterSpacing: 2 }}>
+        ══ INVENTORY
+      </div>
+
+      {/* ── grid ── */}
+      {items.length === 0 ? (
+        <div style={{ background: C.panel, border: `3px solid ${C.dim}`, padding: '32px 16px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ fontFamily: press, fontSize: 9, color: C.lavender, lineHeight: 1.8 }}>YOUR HANDS ARE{'\n'}SUSPICIOUSLY EMPTY.</div>
+          <div style={{ fontSize: 20, color: C.dim }}>Producers suggest you pick something up.</div>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+          {cells.map((item, i) => {
+            const isSelected = selected === i && item !== null
+            return (
+              <button key={i} onClick={() => item && setSelected(isSelected ? null : i)}
+                style={{
+                  background: C.panel,
+                  border: `2px solid ${isSelected ? C.pink : item ? C.gold : C.dim}`,
+                  padding: 10,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  cursor: item ? 'pointer' : 'default',
+                  minHeight: 90,
+                  transition: 'border-color .1s',
+                }}>
+                {item ? (
+                  <>
+                    <ItemSprite sprite={item.sprite} size={48} label={item.label} />
+                    <span style={{ fontFamily: vt, fontSize: 15, color: C.cream, textAlign: 'center', lineHeight: 1.2, wordBreak: 'break-word' }}>
+                      {item.label.length > 18 ? item.label.slice(0, 16) + '…' : item.label}
+                    </span>
+                  </>
+                ) : (
+                  <span style={{ fontFamily: press, fontSize: 8, color: C.dim }}>---</span>
+                )}
+              </button>
+            )
+          })}
+        </div>
+      )}
+
+      {/* ── detail panel ── */}
+      <div style={{ background: C.panel, border: `2px solid ${C.gold}`, padding: '14px 14px', display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
+        {sel ? (
+          <>
+            <div style={{ fontFamily: press, fontSize: 9, color: C.gold, letterSpacing: 1 }}>{sel.label.toUpperCase()}</div>
+            {sel.description && <div style={{ fontSize: 20, color: C.cream, lineHeight: 1.3 }}>{sel.description}</div>}
+            {sel.hint && (
+              <div style={{ fontSize: 18, color: C.pink, marginTop: 4 }}>! {sel.hint}</div>
+            )}
+          </>
+        ) : (
+          <div style={{ fontSize: 20, color: C.dim }}>Select an item.</div>
+        )}
+      </div>
+
+      {/* ── actions ── */}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <button
+          onClick={() => { if (sel) onUse(sel) }}
+          disabled={!sel}
+          style={{
+            flex: 1, fontFamily: press, fontSize: 9, padding: '14px 8px', minHeight: 48,
+            background: sel ? C.teal : C.bg,
+            color: sel ? C.bg : C.dim,
+            border: `3px solid ${sel ? C.teal : C.dim}`,
+            cursor: sel ? 'pointer' : 'default',
+          }}>
+          USE ITEM
+        </button>
+        <button
+          onClick={() => { if (sel) { onDrop(sel); setSelected(null) } }}
+          disabled={!sel}
+          style={{
+            flex: 1, fontFamily: press, fontSize: 9, padding: '14px 8px', minHeight: 48,
+            background: sel ? C.dim : C.bg,
+            color: sel ? C.pink : C.dim,
+            border: `3px solid ${sel ? C.pink : C.dim}`,
+            cursor: sel ? 'pointer' : 'default',
+          }}>
+          DROP ITEM
+        </button>
+        <button onClick={onBack}
+          style={{ flex: 1, fontFamily: press, fontSize: 9, padding: '14px 8px', minHeight: 48, background: C.dim, color: C.gold, border: `3px solid ${C.gold}`, cursor: 'pointer' }}>
+          ◄ BACK
+        </button>
+      </div>
+
+    </div>
+  )
+}
+
+function SwapPrompt({ offeredItem, inventory, adventure, onAccept, onDecline }) {
+  const items = inventory.map(i => normalizeInventoryItem(i, adventure))
+  return (
+    <div style={{ background: scanlines, minHeight: '100dvh', padding: '20px 16px max(20px, env(safe-area-inset-bottom, 20px))', display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 600, margin: '0 auto' }}>
+
+      <div style={{ fontFamily: press, fontSize: 10, color: C.pink, borderBottom: `4px double ${C.pink}`, paddingBottom: 12 }}>
+        !! BAG IS FULL
+      </div>
+
+      {/* offered item */}
+      <div style={{ background: C.panel, border: `3px solid ${C.teal}`, padding: '14px', display: 'flex', gap: 14, alignItems: 'center' }}>
+        <ItemSprite sprite={offeredItem.sprite} size={48} label={offeredItem.label} />
+        <div style={{ flex: 1 }}>
+          <div style={{ fontFamily: press, fontSize: 8, color: C.teal, marginBottom: 6 }}>NEW ITEM</div>
+          <div style={{ fontSize: 20, color: C.cream }}>{offeredItem.label}</div>
+        </div>
+      </div>
+
+      <div style={{ fontFamily: press, fontSize: 8, color: C.lavender, lineHeight: 1.8 }}>
+        DROP SOMETHING TO MAKE ROOM, OR LEAVE IT.
+      </div>
+
+      {/* current inventory — tap to drop and swap */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+        {items.map((item, i) => (
+          <button key={i} onClick={() => onAccept(item.id ?? item.label)}
+            style={{
+              background: C.panel, border: `2px solid ${C.pink}`,
+              padding: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+              cursor: 'pointer', minHeight: 90,
+            }}>
+            <ItemSprite sprite={item.sprite} size={40} label={item.label} />
+            <span style={{ fontFamily: press, fontSize: 7, color: C.pink }}>DROP</span>
+            <span style={{ fontFamily: vt, fontSize: 13, color: C.cream, textAlign: 'center', lineHeight: 1.2, wordBreak: 'break-word' }}>
+              {item.label.length > 14 ? item.label.slice(0, 12) + '…' : item.label}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <button onClick={onDecline}
+        style={{ fontFamily: press, fontSize: 10, padding: '14px', minHeight: 48, background: C.dim, color: C.lavender, border: `3px solid ${C.lavender}`, cursor: 'pointer', width: '100%' }}>
+        LEAVE IT
+      </button>
+
+    </div>
+  )
+}
+
 function EndingScreen({ ending, adventure, onRestart, onGoToSelect }) {
   return (
     <div style={{ background: scanlines, minHeight: '100dvh', padding: '24px 16px max(24px, env(safe-area-inset-bottom, 24px))', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 600, margin: '0 auto' }}>
@@ -292,7 +468,7 @@ function EndingScreen({ ending, adventure, onRestart, onGoToSelect }) {
 
 // ── main app ─────────────────────────────────────────────────────────────────
 
-async function fetchScene(adventure, gameState, lastScene, choice, newState, authHeader) {
+async function fetchScene(adventure, gameState, lastScene, choice, newState, authHeader, itemUse = null) {
   const recentBeats = gameState.history.slice(-4).map((h) => `You: "${h.text}"`)
   const act = currentAct(adventure, newState)
   const body = {
@@ -304,9 +480,10 @@ async function fetchScene(adventure, gameState, lastScene, choice, newState, aut
     memory:      newState.memory,
     recentBeats,
     lastScene:   { place: lastScene.place, speaker: lastScene.speaker, line: lastScene.line },
-    choice:      { text: choice.text, hint: choice.hint ?? undefined },
+    choice:      choice ? { text: choice.text, hint: choice.hint ?? undefined } : null,
     beat:        newState.beat,
     actGoal:     act?.goal ?? null,
+    itemUse:     itemUse ?? null,
   }
   const headers = { 'Content-Type': 'application/json' }
   if (authHeader) headers['Authorization'] = authHeader
@@ -317,11 +494,12 @@ async function fetchScene(adventure, gameState, lastScene, choice, newState, aut
 }
 
 export default function App() {
-  const [adventureIdx, setAdventureIdx] = useState(null)
-  const [gameState, setGameState]       = useState(null)
-  const [ending, setEnding]             = useState(null)
-  const [loading, setLoading]           = useState(false)
-  const [appSpice, setAppSpice]         = useState(2)
+  const [adventureIdx, setAdventureIdx]   = useState(null)
+  const [gameState, setGameState]         = useState(null)
+  const [ending, setEnding]               = useState(null)
+  const [loading, setLoading]             = useState(false)
+  const [appSpice, setAppSpice]           = useState(2)
+  const [showInventory, setShowInventory] = useState(false)
   const [playerAuth, setPlayerAuth]     = useState(() => {
     try { return JSON.parse(localStorage.getItem(AUTH_KEY)) } catch { return null }
   })
@@ -424,6 +602,44 @@ export default function App() {
     setEnding(null)
   }, [adventure])
 
+  const handleDropItem = useCallback((item) => {
+    setGameState(prev => {
+      if (!prev) return prev
+      return {
+        ...prev,
+        inventory: prev.inventory.filter(i => {
+          if (typeof i === 'string') return i !== item.id
+          return item.id ? i.id !== item.id : i.label !== item.label
+        }),
+      }
+    })
+  }, [])
+
+  const handleUseItem = useCallback(async (item) => {
+    if (loading) return
+    setShowInventory(false)
+    const lastScene = resolveScene(adventure, gameState)
+    const result = engineUseItem(adventure, gameState, item)
+    // result.status is always 'generate'
+    setLoading(true)
+    const fetchId = ++fetchIdRef.current
+    try {
+      const generatedScene = await fetchScene(
+        adventure, gameState, lastScene, null, result.state, playerAuth?.authHeader, result.itemUse
+      )
+      if (fetchId !== fetchIdRef.current) return
+      const scene = generatedScene ?? fallbackScene(result.state)
+      const stateWithScene = provideGeneratedScene(adventure, result.state, scene)
+      // resolve consumed: remove item if LLM accepted it
+      setGameState(resolveItemUse(stateWithScene, scene.consumed === true))
+    } catch {
+      if (fetchId !== fetchIdRef.current) return
+      setGameState(provideGeneratedScene(adventure, result.state, fallbackScene(result.state)))
+    } finally {
+      if (fetchId === fetchIdRef.current) setLoading(false)
+    }
+  }, [adventure, gameState, loading, playerAuth])
+
   if (adventureIdx === null) {
     return (
       <>
@@ -437,6 +653,30 @@ export default function App() {
 
   if (ending) {
     return <EndingScreen ending={ending} adventure={adventure} onRestart={handleRestart} onGoToSelect={handleGoToSelect} />
+  }
+
+  if (showInventory) {
+    return (
+      <InventoryScreen
+        inventory={gameState.inventory ?? []}
+        adventure={adventure}
+        onDrop={handleDropItem}
+        onUse={handleUseItem}
+        onBack={() => setShowInventory(false)}
+      />
+    )
+  }
+
+  if (gameState.pendingInventoryOffer?.length > 0) {
+    return (
+      <SwapPrompt
+        offeredItem={gameState.pendingInventoryOffer[0]}
+        inventory={gameState.inventory ?? []}
+        adventure={adventure}
+        onAccept={(droppedId) => setGameState(acceptInventoryOffer(gameState, droppedId))}
+        onDecline={() => setGameState(declineInventoryOffer(gameState))}
+      />
+    )
   }
 
   const scene      = resolveScene(adventure, gameState)
@@ -491,16 +731,22 @@ export default function App() {
         </div>
       )}
 
-      {/* ── inventory ── */}
+      {/* ── inventory strip ── */}
       {(gameState.inventory ?? []).length > 0 && (
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: press, fontSize: 8, color: C.lavender }}>CARRYING:</span>
-          {gameState.inventory.map((id) => (
-            <span key={id} style={{ fontFamily: press, fontSize: 8, color: C.gold, border: `2px solid ${C.gold}`, padding: '3px 8px', background: C.dim }}>
-              {adventure.items?.[id]?.label ?? id}
-            </span>
-          ))}
-        </div>
+        <button onClick={() => setShowInventory(true)}
+          style={{ display: 'flex', gap: 8, alignItems: 'center', background: C.panel, border: `2px solid ${C.gold}`, padding: '8px 12px', cursor: 'pointer', textAlign: 'left', width: '100%' }}>
+          <span style={{ fontFamily: press, fontSize: 8, color: C.gold, flexShrink: 0 }}>BAG:</span>
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center', overflow: 'hidden' }}>
+            {(gameState.inventory ?? []).map((item, i) => {
+              const norm = normalizeInventoryItem(item, adventure)
+              return (
+                <div key={i} title={norm.label} style={{ flexShrink: 0 }}>
+                  <ItemSprite sprite={norm.sprite} size={32} label={norm.label} />
+                </div>
+              )
+            })}
+          </div>
+        </button>
       )}
 
       {/* ── choices ── */}

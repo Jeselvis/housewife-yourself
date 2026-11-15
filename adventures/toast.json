@@ -11,12 +11,12 @@
   "acts": [
     {
       "goal": "Survive the holiday party — navigate Georgie, survive the Secret Santa, and pick a side in the photoshoot drama before it becomes a party-wide incident.",
-      "until": { "stats": { "drama": ">=60" } },
+      "until": { "stats": { "drama": ">=45" } },
       "minBeats": 3
     },
     {
       "goal": "Lock in your alliance at Carla's apartment and decide whether to give Avigail the push she needs — or blow up the St. Barths plan entirely.",
-      "until": { "stats": { "drama": ">=80" } },
+      "until": { "stats": { "drama": ">=65" } },
       "minBeats": 3,
       "anchor": "jannas_party"
     },
@@ -26,9 +26,22 @@
     }
   ],
   "stats": {
-    "drama":     { "label": "Drama",        "start": 40,    "min": 0, "max": 100, "maxStep": 25, "display": "bar" },
-    "brand":     { "label": "Brand Value",  "start": 15000, "min": 0,             "maxStep": 20000, "display": "money" },
-    "alliances": { "label": "Allies",       "start": 1,     "min": 0, "max": 7,   "maxStep": 2,  "display": "number" }
+    "drama":     { "label": "Drama",        "start": 20,   "min": 0, "max": 100, "maxStep": 12, "decay": 3,    "display": "bar" },
+    "brand":     { "label": "Brand Value",  "start": 8000, "min": 0,             "maxStep": 8000, "decay": 500, "display": "money" },
+    "alliances": { "label": "Allies",       "start": 1,    "min": 0, "max": 7,   "maxStep": 1,                 "display": "number" }
+  },
+  "items": {
+    "iguana": {
+      "label": "The Iguana",
+      "description": "You volunteered. It is calm. It has not blinked since you picked it up.",
+      "sprite": { "base": "creature", "color": "teal", "accent": "none" }
+    },
+    "wine_glass": {
+      "label": "Roxy's Wine Glass",
+      "description": "A full glass of Roxy's brand rosé. Still full. You have been careful.",
+      "hint": "This might matter.",
+      "sprite": { "base": "glass", "color": "pink", "accent": "stain" }
+    }
   },
   "flags": {
     "georgie_survived":  { "recap": "You survived an extended encounter with Georgie Chase with your dignity intact." },
@@ -41,10 +54,6 @@
     "accent_defended":   { "recap": "You defended Marceau's accent the second he left the room." },
     "said_what_i_said":  { "recap": "You said what you said, into a camera, and did not walk it back." },
     "made_scene":        { "recap": "You made a scene at Janna's party. It's going in the trailer." }
-  },
-  "items": {
-    "iguana":     { "label": "Clitoris Iguana" },
-    "wine_glass": { "label": "Roxy's Pinot" }
   },
   "scenes": {
     "start": {
@@ -105,7 +114,7 @@
       "choices": [
         { "text": "Slide in on Georgie's other side. Hold the flanks.", "next": "celeste_georgie_match", "delta": { "drama": 10, "alliances": 1 }, "set": ["georgie_survived"] },
         { "text": "Find your own seat at a safe distance and watch this develop.", "next": "generate", "hint": "Georgie immediately courts Celeste with the double-martini playbook. Celeste deflects with devastating grace. Each deflection encourages Georgie further. The camera crew is visibly overjoyed. You eat canapés from a safe distance as a producer whispers into an earpiece and smiles.", "delta": { "drama": 15, "brand": 6000 }, "set": ["georgie_survived"] },
-        { "text": "Move the card back and blame it on the waitstaff.", "next": "secret_santa", "delta": { "drama": 5, "alliances": -1 } }
+        { "text": "Move the card back and blame it on the waitstaff.", "next": "secret_santa", "delta": { "drama": -5, "alliances": -1, "brand": -1500 } }
       ]
     },
 
@@ -273,7 +282,7 @@
         { "text": "Tell Dallas that Mimosa's name is on the product, so Mimosa's vision should lead.", "next": "carla_lunch_invite", "delta": { "drama": 15, "alliances": 1 } },
         { "text": "Agree with Dallas. Mimosa got a free campaign and needs to say thank you.", "next": "carla_lunch_invite", "delta": { "drama": 10, "alliances": 1 } },
         { "text": "Find Mimosa and Dallas in the same room and ask them to hash it out right here.", "next": "generate", "hint": "They hash it out at the bar in front of a camera crew that is barely pretending to be casual. Mimosa cries briefly. Dallas says holla once at the absolute wrong moment. It almost resolves. It does not resolve. Roxy is watching from the coat check and texting someone.", "delta": { "drama": 25, "brand": 10000 } },
-        { "text": "Grab Roxy and go. This is not your fight.", "next": "carla_lunch_invite", "delta": { "drama": 5, "alliances": 1 } }
+        { "text": "Grab Roxy and go. This is not your fight.", "next": "carla_lunch_invite", "delta": { "drama": -5, "alliances": 1, "brand": -2000 } }
       ],
       "spice": {
         "1": { "line": "What I would like, actually, is simply for the work I contributed to be acknowledged. I think that's reasonable. I think 'holla' is reasonable. I think I am reasonable.", "mood": "neutral" },
@@ -376,7 +385,7 @@
       "memory": ["Roxy believes Celeste deliberately set her up to fail at the wine tasting.", "Roxy's brand is her Pinot — she treats this as a serious business threat."],
       "choices": [
         { "text": "Defend Roxy. This was clearly an attempt to embarrass her brand. You'll say so to Celeste.", "next": "accent_scene", "delta": { "drama": 20, "alliances": 1 }, "set": ["wine_defended"], "give": ["wine_glass"], "setGlobal": ["wine_ally"] },
-        { "text": "Play devil's advocate. Celeste's boyfriend was just promoting the wine. No harm intended.", "next": "accent_scene", "delta": { "drama": 10 } },
+        { "text": "Play devil's advocate. Celeste's boyfriend was just promoting the wine. No harm intended.", "next": "accent_scene", "delta": { "drama": -5, "brand": -1000 } },
         { "text": "Change the subject. Tell Roxy what Avigail said about Celeste when she thought she was out of earshot.", "next": "generate", "hint": "You lean in and tell Roxy exactly what Avigail said when she thought nobody was listening. Roxy's face goes through four expressions in two seconds. She immediately needs to find Celeste. You have accelerated the confrontation by approximately forty-five minutes. A producer thanks you with their eyes.", "delta": { "drama": 25, "brand": 10000 } }
       ],
       "spice": {

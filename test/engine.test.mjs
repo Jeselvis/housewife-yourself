@@ -43,6 +43,19 @@ test('stats clamp to min and max', () => {
   assert.equal(state.stats.glasses, 0);
 });
 
+test('decay subtracts from stats each beat, clamping at min', () => {
+  const adv = goat();
+  adv.stats.drama.decay = 10;
+  adv.scenes.start.choices[0].delta = { drama: 5 }; // +5 then -10 decay = net -5
+  const { state } = engine.choose(adv, engine.createState(adv), 0);
+  assert.equal(state.stats.drama, 62 + 5 - 10); // 57
+  // clamp: decay on a stat already at min stays at min
+  adv.stats.drama.decay = 999;
+  adv.scenes.start.choices[0].delta = {};
+  const { state: floored } = engine.choose(adv, engine.createState(adv), 0);
+  assert.equal(floored.stats.drama, 0);
+});
+
 test('spice overrides replace scene fields; level 2 is the base text', () => {
   const adv = goat();
   const base = engine.resolveScene(adv, engine.createState(adv, { spice: 2 }));
@@ -182,23 +195,29 @@ test('low brand falls through to the default ending', async () => {
 
 test('inventory: createState has empty inventory; give adds, consume removes; hasItems gates choices', () => {
   const adv = goat();
-  adv.items = { napkin: { label: 'Damp Napkin' }, goblet: { label: 'Crystal Goblet' } };
+  const sprite = { base: 'cloth', color: 'cream', accent: 'none' };
+  adv.items = {
+    napkin: { label: 'Damp Napkin', sprite },
+    goblet: { label: 'Crystal Goblet', sprite },
+  };
 
   // createState gives empty inventory
   const s0 = engine.createState(adv);
   assert.deepEqual(s0.inventory, []);
 
-  // give on choice 0 (twin path)
+  // give hydrates string id → full object
   adv.scenes.start.choices[0].give = ['napkin'];
   const { state: s1 } = engine.choose(adv, s0, 0);
-  assert.deepEqual(s1.inventory, ['napkin']);
+  assert.equal(s1.inventory.length, 1);
+  assert.equal(s1.inventory[0].id, 'napkin');
+  assert.equal(s1.inventory[0].label, 'Damp Napkin');
 
   // give is idempotent: picking the same item again doesn't duplicate
   adv.scenes.twin.choices[0].give = ['napkin'];
   const { state: s2 } = engine.choose(adv, s1, 0);
-  assert.deepEqual(s2.inventory, ['napkin']);
+  assert.equal(s2.inventory.length, 1);
 
-  // consume removes the item
+  // consume removes by id
   adv.scenes.twin.choices[1].consume = ['napkin'];
   const { state: s3 } = engine.choose(adv, s1, 1);
   assert.deepEqual(s3.inventory, []);
@@ -208,16 +227,97 @@ test('inventory: createState has empty inventory; give adds, consume removes; ha
   const withoutGoblet = engine.visibleChoices(engine.resolveScene(adv, s0), s0);
   assert.ok(withoutGoblet.every((c) => !c.requires?.hasItems));
 
-  // give goblet, then gated choice appears
-  const sWithGoblet = { ...s0, inventory: ['goblet'] };
+  // hasItems works with object inventory
+  const sWithGoblet = { ...s0, inventory: [{ id: 'goblet', label: 'Crystal Goblet', sprite }] };
   const withItem = engine.visibleChoices(engine.resolveScene(adv, sWithGoblet), sWithGoblet);
   assert.ok(withItem.some((c) => c.requires?.hasItems?.includes('goblet')));
 
   // notItems: choice hidden when item IS held
   adv.scenes.start.choices[2].requires = { notItems: ['napkin'] };
-  const withNapkin = { ...s0, inventory: ['napkin'] };
+  const withNapkin = { ...s0, inventory: [{ id: 'napkin', label: 'Damp Napkin', sprite }] };
   const withNapkinChoices = engine.visibleChoices(engine.resolveScene(adv, withNapkin), withNapkin);
   assert.ok(withNapkinChoices.every((c) => !c.requires?.notItems?.includes('napkin')));
+});
+
+test('inventory full: overflow items go to pendingInventoryOffer; accept swaps; decline discards', () => {
+  const adv = goat();
+  const sp = { base: 'orb', color: 'gold', accent: 'none' };
+  adv.items = { napkin: { label: 'Napkin', sprite: sp }, goblet: { label: 'Goblet', sprite: sp } };
+
+  // fill inventory to cap
+  const full = Array.from({ length: 8 }, (_, i) => ({ id: `item${i}`, label: `Item ${i}`, sprite: sp }));
+  const s0 = { ...engine.createState(adv), inventory: full };
+
+  // giving a new item when full → pendingInventoryOffer, inventory unchanged
+  adv.scenes.start.choices[0].give = ['goblet'];
+  const { state: s1 } = engine.choose(adv, s0, 0);
+  assert.equal(s1.inventory.length, 8);
+  assert.equal(s1.pendingInventoryOffer?.length, 1);
+  assert.equal(s1.pendingInventoryOffer[0].label, 'Goblet');
+
+  // accept: drop item0, add goblet
+  const s2 = engine.acceptInventoryOffer(s1, 'item0');
+  assert.equal(s2.pendingInventoryOffer, null);
+  assert.equal(s2.inventory.length, 8);
+  assert.ok(s2.inventory.some(i => i.id === 'goblet'));
+  assert.ok(!s2.inventory.some(i => i.id === 'item0'));
+
+  // decline: inventory unchanged, offer cleared
+  const s3 = engine.declineInventoryOffer(s1);
+  assert.equal(s3.pendingInventoryOffer, null);
+  assert.equal(s3.inventory.length, 8);
+  assert.ok(!s3.inventory.some(i => i.id === 'goblet'));
+});
+
+test('inventory: dropItem removes by id; freeform item (no id) passthrough', () => {
+  const adv = goat();
+  const sprite = { base: 'orb', color: 'gold', accent: 'none' };
+  adv.items = { goblet: { label: 'Crystal Goblet', sprite } };
+
+  // dropItem removes declared item by id
+  const s = { ...engine.createState(adv), inventory: [{ id: 'goblet', label: 'Crystal Goblet', sprite }] };
+  const dropped = engine.dropItem(s, 'goblet');
+  assert.deepEqual(dropped.inventory, []);
+
+  // dropItem leaves freeform item with different label untouched
+  const freeform = { label: 'a damp orchid', sprite: { base: 'flora', color: 'pink', accent: 'none' } };
+  const s2 = { ...s, inventory: [freeform] };
+  const after = engine.dropItem(s2, 'goblet');
+  assert.equal(after.inventory.length, 1);
+
+  // freeform give (object without id) stored as-is
+  adv.scenes.start.choices[0].give = [freeform];
+  const { state: sg } = engine.choose(adv, engine.createState(adv), 0);
+  assert.equal(sg.inventory[0].label, 'a damp orchid');
+  assert.equal(sg.inventory[0].id, undefined);
+});
+
+test('useItem: sets useFlag, marks pendingItemUse, returns generate status; resolveItemUse consumes on true', () => {
+  const adv = goat();
+  const sprite = { base: 'document', color: 'cream', accent: 'none' };
+  adv.items = { photo: { label: 'The Photo', sprite, useFlag: 'used_photo' } };
+  adv.flags = { ...adv.flags, used_photo: {} };
+
+  const s0 = engine.createState(adv);
+  const item = { id: 'photo', label: 'The Photo', sprite };
+  const result = engine.useItem(adv, s0, item);
+
+  assert.equal(result.status, 'generate');
+  assert.ok(result.state.flags.includes('used_photo'));
+  assert.deepEqual(result.state.pendingItemUse, { id: 'photo', label: 'The Photo' });
+  assert.deepEqual(result.itemUse, { id: 'photo', label: 'The Photo' });
+  assert.equal(result.state.beat, s0.beat + 1);
+
+  // resolveItemUse with consumed: true removes item from inventory
+  const withItem = { ...result.state, inventory: [item] };
+  const afterConsumed = engine.resolveItemUse(withItem, true);
+  assert.deepEqual(afterConsumed.inventory, []);
+  assert.equal(afterConsumed.pendingItemUse, null);
+
+  // resolveItemUse with consumed: false keeps item
+  const afterRejected = engine.resolveItemUse(withItem, false);
+  assert.equal(afterRejected.inventory.length, 1);
+  assert.equal(afterRejected.pendingItemUse, null);
 });
 
 test('generate beats: status, provideGeneratedScene, fallback, and endAfter', () => {

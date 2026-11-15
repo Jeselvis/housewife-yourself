@@ -11,12 +11,12 @@
   "acts": [
     {
       "goal": "Establish yourself at the wedding before the ceremony — help Crystal, warn Maxwell, or find out what's in the basement. At least one revelation must land.",
-      "until": { "stats": { "drama": ">=75" } },
+      "until": { "stats": { "drama": ">=65" } },
       "minBeats": 2
     },
     {
       "goal": "The ceremony is happening and it must be disrupted. Interrupt the vows, expose Vangie, or give Magdalena permission to do her worst. The wedding cannot go smoothly.",
-      "until": { "stats": { "drama": ">=90" } },
+      "until": { "stats": { "drama": ">=80" } },
       "minBeats": 3,
       "anchor": "confrontation"
     },
@@ -26,10 +26,24 @@
     }
   ],
   "stats": {
-    "drama":   { "label": "Drama",        "start": 55,    "min": 0, "max": 100, "maxStep": 25, "display": "bar" },
-    "chaos":   { "label": "Chaos Level",  "start": 30,    "min": 0, "max": 100, "maxStep": 25, "display": "bar" },
-    "tears":   { "label": "Tears Shed",   "start": 0,     "min": 0,             "maxStep": 3,  "display": "number" },
-    "destiny": { "label": "Brand Value",  "start": 10000, "min": 0,             "maxStep": 20000, "display": "money" }
+    "drama":   { "label": "Drama",        "start": 25,   "min": 0, "max": 100, "maxStep": 12, "decay": 3, "display": "bar" },
+    "chaos":   { "label": "Chaos Level",  "start": 15,   "min": 0, "max": 100, "maxStep": 12, "decay": 2, "display": "bar" },
+    "tears":   { "label": "Tears Shed",   "start": 0,    "min": 0,             "maxStep": 2,              "display": "number" },
+    "destiny": { "label": "Brand Value",  "start": 5000, "min": 0,             "maxStep": 8000,            "display": "money" }
+  },
+  "items": {
+    "evidence": {
+      "label": "Crystal's Photograph",
+      "description": "A photograph proving Vangie attended a conference in Geneva in 2019. Crystal gave it to you.",
+      "hint": "This might matter.",
+      "sprite": { "base": "document", "color": "cream", "accent": "none" }
+    },
+    "amulet": {
+      "label": "Magdalena's Amulet",
+      "description": "It hums. It is warm. Magdalena said not to drop it. She was very specific about that.",
+      "hint": "This might matter.",
+      "sprite": { "base": "orb", "color": "purple", "accent": "glow" }
+    }
   },
   "flags": {
     "helped_crystal":      { "recap": "You helped Crystal crash the wedding." },
@@ -44,10 +58,6 @@
     "magdalena_unleashed": { "recap": "You gave Magdalena permission to do her worst." },
     "table_flipped":       { "recap": "You flipped the buffet table. On camera. In a tagline-worthy way." },
     "said_what_i_said":    { "recap": "You said what you said, and you did not take it back." }
-  },
-  "items": {
-    "amulet":   { "label": "Cursed Amulet" },
-    "evidence": { "label": "Vangie's Secret" }
   },
   "scenes": {
     "start": {
@@ -153,7 +163,7 @@
         { "text": "Catch Maxwell's eye and give him the signal you agreed on.", "requires": ["warned_maxwell"], "next": "altar", "delta": { "drama": 20, "chaos": 15, "destiny": 15000 }, "set": ["vows_interrupted"] },
         { "text": "Crystal is in the third pew. She's standing up. You absolutely cannot stop her.", "next": "crystal_drama", "delta": { "drama": 20, "chaos": 20, "tears": 1, "destiny": 10000 } },
         { "text": "Stand up and address the room about Vangie's wine credentials. You know how to make a brand case.", "requires": { "globalFlags": ["wine_ally"] }, "next": "generate", "delta": { "drama": 25, "chaos": 15, "destiny": 18000 }, "set": ["vows_interrupted", "wedding_stopped"], "hint": "You invoke Roxy LaRue's brand defense playbook. The wedding guests are confused but riveted. Vangie's expression becomes very controlled. Celeste de Villiers-equivalent recognizes exactly what you're doing and starts nodding. Crystal uses the distraction to advance three rows." },
-        { "text": "Sit in the back and wait. Something is definitely coming.", "next": "generate", "delta": { "drama": 5, "chaos": 5, "destiny": 5000 }, "hint": "Something small but significant happens in the row ahead of you. It sets off a chain reaction involving a hat, a cufflink, and very bad timing. A producer pretends not to smile." },
+        { "text": "Sit in the back and wait. Something is definitely coming.", "next": "generate", "delta": { "drama": -3, "chaos": -3, "destiny": 3000 }, "hint": "Something small but significant happens in the row ahead of you. It sets off a chain reaction involving a hat, a cufflink, and very bad timing. A producer pretends not to smile." },
         { "text": "Walk quietly to the front. The minister looks relieved to see someone who appears competent.", "next": "altar", "delta": { "drama": 10, "chaos": 10, "destiny": 8000 } }
       ]
     },
@@ -169,7 +179,7 @@
       "choices": [
         { "text": "Go down. Just a few steps. Just to look.", "next": "generate", "delta": { "drama": 15, "chaos": 30, "destiny": 12000 }, "set": ["evil_awakened"], "hint": "You find something down there that cannot be explained away. Magdalena says 'I told you' three times. Something follows you back up the stairs, slowly. The crew gets the shot of their lives." },
         { "text": "Back upstairs immediately and announce to the guests that there is something in the basement.", "next": "altar", "delta": { "drama": 25, "chaos": 35, "destiny": 15000 }, "set": ["evil_awakened"] },
-        { "text": "Close the door carefully. Walk back to the garden. Tell no one.", "next": "altar", "delta": { "drama": 5, "chaos": 5, "destiny": 3000 } }
+        { "text": "Close the door carefully. Walk back to the garden. Tell no one.", "next": "altar", "delta": { "drama": -5, "chaos": -5, "destiny": 1000 } }
       ]
     },
 
@@ -260,7 +270,7 @@
         { "text": "Hand Vangie the photograph. Right here. Right now. At the altar.", "requires": { "hasItems": ["evidence"] }, "next": "confrontation", "delta": { "drama": 30, "chaos": 20, "destiny": 25000 }, "set": ["vangie_exposed", "wedding_stopped"], "consume": ["evidence"] },
         { "text": "Say: 'I object.' Then turn to the nearest lens and add: 'I said what I said.'", "next": "confrontation", "delta": { "drama": 25, "chaos": 20, "tears": 1, "destiny": 20000 }, "set": ["vows_interrupted", "wedding_stopped", "said_what_i_said"], "setGlobal": ["said_it_before"] },
         { "text": "Step aside for Magdalena, who has appeared at the back of the chapel holding a candle.", "next": "confrontation", "delta": { "drama": 20, "chaos": 30, "destiny": 18000 }, "set": ["wedding_stopped"] },
-        { "text": "Say nothing. The minister opens his mouth. Something stops him. It may have been you.", "next": "generate", "delta": { "drama": 10, "chaos": 10, "destiny": 8000 }, "hint": "The ceremony pauses on a technicality that nobody understands. A producer whispers 'give us one more.' This creates space for one more revelation before the vows." }
+        { "text": "Say nothing. The minister opens his mouth. Something stops him. It may have been you.", "next": "generate", "delta": { "drama": -8, "chaos": 5, "destiny": 4000 }, "hint": "The ceremony pauses on a technicality that nobody understands. A producer whispers 'give us one more.' This creates space for one more revelation before the vows." }
       ],
       "spice": {
         "1": {
@@ -318,7 +328,7 @@
         { "text": "Tell Magdalena she has permission. Whatever she was planning. Do it.", "requires": ["wedding_stopped"], "next": "END", "delta": { "drama": 35, "chaos": 40, "destiny": 30000 }, "set": ["magdalena_unleashed"] },
         { "text": "Tell Maxwell: choose. Right now. No more time.", "next": "END", "delta": { "drama": 40, "chaos": 25, "tears": 2, "destiny": 25000 } },
         { "text": "Flip the buffet table. Announce you're not here to make friends. Take the champagne.", "next": "END", "delta": { "drama": 40, "chaos": 35, "tears": 1, "destiny": 22000 }, "set": ["table_flipped"], "setGlobal": ["chaos_agent"] },
-        { "text": "Walk out the side door. Take the champagne. You were only here for the canapes anyway.", "next": "END", "delta": { "drama": 5, "chaos": 5, "tears": 1, "destiny": 5000 } },
+        { "text": "Walk out the side door. Take the champagne. You were only here for the canapes anyway.", "next": "END", "delta": { "drama": -10, "chaos": -5, "tears": 1, "destiny": 2000 } },
         { "text": "Magdalena whispers something to you. You repeat it aloud to the whole chapel.", "next": "generate", "delta": { "drama": 25, "chaos": 30, "destiny": 20000 }, "hint": "What Magdalena whispered is something that everyone in the chapel reacts to differently. It concerns the basement, the guest list, and a year nobody mentioned. Every camera finds a different face." }
       ],
       "spice": {

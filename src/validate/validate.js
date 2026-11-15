@@ -47,6 +47,39 @@ export function createValidator({ adventureSchema, castSchema, generatedSceneSch
   return { validateCast, validateAdventure, validateGeneratedScene };
 }
 
+const VALID_ITEM_BASES   = new Set(['document','bottle','creature','device','ring','food','cloth','orb','flora','key','glass','trophy','bag']);
+const VALID_ITEM_COLORS  = new Set(['gold','pink','teal','cream','purple']);
+const VALID_ITEM_ACCENTS = new Set(['sparkle','glow','stain','tear','none']);
+
+function sanitizeSprite(raw) {
+  if (!raw || typeof raw !== 'object') return { base: 'orb', color: 'cream', accent: 'none' };
+  return {
+    base:   VALID_ITEM_BASES.has(raw.base)    ? raw.base   : 'orb',
+    color:  VALID_ITEM_COLORS.has(raw.color)  ? raw.color  : 'cream',
+    accent: VALID_ITEM_ACCENTS.has(raw.accent) ? raw.accent : 'none',
+  };
+}
+
+function sanitizeGive(give, adv) {
+  if (!Array.isArray(give)) return [];
+  const declared = adv.items ?? {};
+  return give.map((item) => {
+    if (typeof item === 'string') {
+      // LLM gave a string ID — only pass through if declared
+      if (!declared[item]) return null;
+      return item;
+    }
+    if (!item || typeof item !== 'object') return null;
+    const label = typeof item.label === 'string' ? item.label.slice(0, 40).trim() : null;
+    if (!label) return null;
+    // If id present and declared, keep it; otherwise strip id (becomes freeform)
+    const id = typeof item.id === 'string' && declared[item.id] ? item.id : undefined;
+    const out = { label, sprite: sanitizeSprite(item.sprite) };
+    if (id) out.id = id;
+    return out;
+  }).filter(Boolean);
+}
+
 /** Make LLM output safe to play: drop unknown flags/stats, clamp each delta to the stat's
  *  maxStep. Call validateGeneratedScene first. Returns a new scene; never mutates. */
 export function sanitizeGeneratedScene(scene, adv) {
@@ -61,10 +94,12 @@ export function sanitizeGeneratedScene(scene, adv) {
         const step = def.maxStep ?? Infinity;
         delta[key] = Math.max(-step, Math.min(step, change));
       }
-      const set = (c.set ?? []).filter((f) => approved.has(f));
-      const out = { text: c.text, next: c.next, delta };
-      if (set.length) out.set = set;
-      if (c.hint) out.hint = c.hint;
+      const set  = (c.set ?? []).filter((f) => approved.has(f));
+      const give = sanitizeGive(c.give, adv);
+      const out  = { text: c.text, next: c.next, delta };
+      if (set.length)  out.set  = set;
+      if (give.length) out.give = give;
+      if (c.hint)      out.hint = c.hint;
       return out;
     }),
   };
