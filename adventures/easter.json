@@ -1,0 +1,270 @@
+{
+  "$schema": "../schema/adventure.schema.json",
+  "version": 1,
+  "id": "easter",
+  "label": "EP 3",
+  "season": 1,
+  "episodeNumber": 3,
+  "episode": "EASTER EGG HUNT",
+  "cast": "lakewood",
+  "tone": "Petty Jersey chaos wrapped in holiday domesticity. Hatchet throwing is a legitimate team-building activity. Easter dinner is a contact sport. Someone always brings up the one thing nobody should bring up at Easter, in front of the wrong people, on purpose. Alliances formed at a hatchet range mean nothing at a dinner table. Someone always cries at Easter. The golden egg has ten dollars in it and it starts a war.",
+  "endAfter": 22,
+  "globalFlags": ["said_it_before", "wine_ally", "chaos_agent"],
+  "acts": [
+    {
+      "goal": "Survive the hatchet throwing event and pick a side before the Mimosa-Avigail loyalty drama explodes into something nobody can walk back.",
+      "until": { "stats": { "drama": ">=45" } },
+      "minBeats": 2,
+      "anchor": "avigail_confrontation"
+    },
+    {
+      "goal": "Get through Easter at Roxy's. Someone is going to bring up the thing nobody should bring up. Decide whether that someone is you.",
+      "until": { "stats": { "drama": ">=65" } },
+      "minBeats": 3,
+      "anchor": "dallas_timing"
+    },
+    {
+      "goal": "Easter dinner is now a full incident. Georgie is on his fourth glass. The egg hunt is over. Someone must say what everyone is thinking, on camera.",
+      "minBeats": 3
+    }
+  ],
+  "stats": {
+    "drama":     { "label": "Drama",       "start": 20,   "min": 0, "max": 100, "maxStep": 12, "decay": 3,    "display": "bar" },
+    "brand":     { "label": "Brand Value", "start": 8000, "min": 0,             "maxStep": 8000, "decay": 500, "display": "money" },
+    "alliances": { "label": "Allies",      "start": 1,    "min": 0, "max": 7,   "maxStep": 1,                 "display": "number" }
+  },
+  "items": {
+    "hatchet_pin": {
+      "label": "Bullseye Pin",
+      "description": "Mimosa had custom gold hatchet pins made for whoever hit the bullseye. It has a tiny bell. It rings when you walk.",
+      "hint": "This might matter.",
+      "sprite": { "base": "key", "color": "gold", "accent": "sparkle" }
+    },
+    "golden_egg": {
+      "label": "The Golden Egg",
+      "description": "The special Easter egg. Ten dollars inside. You found it before any of the children. They are still looking.",
+      "sprite": { "base": "orb", "color": "gold", "accent": "sparkle" }
+    }
+  },
+  "flags": {
+    "threw_bullseye":      { "recap": "You hit the bullseye on the first throw. The bell rang. Everyone stopped talking." },
+    "backed_mimosa":       { "recap": "When Avigail came for Mimosa's character, you stood with Mimosa." },
+    "backed_avigail":      { "recap": "When Mimosa came for Avigail's character, you stood with Avigail." },
+    "oklahoma_committed":  { "recap": "You committed to the Lake Sparkle charity weekend. Your husband does not know yet." },
+    "caused_easter_drama": { "recap": "You were the one who said the thing at Easter dinner." },
+    "golden_egg_winner":   { "recap": "You found the golden egg. The children will never forgive you." },
+    "defended_celeste":    { "recap": "You defended Celeste when Avigail went below the belt about her and Georgie's history." }
+  },
+  "scenes": {
+    "start": {
+      "place": "JERSEY BLADE & AXE · THE THROWING LANE · 2:14 PM",
+      "narration": "Mimosa Raines organized a hatchet throwing event and called it team wellness. The venue smells like cedar and competitive energy. Celeste is studying the target the way you study a person you do not trust yet. Avigail is holding her hatchet with both hands and not looking at anyone.",
+      "speaker": "MIMOSA RAINES",
+      "line": "I feel like we need to get some aggression out. We're throwing the hatchet at everything that has been holding us back.",
+      "confessional": "I organized this event because I genuinely believe in the therapeutic value of controlled violence. Also someone said something to me this week I cannot stop thinking about.",
+      "mood": "smug",
+      "fx": [],
+      "choices": [
+        { "text": "Step up first. Pick up the hatchet. Picture one specific person. Release.", "next": "generate", "delta": { "drama": 15, "brand": 6000 }, "give": ["hatchet_pin"], "set": ["threw_bullseye"], "setGlobal": ["chaos_agent"], "hint": "The bell rings. Everyone in the lane stops talking. A producer gestures at the camera crew." },
+        { "text": "Find Celeste before you do anything. She already knows why everyone is really here.", "next": "generate", "delta": { "drama": 8, "alliances": 1, "brand": 3000 }, "hint": "Celeste has been here for forty minutes. She has opinions about Avigail and has not volunteered them yet." },
+        { "text": "Toast Mimosa. 'To everything that has been holding us back.' You'll throw when you're ready.", "next": "mimosa_confides", "delta": { "drama": 5, "alliances": 1, "brand": 2000 } },
+        { "text": "Find Avigail. She looks like she needs someone to stand next to her right now.", "next": "generate", "delta": { "drama": -3, "alliances": 1, "brand": 1000 }, "hint": "Avigail is relieved. She immediately starts telling you something Mimosa does not know she is telling you." }
+      ]
+    },
+    "mimosa_confides": {
+      "place": "JERSEY BLADE & AXE · THE BAR · 2:38 PM",
+      "narration": "Mimosa has pulled you away from the lane. She is using her quiet voice, which is still louder than most people's regular voice.",
+      "speaker": "MIMOSA RAINES",
+      "line": "She said — point blank — 'You cheated on your husband and Celeste got cheated on. What do you even have in common?' Can you believe that?",
+      "confessional": "I am not angry. I am clarifying. Those are two completely different things.",
+      "mood": "angry",
+      "fx": [],
+      "choices": [
+        { "text": "She said WHAT? Give me every word. Start from the beginning.", "next": "generate", "delta": { "drama": 15, "brand": 5000 }, "set": ["backed_mimosa"], "hint": "Mimosa does not need to be asked twice. She has been waiting to tell someone since yesterday." },
+        { "text": "That is a low blow. Where did that come from?", "next": "generate", "delta": { "drama": 10, "alliances": 1, "brand": 3000 }, "set": ["backed_mimosa"] },
+        { "text": "To be fair — where is this coming from? What did you say first?", "next": "generate", "delta": { "drama": 5, "alliances": 1 }, "set": ["backed_avigail"] },
+        { "text": "She's right over there. This needs to happen in front of everyone. Now.", "next": "avigail_confrontation", "delta": { "drama": 20, "brand": 6000 } }
+      ]
+    },
+    "avigail_confrontation": {
+      "place": "JERSEY BLADE & AXE · THE LANE · 3:11 PM",
+      "narration": "Mimosa has decided everyone should hear this now. Avigail is still holding her hatchet. The throwing coach, Paul, has quietly moved toward the exit.",
+      "speaker": "AVIGAIL CHASE",
+      "line": "I didn't say it to hurt you. I said it because I was hurt. When you're my close, close friend and you go spend time with someone who has been nothing but trouble for everyone in this room — yes, I go below the belt. That's what I do when I'm hurt.",
+      "confessional": "Other people don't get this side of me because I don't care about other people as much as I care about Mimosa. So.",
+      "mood": "surprised",
+      "fx": [],
+      "choices": [
+        { "text": "Step between them. 'Paul, can you give us a moment? Actually, give us several.'", "next": "generate", "delta": { "drama": 20, "brand": 8000, "alliances": 1 }, "set": ["backed_mimosa"], "hint": "The other women are watching. Someone is definitely going to repeat this later." },
+        { "text": "Stay back. This is between them. Walk to the bar. Wait for Mimosa to pivot — she always does.", "next": "oklahoma_pitch", "delta": { "drama": -5, "brand": 1000 } },
+        { "text": "Walk toward Avigail. Tell her quietly: being hurt doesn't make it okay to go below the belt.", "next": "generate", "delta": { "drama": 15, "alliances": 1 }, "set": ["backed_mimosa"] },
+        { "text": "Walk toward Avigail. Tell her quietly: Celeste didn't do anything to her. Keep her out of it.", "next": "generate", "delta": { "drama": 10, "alliances": 1 }, "set": ["defended_celeste"], "requires": { "flags": ["backed_mimosa"] } },
+        { "text": "Pick up a hatchet. Throw it into the target. Very hard. Interrupt the moment entirely.", "next": "generate", "delta": { "drama": 25, "brand": 10000 }, "setGlobal": ["chaos_agent"], "hint": "The bell rings again. Everyone looks at you instead of each other." }
+      ]
+    },
+    "oklahoma_pitch": {
+      "place": "JERSEY BLADE & AXE · THE BAR · 4:02 PM",
+      "narration": "The hatchets are back in the rack. Mimosa has raised a glass. She is pivoting from conflict to vision, which is her signature move, and it almost always works.",
+      "speaker": "MIMOSA RAINES",
+      "line": "I want to do a charity weekend at Lake Sparkle — it's for the children's wing. We'll make it a girls' trip. I'm calling Roxy tonight. Who's in?",
+      "confessional": "I am 100% in. And I think Jennifer could use a weekend without anyone asking her to make roasted chicken.",
+      "mood": "smug",
+      "fx": ["sparkle"],
+      "choices": [
+        { "text": "Raise your glass. 'I am a hundred percent in. Oklahoma style.'", "next": "generate", "delta": { "drama": 10, "brand": 5000, "alliances": 1 }, "set": ["oklahoma_committed"] },
+        { "text": "Look at Avigail. This is the real question.", "next": "avigail_husband_call", "delta": { "drama": 8, "brand": 3000 } },
+        { "text": "Ask about the charity first. What are they actually doing? Give the details.", "next": "generate", "delta": { "drama": 5, "alliances": 1 }, "hint": "Mimosa has a whole pitch deck for this. It is nine slides. She did not need to make a pitch deck." },
+        { "text": "Hesitate. A whole weekend. You have things. You have a husband. You have a complicated situation.", "next": "generate", "delta": { "drama": -3, "brand": 1000 } }
+      ]
+    },
+    "avigail_husband_call": {
+      "place": "JERSEY BLADE & AXE · THE PARKING LOT · 4:19 PM",
+      "narration": "Avigail is on the phone with her husband. You can hear his side. He is traditional in the way that the word 'traditional' means 'very much against this trip.' Avigail's voice is getting quieter, which you have learned means louder inside.",
+      "speaker": "AVIGAIL CHASE",
+      "line": "I told them yes. I know I didn't discuss it. It's three days. It's not really a big deal. If you don't like it, you know — tough.",
+      "confessional": "My husband is the breadwinner. He provides. And I have paid my dues. My youngest starts kindergarten. I need to get away. So.",
+      "mood": "smug",
+      "fx": [],
+      "choices": [
+        { "text": "Applaud. Quietly. With eye contact. Tell her: you're doing the right thing.", "next": "generate", "delta": { "drama": 10, "alliances": 1, "brand": 4000 }, "set": ["oklahoma_committed"] },
+        { "text": "Give her a moment. Walk back inside. This is a private conversation.", "next": "generate", "delta": { "drama": 5 } },
+        { "text": "Stay close. When she hangs up, hand her your glass. She's going to need it.", "next": "roxy_no_food", "delta": { "drama": 8, "alliances": 1, "brand": 3000 } }
+      ]
+    },
+    "roxy_no_food": {
+      "place": "ROXY'S GYM · THURSDAY BEFORE EASTER",
+      "narration": "Roxy is nine and a half weeks out from her brand's big photoshoot. Her trainer Tracy does not believe in Easter. Or carbs. Or holidays as a concept.",
+      "speaker": "ROXY LARUE",
+      "line": "I can't eat. I can't have a drink. This is my Easter. The asparagus are mine.",
+      "confessional": "My trainer literally said — quote — 'right now you're standing there like a pile of' — she used language. And she's right. That's the worst part.",
+      "mood": "angry",
+      "fx": [],
+      "choices": [
+        { "text": "Tell Roxy she looks incredible and you will eat an extra roll for her at Easter.", "next": "generate", "delta": { "drama": 5, "alliances": 1, "brand": 2000 } },
+        { "text": "Ask: on a holiday you can have a treat. One small treat. Right?", "next": "generate", "delta": { "drama": 8, "brand": 3000 }, "hint": "Roxy looks at you like you just asked her to commit a crime. The trainer appears from nowhere." },
+        { "text": "Respect it. Find out what asparagus Roxy considers safe. Stand with her on asparagus.", "next": "easter_arrival", "delta": { "drama": -3, "alliances": 1, "brand": 1000 } }
+      ]
+    },
+    "easter_arrival": {
+      "place": "ROXY'S HOUSE · EASTER SUNDAY · 1:00 PM",
+      "narration": "Easter at Roxy's. The table is extraordinary. Georgie Chase arrived early and has been keeping Roxy's father company near the wine. They appear to have covered significant ground. The children are already in the backyard and already screaming.",
+      "speaker": "GEORGIE CHASE",
+      "line": "Three bottles. And it's not even two o'clock. I'm having a wonderful time. Happy Easter, everyone. Happy Easter.",
+      "confessional": "I am here because Avigail said there would be an egg hunt. I am competitive about egg hunts. I want that to be on record.",
+      "mood": "smug",
+      "fx": [],
+      "choices": [
+        { "text": "Sit next to Georgie and Roxy's father. These two have information and wine.", "next": "generate", "delta": { "drama": 8, "alliances": 1, "brand": 3000 }, "hint": "Georgie immediately tells you something about Dallas and her brother that Dallas does not know Georgie knows." },
+        { "text": "Find Roxy in the kitchen. She is standing near a plate of asparagus with a haunted expression.", "next": "generate", "delta": { "drama": 5, "alliances": 1, "brand": 2000 } },
+        { "text": "Get the Easter egg situation organized before the children lose their minds.", "next": "egg_hunt", "delta": { "drama": 5, "brand": 2000 } },
+        { "text": "Find Dallas. She looks like she is planning something, and when Dallas plans something, it lands on everyone.", "next": "generate", "delta": { "drama": 10, "brand": 4000 }, "hint": "Dallas is planning something. You are right." }
+      ]
+    },
+    "egg_hunt": {
+      "place": "ROXY'S BACKYARD · 2:30 PM",
+      "narration": "The egg hunt has been released. Children are running. Someone hid the golden egg — the one with ten dollars — in the rhododendron. Georgie Chase has also gone into the garden. This is a development.",
+      "speaker": "GEORGIE CHASE",
+      "line": "I found it. First. Fair and square. Happy Easter.",
+      "confessional": "I am not apologizing for this. The rules did not specify adults were excluded. I read the rules.",
+      "mood": "smug",
+      "fx": ["sparkle"],
+      "choices": [
+        { "text": "Back Georgie up completely. 'The rules did not specify. He found it fair and square.'", "next": "generate", "delta": { "drama": 15, "brand": 5000, "alliances": 1 } },
+        { "text": "Intervene. Take the egg. Give it back to the children before this becomes the story.", "next": "generate", "delta": { "drama": -3, "alliances": 1 } },
+        { "text": "While everyone is watching Georgie, go find the golden egg yourself and walk calmly inside.", "next": "generate", "delta": { "drama": 10, "brand": 6000 }, "give": ["golden_egg"], "set": ["golden_egg_winner"], "hint": "There's a second one. Roxy hid a backup because she knows this group." },
+        { "text": "Film Georgie holding the golden egg on your phone and say nothing. This will be useful later.", "next": "generate", "delta": { "drama": 12, "brand": 5000 }, "hint": "A producer sees you doing this and visibly approves." },
+        { "text": "Round everyone up. The hunt is over. Time to go inside for dinner.", "next": "dallas_timing", "delta": { "drama": 5, "brand": 2000 } }
+      ]
+    },
+    "dallas_timing": {
+      "place": "ROXY'S DINING ROOM · EASTER DINNER · 4:15 PM",
+      "narration": "Easter dinner. The table is full. Georgie and Roxy's father are side by side, still operating in their own frequency. Roxy is eating asparagus with the energy of someone who has made a profound sacrifice. Dallas clears her throat.",
+      "speaker": "DALLAS THORP",
+      "line": "Hey — I want to ask something, and I know the timing is probably not perfect, but — Roxy, is your brother going to be around more this year? For your dad? Because I think everyone at this table wants to say it.",
+      "confessional": "I brought it up because someone had to. I am the one who brings things up. I know the timing is never perfect but if nobody says it—",
+      "mood": "neutral",
+      "fx": [],
+      "choices": [
+        { "text": "Back Dallas. 'I think what Dallas is saying is that your dad has been saying something to all of us.'", "next": "confrontation", "delta": { "drama": 20, "brand": 8000 }, "set": ["caused_easter_drama"], "setGlobal": ["chaos_agent"] },
+        { "text": "Change the subject immediately. Loudly. Raise your glass. 'To Roxy's asparagus. The sacrifice.'", "next": "generate", "delta": { "drama": 5, "alliances": 1 } },
+        { "text": "Look at Roxy. Let her take this. This is her table, her family, her call.", "next": "confrontation", "delta": { "drama": 15, "brand": 5000 }, "hint": "Roxy takes it. You immediately realize she has been waiting to take it." },
+        { "text": "Say quietly to Dallas: 'Not at Easter. Not now. Tell her later.'", "next": "generate", "delta": { "drama": -5, "alliances": 1, "brand": 1000 } }
+      ]
+    },
+    "confrontation": {
+      "place": "ROXY'S DINING ROOM · EASTER · 4:28 PM",
+      "narration": "Roxy's brother is explaining — again — that he works very hard, that his business takes everything he has, that it is not personal. Roxy's father is saying something in Italian. Georgie Chase is very quietly pouring himself another glass and making serious eye contact with no one. The cameras are very close.",
+      "speaker": "ROXY LARUE",
+      "line": "I cry like a baby at night because of this. I say it because someone has to say it. And I don't take it back. Capisce?",
+      "confessional": "I said what I said. I said what my father could not say. I will not apologize for it. Not on Easter, not ever.",
+      "mood": "angry",
+      "fx": ["wine"],
+      "choices": [
+        { "text": "Stand up. 'She's right. And I think everyone in this room has wanted to say it for a long time.' Look directly at the camera.", "next": "END", "delta": { "drama": 35, "brand": 25000, "alliances": 2 }, "set": ["caused_easter_drama"], "setGlobal": ["said_it_before", "chaos_agent"] },
+        { "text": "Put your hand on Roxy's arm. 'You said it. It's out there. That's enough for now.'", "next": "END", "delta": { "drama": 25, "brand": 20000, "alliances": 1 } },
+        { "text": "Walk to the Easter table, take the basket of rolls, and hand them to Roxy. 'Eat. You've earned it.'", "next": "END", "delta": { "drama": 20, "brand": 15000, "alliances": 2 } },
+        { "text": "Collect your things quietly, find the golden egg if you don't have it, and exit through the back door.", "next": "END", "delta": { "drama": -10, "brand": 2000 } },
+        { "text": "Find Dallas's eye across the table. Neither of you says anything. That is enough.", "next": "END", "delta": { "drama": 15, "brand": 12000, "alliances": 1 } },
+        { "text": "Touch the bullseye pin. The bell rings. The whole table looks at you. You say: 'I said what I said.'", "next": "END", "delta": { "drama": 35, "brand": 28000, "alliances": 2 }, "consume": ["hatchet_pin"], "setGlobal": ["said_it_before", "chaos_agent"], "requires": { "hasItems": ["hatchet_pin"] } },
+        { "text": "Place the golden egg on the table. Say nothing. Watch everyone figure out what that means.", "next": "END", "delta": { "drama": 25, "brand": 20000, "alliances": 1 }, "consume": ["golden_egg"], "requires": { "hasItems": ["golden_egg"] } }
+      ]
+    }
+  },
+  "endings": [
+    {
+      "if": { "flags": ["threw_bullseye", "caused_easter_drama"], "stats": { "drama": ">=70" } },
+      "title": "AXPERT AND UNAPOLOGETIC",
+      "text": "You hit the bullseye at the hatchet range and you said the thing at Easter dinner. These are two separate but equally important facts about you. Production is already planning your tagline.",
+      "spice": {
+        "3": { "text": "You hit the bullseye and said the thing at Easter dinner on the same day. You are either healing very quickly or you have never needed to heal. Either way, production loves you." }
+      }
+    },
+    {
+      "if": { "flags": ["threw_bullseye", "backed_mimosa"], "stats": { "brand": ">=30000" } },
+      "title": "MIMOSA'S RIDE OR DIE",
+      "text": "You stood with Mimosa when it mattered, hit the bullseye on your first throw, and left Easter with your brand intact. The hatchet pin is a flex and you know it.",
+      "spice": {
+        "3": { "text": "You stood with Mimosa, hit the bullseye, and wore that pin to Easter dinner. The bell rang every time you moved. Everyone heard it." }
+      }
+    },
+    {
+      "if": { "flags": ["oklahoma_committed", "backed_avigail"], "stats": { "alliances": ">=3" } },
+      "title": "OKLAHOMA, HERE WE COME",
+      "text": "You backed Avigail when she needed it, committed to the Lake Sparkle charity weekend, and left Easter with more allies than you arrived with. The trip is going to be interesting.",
+      "spice": {
+        "3": { "text": "You backed Avigail, committed to the charity weekend, and your husband has not been told yet. Oklahoma, here we come. The rest is details." }
+      }
+    },
+    {
+      "if": { "flags": ["caused_easter_drama"], "stats": { "drama": ">=65" } },
+      "title": "YOU SAID IT AT EASTER",
+      "text": "You were the one. At the Easter table. With Georgie on his fourth glass and Roxy eating asparagus next to a ham. You said the thing. It is in the trailer now.",
+      "spice": {
+        "3": { "text": "You said it at Easter dinner. At the table. With Roxy's father right there. It is going to be in the season recap. It is going to be in the reunion. You said it and you can not unsay it and honestly you do not want to." }
+      }
+    },
+    {
+      "if": { "flags": ["golden_egg_winner"], "stats": { "drama": ">=50" } },
+      "title": "KEEPER OF THE GOLDEN EGG",
+      "text": "You found the backup golden egg. You kept it. You said nothing. The children are still looking. The ten dollars is yours. This is your Easter now.",
+      "spice": {
+        "3": { "text": "You found the backup golden egg and you kept it and you watched Georgie Chase take credit for finding the first one and you said absolutely nothing. That is power." }
+      }
+    },
+    {
+      "if": { "stats": { "drama": ">=50" } },
+      "title": "PRODUCTION'S FAVORITE",
+      "text": "You were at the right place at every moment this episode. You didn't cause everything but you were present for all of it. Production has circled your name.",
+      "spice": {
+        "3": { "text": "Production has circled your name. You were present for the hatchet incident, the Oklahoma announcement, and the Easter explosion. You didn't cause everything. But you were there." }
+      }
+    },
+    {
+      "title": "LEFT WITH THE DEVILED EGGS",
+      "text": "You navigated every drama with caution and left with Roxy's leftover deviled eggs and nobody's enemy. Well done. Nobody will remember you were here.",
+      "spice": {
+        "3": { "text": "You left with the deviled eggs. No drama. No allies, no enemies. The editors have almost nothing to work with. You are a background blur this episode. Well done." }
+      }
+    }
+  ]
+}

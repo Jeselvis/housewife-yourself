@@ -18,7 +18,7 @@ const ADVENTURES = Object.values(_adventureMods).map(m => m.default)
 const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast, lakewood: lakewoodCast }
 const SAVE_KEY = 'lsa'
 const AUTH_KEY  = 'lsa-auth'
-const ADVENTURE_IMAGES = { toast: '/toast.webp', passions: '/wedding.webp' }
+const ADVENTURE_IMAGES = { toast: '/toast.webp', passions: '/wedding.webp', easter: '/easter.webp' }
 
 const C = {
   bg: '#170a21',
