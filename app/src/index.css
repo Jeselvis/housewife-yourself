@@ -59,7 +59,7 @@ button { font-family: inherit; cursor: pointer; }
   0%, 100% { transform: translateY(0); }
   50%       { transform: translateY(-2px); }
 }
-.conf-talk { animation: conf-talk 0.45s ease-in-out infinite; display: inline-block; line-height: 0; }
+.conf-talk { animation: conf-talk 0.45s ease-in-out infinite; display: inline-block; line-height: 0; position: relative; }
 
 @keyframes conf-mouth {
   0%, 35%  { opacity: 0; }

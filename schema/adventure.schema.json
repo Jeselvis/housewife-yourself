@@ -176,6 +176,7 @@
       "additionalProperties": false,
       "properties": {
         "place": { "type": "string" },
+        "establishing": { "type": "string", "description": "Shown instead of narration when arriving fresh (from a scripted scene or start). narration is the mid-sequence version." },
         "narration": { "type": "string" },
         "speaker": { "type": "string" },
         "line": { "type": "string" },

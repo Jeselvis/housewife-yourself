@@ -89,7 +89,8 @@
     },
     "avigail_confrontation": {
       "place": "JERSEY BLADE & AXE · THE LANE · 3:11 PM",
-      "narration": "Mimosa has decided everyone should hear this now. Avigail is still holding her hatchet. The throwing coach, Paul, has quietly moved toward the exit.",
+      "establishing": "Mimosa has decided everyone should hear this now. Avigail is still holding her hatchet. The throwing coach, Paul, has quietly moved toward the exit.",
+      "narration": "Avigail is still holding her hatchet. The lane has gone very quiet. The throwing coach, Paul, is edging toward the exit.",
       "speaker": "AVIGAIL CHASE",
       "line": "I didn't say it to hurt you. I said it because I was hurt. When you're my close, close friend and you go spend time with someone who has been nothing but trouble for everyone in this room — yes, I go below the belt. That's what I do when I'm hurt.",
       "confessional": "Other people don't get this side of me because I don't care about other people as much as I care about Mimosa. So.",
@@ -179,7 +180,7 @@
     },
     "dallas_timing": {
       "place": "ROXY'S DINING ROOM · EASTER DINNER · 4:15 PM",
-      "narration": "Easter dinner. The table is full. Georgie and Roxy's father are side by side, still operating in their own frequency. Roxy is eating asparagus with the energy of someone who has made a profound sacrifice. Dallas clears her throat.",
+      "narration": "The table goes quiet mid-sentence. Dallas sets down her fork and clears her throat in the specific way that means she has decided to say something.",
       "speaker": "DALLAS THORP",
       "line": "Hey — I want to ask something, and I know the timing is probably not perfect, but — Roxy, is your brother going to be around more this year? For your dad? Because I think everyone at this table wants to say it.",
       "confessional": "I brought it up because someone had to. I am the one who brings things up. I know the timing is never perfect but if nobody says it—",

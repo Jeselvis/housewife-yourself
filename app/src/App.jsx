@@ -154,8 +154,10 @@ function ConfessionalPortrait({ look, mood, name }) {
   const gesture  = renderGestureSVG(layers, look, 80)
   return (
     <div style={{ position: 'relative', width: 88, height: 88, border: `3px solid ${C.teal}`, background: C.dim, flexShrink: 0, overflow: 'hidden' }}>
-      <div className="conf-talk" dangerouslySetInnerHTML={{ __html: svg }} />
-      <div className="conf-mouth" dangerouslySetInnerHTML={{ __html: mouthSvg }} />
+      <div className="conf-talk">
+        <div dangerouslySetInnerHTML={{ __html: svg }} />
+        <div className="conf-mouth" dangerouslySetInnerHTML={{ __html: mouthSvg }} />
+      </div>
       <div key={gestureKey} className="conf-gesture" dangerouslySetInnerHTML={{ __html: gesture }} />
     </div>
   )
@@ -734,6 +736,9 @@ export default function App() {
   const choices    = visibleChoices(scene, gameState)
   const castData   = CASTS[adventure.cast] ?? lakeSparkleCast
   const speakerDef = scene.speaker ? castData.characters[scene.speaker] : null
+  const lastSceneId = gameState.history[gameState.history.length - 1]?.sceneId
+  const isEstablishing = !lastSceneId || !lastSceneId.startsWith('gen-')
+  const displayNarration = isEstablishing && scene.establishing ? scene.establishing : scene.narration
 
   return (
     <div style={{ background: scanlines, minHeight: '100dvh', padding: '20px 16px max(20px, env(safe-area-inset-bottom, 20px))', display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 600, margin: '0 auto' }}>
@@ -759,7 +764,7 @@ export default function App() {
       <div style={{ background: C.panel, border: `3px solid ${C.gold}`, padding: '18px 14px', display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{ fontSize: 17, color: C.lavender, letterSpacing: 1 }}>{scene.place}</div>
         <div style={{ fontSize: 24, lineHeight: 1.3 }}>
-          <TypedText key={scene.narration} text={scene.narration} />
+          <TypedText key={displayNarration} text={displayNarration} />
         </div>
         {scene.speaker && speakerDef && (
           <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', marginTop: 4 }}>
