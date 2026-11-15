@@ -135,6 +135,9 @@ function semanticChecks(adv, cast, errors, warnings, globalsData) {
   for (const f of advGlobalFlags) {
     if (globalsData && !globalFlagDefs[f]) errors.push(`globalFlags: "${f}" is not in globals.json`);
   }
+  for (const id of adv.globalItems ?? []) {
+    if (!itemKeys.has(id)) errors.push(`globalItems: "${id}" is not declared in "items"`);
+  }
   const flagsSet     = new Set();
   const flagsRead    = new Set(); // positive reads
   const flagsReadNeg = new Set();

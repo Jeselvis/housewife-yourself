@@ -22,8 +22,42 @@ const ADVENTURES = Object.values(_adventureMods)
     return sb - sa
   })
 const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast, lakewood: lakewoodCast }
-const SAVE_KEY = 'lsa'
-const AUTH_KEY  = 'lsa-auth'
+const SAVE_KEY         = 'lsa'
+const AUTH_KEY         = 'lsa-auth'
+const GLOBAL_FLAGS_KEY = 'lsa_global_flags'
+const GLOBAL_ITEMS_KEY = 'lsa_global_items'
+
+function readGlobalFlags() {
+  try { return JSON.parse(localStorage.getItem(GLOBAL_FLAGS_KEY)) ?? [] } catch { return [] }
+}
+function readGlobalItems() {
+  try { return JSON.parse(localStorage.getItem(GLOBAL_ITEMS_KEY)) ?? [] } catch { return [] }
+}
+function persistGlobalState(adventure, state) {
+  // merge global flags
+  const prev = readGlobalFlags()
+  const merged = [...prev]
+  for (const f of state.globalFlags ?? []) if (!merged.includes(f)) merged.push(f)
+  localStorage.setItem(GLOBAL_FLAGS_KEY, JSON.stringify(merged))
+  // persist items this adventure declared as global, if still held
+  const globalItemIds = new Set(adventure.globalItems ?? [])
+  if (!globalItemIds.size) return
+  const toSave = (state.inventory ?? []).filter(i => i.id && globalItemIds.has(i.id))
+  if (!toSave.length) return
+  const prevItems = readGlobalItems()
+  const updated = [...prevItems.filter(i => !toSave.some(n => n.id === i.id)), ...toSave]
+  localStorage.setItem(GLOBAL_ITEMS_KEY, JSON.stringify(updated))
+}
+function buildSeedItems(adventure, globalItems) {
+  return globalItems
+    .filter(item => item?.id)
+    .map(item => {
+      const def = adventure.items?.[item.id]
+      if (!def) return { ...item } // freeform — keep original label + sprite
+      return { id: item.id, label: def.label, description: def.description ?? null, hint: def.hint ?? null, sprite: def.sprite ?? null }
+    })
+    .slice(0, 8)
+}
 const ADVENTURE_IMAGES = { toast: '/toast.webp', passions: '/wedding.webp', easter: '/easter.webp' }
 
 const C = {
@@ -527,7 +561,11 @@ export default function App() {
     if (saved) {
       try { setGameState(JSON.parse(saved)); setEnding(null); return } catch {}
     }
-    setGameState(engineSetSpice(createState(adventure), appSpice))
+    const seedFlags = readGlobalFlags().filter(f => (adventure.globalFlags ?? []).includes(f))
+    const seedItems = buildSeedItems(adventure, readGlobalItems())
+    let fresh = engineSetSpice(createState(adventure, { globalFlags: seedFlags }), appSpice)
+    if (seedItems.length) fresh = { ...fresh, inventory: seedItems }
+    setGameState(fresh)
     setEnding(null)
   }, [adventureIdx])
 
@@ -559,6 +597,7 @@ export default function App() {
         if (fetchId === fetchIdRef.current) setLoading(false)
       }
     } else if (result.status === 'end') {
+      persistGlobalState(adventure, result.state)
       setGameState(result.state)
       setEnding(result.ending)
       localStorage.removeItem(`${SAVE_KEY}-${adventure.id}`)

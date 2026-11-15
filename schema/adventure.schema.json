@@ -52,6 +52,12 @@
       "uniqueItems": true,
       "items": { "$ref": "#/definitions/flagName" },
       "description": "Global flags this adventure may read (globalFlags/notGlobalFlags conditions) or write (setGlobal). Every entry must be declared in globals.json."
+    },
+    "globalItems": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/definitions/itemName" },
+      "description": "Item IDs from this adventure's items block that persist to localStorage when held at episode end, available to future episodes."
     }
   },
   "definitions": {

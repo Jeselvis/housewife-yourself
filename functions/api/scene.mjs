@@ -170,7 +170,7 @@ STATS: ${statIds}
 ITEM BASES: document | bottle | creature | device | ring | food | cloth | orb | flora | key | glass | trophy | bag
 ITEM COLORS: gold | pink | teal | cream | purple
 ITEM ACCENTS: sparkle | glow | stain | tear | none
-APPROVED ITEMS: ${Object.entries(adv.items ?? {}).map(([id, def]) => `${id} (${def.label})`).join(', ') || 'none'}
+APPROVED ITEMS: ${Object.entries(adventure.items ?? {}).map(([id, def]) => `${id} (${def.label})`).join(', ') || 'none'}
 
 You may add ONE item to one choice per beat via "give". Use a declared APPROVED ITEM id, or invent a freeform object: { "label": "a strange thing", "sprite": { "base": "...", "color": "...", "accent": "..." } }. Declared items may gate future choices. Freeform items are flavor. Keep labels specific and strange, max 40 characters. Do not give an item on every beat — only when something physically changes hands.
 

@@ -87,7 +87,7 @@ function applyDelta(adventure, stats, delta = {}) {
   const out = { ...stats };
   for (const [key, change] of Object.entries(delta)) {
     const def = adventure.stats[key];
-    if (!def) throw new Error(`Unknown stat: ${key}`);
+    if (!def) continue;
     let v = (out[key] ?? def.start) + change;
     if (def.min !== undefined) v = Math.max(def.min, v);
     if (def.max !== undefined) v = Math.min(def.max, v);
@@ -251,9 +251,9 @@ export function fallbackScene(state) {
     fx: [],
     memory: [],
     choices: [
-      { text: 'Pretend that never happened.', next: 'END', delta: { pop: 5 } },
+      { text: 'Pretend that never happened.', next: 'END', delta: { drama: 5 } },
       { text: 'Demand a second take.', next: 'END', delta: { drama: 10 } },
-      { text: 'Leave through the window. Take the snacks.', next: 'END', delta: { pop: -5 } },
+      { text: 'Leave through the window. Take the snacks.', next: 'END', delta: { drama: -5 } },
     ],
   };
 }

@@ -10,6 +10,7 @@
   "tone": "Petty, escalating reality-TV chaos. Old money meets new money, everyone has a brand to protect, and nobody can let anything go. Confessionals are sharp and self-serving. Every slight is remembered. Every gift exchange becomes an incident. Someone always says what everyone else was thinking, loudly, in a hallway.",
   "endAfter": 24,
   "globalFlags": ["iguana_keeper", "said_it_before", "wine_ally", "chaos_agent"],
+  "globalItems": ["iguana", "wine_glass"],
   "acts": [
     {
       "goal": "Survive the holiday party — navigate Georgie, survive the Secret Santa, and pick a side in the photoshoot drama before it becomes a party-wide incident.",

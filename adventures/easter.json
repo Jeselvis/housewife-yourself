@@ -10,6 +10,7 @@
   "tone": "Petty Jersey chaos wrapped in holiday domesticity. Hatchet throwing is a legitimate team-building activity. Easter dinner is a contact sport. Someone always brings up the one thing nobody should bring up at Easter, in front of the wrong people, on purpose. Alliances formed at a hatchet range mean nothing at a dinner table. Someone always cries at Easter. The golden egg has ten dollars in it and it starts a war.",
   "endAfter": 22,
   "globalFlags": ["said_it_before", "wine_ally", "chaos_agent"],
+  "globalItems": ["hatchet_pin", "golden_egg"],
   "acts": [
     {
       "goal": "Survive the hatchet throwing event and pick a side before the Mimosa-Avigail loyalty drama explodes into something nobody can walk back.",
