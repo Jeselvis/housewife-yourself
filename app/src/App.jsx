@@ -546,7 +546,10 @@ export default function App() {
   const [gameState, setGameState]         = useState(null)
   const [ending, setEnding]               = useState(null)
   const [loading, setLoading]             = useState(false)
-  const [appSpice, setAppSpice]           = useState(2)
+  const [appSpice, setAppSpice]           = useState(() => {
+    const saved = parseInt(localStorage.getItem('lsa_spice'), 10)
+    return saved >= 1 && saved <= 3 ? saved : 2
+  })
   const [showInventory, setShowInventory] = useState(false)
   const [playerAuth, setPlayerAuth]     = useState(() => {
     try { return JSON.parse(localStorage.getItem(AUTH_KEY)) } catch { return null }
@@ -696,7 +699,7 @@ export default function App() {
   if (adventureIdx === null) {
     return (
       <>
-        <EpisodeSelect onSelect={handleSelectAdventure} onNewGame={handleNewGameSelect} spice={appSpice} onSpice={setAppSpice} />
+        <EpisodeSelect onSelect={handleSelectAdventure} onNewGame={handleNewGameSelect} spice={appSpice} onSpice={(level) => { setAppSpice(level); localStorage.setItem('lsa_spice', level) }} />
         {showLogin && <LoginModal onSuccess={handleLoginSuccess} />}
       </>
     )
