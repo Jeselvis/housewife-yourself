@@ -11,8 +11,12 @@ import lakewoodCast from '../../cast/lakewood.json'
 const ADVENTURES = { passions, toast }
 const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast, lakewood: lakewoodCast }
 
-const VALID_MOODS = new Set(['neutral', 'surprised', 'angry', 'smug'])
-const VALID_FX    = new Set(['wine', 'souffle', 'horns', 'sparkle'])
+const VALID_MOODS        = new Set(['neutral', 'surprised', 'angry', 'smug'])
+const VALID_FX           = new Set(['wine', 'souffle', 'horns', 'sparkle'])
+const VALID_ITEM_BASES   = new Set(['document','bottle','creature','device','ring','food','cloth','orb','flora','key','glass','trophy','bag'])
+const VALID_ITEM_COLORS  = new Set(['gold','pink','teal','cream','purple'])
+const VALID_ITEM_ACCENTS = new Set(['sparkle','glow','stain','tear','none'])
+const INVENTORY_CAP      = 8
 
 const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash'
 const DEFAULT_MAGICA_MODEL = 'openai/gpt-5.6-terra'
@@ -55,13 +59,38 @@ function validateGeneratedScene(scene, adv, cast) {
   return errors
 }
 
+function sanitizeSprite(raw) {
+  if (!raw || typeof raw !== 'object') return { base: 'orb', color: 'cream', accent: 'none' }
+  return {
+    base:   VALID_ITEM_BASES.has(raw.base)    ? raw.base   : 'orb',
+    color:  VALID_ITEM_COLORS.has(raw.color)  ? raw.color  : 'cream',
+    accent: VALID_ITEM_ACCENTS.has(raw.accent) ? raw.accent : 'none',
+  }
+}
+
+function sanitizeGive(give, adv) {
+  if (!Array.isArray(give)) return []
+  const declared = adv.items ?? {}
+  return give.map((item) => {
+    if (typeof item === 'string') return declared[item] ? item : null
+    if (!item || typeof item !== 'object') return null
+    const label = typeof item.label === 'string' ? item.label.slice(0, 40).trim() : null
+    if (!label) return null
+    const id = typeof item.id === 'string' && declared[item.id] ? item.id : undefined
+    const out = { label, sprite: sanitizeSprite(item.sprite) }
+    if (id) out.id = id
+    return out
+  }).filter(Boolean)
+}
+
 function sanitizeGeneratedScene(scene, adv) {
   const approved = new Set(Object.keys(adv.flags ?? {}))
   const statKeys  = new Set(Object.keys(adv.stats))
   return {
     ...scene,
-    mood: VALID_MOODS.has(scene.mood) ? scene.mood : 'neutral',
-    fx:   Array.isArray(scene.fx) ? scene.fx.filter(f => VALID_FX.has(f)) : [],
+    mood:     VALID_MOODS.has(scene.mood) ? scene.mood : 'neutral',
+    fx:       Array.isArray(scene.fx) ? scene.fx.filter(f => VALID_FX.has(f)) : [],
+    consumed: typeof scene.consumed === 'boolean' ? scene.consumed : false,
     choices: scene.choices.map((c) => {
       const delta = {}
       for (const [key, val] of Object.entries(c.delta ?? {})) {
@@ -69,10 +98,12 @@ function sanitizeGeneratedScene(scene, adv) {
         const step = adv.stats[key].maxStep ?? Infinity
         delta[key] = Math.max(-step, Math.min(step, val))
       }
-      const set = (c.set ?? []).filter(f => approved.has(f))
-      const out = { text: c.text, next: c.next, delta }
-      if (set.length) out.set = set
-      if (c.hint) out.hint = c.hint
+      const set  = (c.set ?? []).filter(f => approved.has(f))
+      const give = sanitizeGive(c.give, adv)
+      const out  = { text: c.text, next: c.next, delta }
+      if (set.length)  out.set  = set
+      if (give.length) out.give = give
+      if (c.hint)      out.hint = c.hint
       return out
     }),
   }
@@ -133,23 +164,32 @@ CAST
 ${castLines}
 
 APPROVED FLAGS: ${flagIds}
-STATS: ${statIds}`
+STATS: ${statIds}
+
+ITEM BASES: document | bottle | creature | device | ring | food | cloth | orb | flora | key | glass | trophy | bag
+ITEM COLORS: gold | pink | teal | cream | purple
+ITEM ACCENTS: sparkle | glow | stain | tear | none
+APPROVED ITEMS: ${Object.entries(adv.items ?? {}).map(([id, def]) => `${id} (${def.label})`).join(', ') || 'none'}
+
+You may add ONE item to one choice per beat via "give". Use a declared APPROVED ITEM id, or invent a freeform object: { "label": "a strange thing", "sprite": { "base": "...", "color": "...", "accent": "..." } }. Declared items may gate future choices. Freeform items are flavor. Keep labels specific and strange, max 40 characters. Do not give an item on every beat — only when something physically changes hands.
+
+If PLAYER IS USING an item: the NPC must react to it directly. Add "consumed": true if the item is accepted or destroyed (physically leaves the player). Add "consumed": false if rejected — the NPC has a funny reason to push it back. Default to false when in doubt. Never silently ignore a used item.`
 }
 
 function buildUserMessage(req) {
-  const { stats, flags, inventory, memory, recentBeats, lastScene, choice, beat, actGoal } = req
+  const { stats, flags, inventory, memory, recentBeats, lastScene, choice, beat, actGoal, itemUse } = req
   const statStr = Object.entries(stats).map(([k, v]) => `${k}=${v}`).join(', ')
   return [
     `Beat: ${beat}`,
     actGoal ? `Act goal: ${actGoal}` : '',
     `Stats: ${statStr}`,
     `Active flags: ${flags.length ? flags.join(', ') : 'none'}`,
-    inventory?.length ? `Inventory: ${inventory.join(', ')}` : '',
+    inventory?.length ? `Inventory: ${inventory.map(i => typeof i === 'string' ? i : i.label).join(', ')}` : '',
     memory.length ? `Cast remembers: ${memory.slice(-8).join(' | ')}` : '',
     recentBeats?.length ? `Recent beats (don't repeat): ${recentBeats.slice(-4).join(' | ')}` : '',
     lastScene?.speaker ? `Last: ${lastScene.speaker} said "${lastScene.line}"` : '',
-    `Player chose: "${choice.text}"`,
-    choice.hint ? `Hint: ${choice.hint}` : '',
+    itemUse ? `PLAYER IS USING: "${itemUse.label}" — react to this directly.` : `Player chose: "${choice?.text}"`,
+    choice?.hint ? `Hint: ${choice.hint}` : '',
   ].filter(Boolean).join('\n')
 }
 

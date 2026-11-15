@@ -30,6 +30,19 @@
     "brand":     { "label": "Brand Value",  "start": 8000, "min": 0,             "maxStep": 8000, "decay": 500, "display": "money" },
     "alliances": { "label": "Allies",       "start": 1,    "min": 0, "max": 7,   "maxStep": 1,                 "display": "number" }
   },
+  "items": {
+    "iguana": {
+      "label": "The Iguana",
+      "description": "You volunteered. It is calm. It has not blinked since you picked it up.",
+      "sprite": { "base": "creature", "color": "teal", "accent": "none" }
+    },
+    "wine_glass": {
+      "label": "Roxy's Wine Glass",
+      "description": "A full glass of Roxy's brand rosé. Still full. You have been careful.",
+      "hint": "This might matter.",
+      "sprite": { "base": "glass", "color": "pink", "accent": "stain" }
+    }
+  },
   "flags": {
     "georgie_survived":  { "recap": "You survived an extended encounter with Georgie Chase with your dignity intact." },
     "iguana_adopted":    { "recap": "You took custody of the iguana." },
@@ -41,10 +54,6 @@
     "accent_defended":   { "recap": "You defended Marceau's accent the second he left the room." },
     "said_what_i_said":  { "recap": "You said what you said, into a camera, and did not walk it back." },
     "made_scene":        { "recap": "You made a scene at Janna's party. It's going in the trailer." }
-  },
-  "items": {
-    "iguana":     { "label": "Clitoris Iguana" },
-    "wine_glass": { "label": "Roxy's Pinot" }
   },
   "scenes": {
     "start": {

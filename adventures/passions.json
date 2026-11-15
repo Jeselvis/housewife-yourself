@@ -31,6 +31,20 @@
     "tears":   { "label": "Tears Shed",   "start": 0,    "min": 0,             "maxStep": 2,              "display": "number" },
     "destiny": { "label": "Brand Value",  "start": 5000, "min": 0,             "maxStep": 8000,            "display": "money" }
   },
+  "items": {
+    "evidence": {
+      "label": "Crystal's Photograph",
+      "description": "A photograph proving Vangie attended a conference in Geneva in 2019. Crystal gave it to you.",
+      "hint": "This might matter.",
+      "sprite": { "base": "document", "color": "cream", "accent": "none" }
+    },
+    "amulet": {
+      "label": "Magdalena's Amulet",
+      "description": "It hums. It is warm. Magdalena said not to drop it. She was very specific about that.",
+      "hint": "This might matter.",
+      "sprite": { "base": "orb", "color": "purple", "accent": "glow" }
+    }
+  },
   "flags": {
     "helped_crystal":      { "recap": "You helped Crystal crash the wedding." },
     "warned_maxwell":      { "recap": "You warned Maxwell about Vangie's true identity." },
@@ -44,10 +58,6 @@
     "magdalena_unleashed": { "recap": "You gave Magdalena permission to do her worst." },
     "table_flipped":       { "recap": "You flipped the buffet table. On camera. In a tagline-worthy way." },
     "said_what_i_said":    { "recap": "You said what you said, and you did not take it back." }
-  },
-  "items": {
-    "amulet":   { "label": "Cursed Amulet" },
-    "evidence": { "label": "Vangie's Secret" }
   },
   "scenes": {
     "start": {

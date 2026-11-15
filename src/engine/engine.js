@@ -113,11 +113,40 @@ function addFlags(flags, toSet = []) {
   return out;
 }
 
-function updateInventory(inventory, give = [], consume = []) {
+const INVENTORY_CAP = 8;
+
+function hydrateItem(adventure, item) {
+  if (typeof item === 'string') {
+    const def = adventure.items?.[item];
+    if (!def) return { label: item, sprite: null };
+    return { id: item, label: def.label, description: def.description ?? null, hint: def.hint ?? null, sprite: def.sprite ?? null };
+  }
+  return item; // already an object (LLM freeform)
+}
+
+function updateInventory(adventure, inventory, give = [], consume = []) {
   const drop = new Set(consume);
-  const out = inventory.filter((item) => !drop.has(item));
-  for (const item of give) if (!out.includes(item)) out.push(item);
-  return out;
+  const out = inventory.filter((item) => {
+    const id = item.id ?? null;
+    return id ? !drop.has(id) : true;
+  });
+  const overflow = [];
+  for (const raw of give) {
+    const item = hydrateItem(adventure, raw);
+    const alreadyHeld = item.id ? out.some((i) => i.id === item.id) : false;
+    if (!alreadyHeld) {
+      if (out.length < INVENTORY_CAP) out.push(item);
+      else overflow.push(item);
+    }
+  }
+  return { inventory: out, overflow };
+}
+
+export function dropItem(state, itemId) {
+  return {
+    ...state,
+    inventory: state.inventory.filter((item) => item.id !== itemId),
+  };
 }
 
 export function enterScene(adventure, state, sceneId) {
@@ -135,16 +164,18 @@ export function choose(adventure, state, choiceIndex) {
   const choice = visibleChoices(scene, state)[choiceIndex];
   if (!choice) throw new RangeError(`No visible choice at index ${choiceIndex}.`);
 
+  const { inventory, overflow } = updateInventory(adventure, state.inventory ?? [], choice.give, choice.consume);
   let next = {
     ...state,
-    stats:       applyDecay(adventure, applyDelta(adventure, state.stats, choice.delta)),
-    flags:       addFlags(state.flags, choice.set),
-    globalFlags: addFlags(state.globalFlags ?? [], choice.setGlobal),
-    inventory:   updateInventory(state.inventory ?? [], choice.give, choice.consume),
-    history:   [...state.history, { sceneId: state.sceneId, choice: choiceIndex, text: choice.text }],
-    beat:      state.beat + 1,
-    act:       state.act ?? 0,
-    actBeat:   (state.actBeat ?? 0) + 1,
+    stats:                 applyDecay(adventure, applyDelta(adventure, state.stats, choice.delta)),
+    flags:                 addFlags(state.flags, choice.set),
+    globalFlags:           addFlags(state.globalFlags ?? [], choice.setGlobal),
+    inventory,
+    pendingInventoryOffer: overflow.length ? overflow : null,
+    history:               [...state.history, { sceneId: state.sceneId, choice: choiceIndex, text: choice.text }],
+    beat:                  state.beat + 1,
+    act:                   state.act ?? 0,
+    actBeat:               (state.actBeat ?? 0) + 1,
   };
 
   // ── act progression ───────────────────────────────────────────────────────
@@ -225,6 +256,54 @@ export function fallbackScene(state) {
       { text: 'Leave through the window. Take the snacks.', next: 'END', delta: { pop: -5 } },
     ],
   };
+}
+
+/**
+ * Player voluntarily uses an item. Sets its useFlag (if declared) and marks
+ * pendingItemUse so the LLM request knows what was used. Returns status "generate"
+ * so the caller triggers an LLM beat. Does NOT remove the item — the LLM decides
+ * via `consumed` whether the item is taken.
+ */
+export function useItem(adventure, state, item) {
+  if (state.ended) throw new Error('The episode has already ended.');
+  const def = item.id ? adventure.items?.[item.id] : null;
+  const flags = def?.useFlag ? addFlags(state.flags, [def.useFlag]) : state.flags;
+  const next = {
+    ...state,
+    flags,
+    pendingItemUse: { id: item.id ?? null, label: item.label },
+    beat: state.beat + 1,
+  };
+  return { status: 'generate', state: next, itemUse: { id: item.id ?? null, label: item.label } };
+}
+
+/** Clear pendingItemUse and optionally consume the item (when LLM says consumed: true). */
+export function resolveItemUse(state, consumed) {
+  const pending = state.pendingItemUse;
+  if (!pending) return state;
+  let inventory = state.inventory;
+  if (consumed && pending.id) {
+    inventory = inventory.filter((i) => (typeof i === 'string' ? i : i.id) !== pending.id);
+  } else if (consumed && !pending.id) {
+    inventory = inventory.filter((i) => (typeof i === 'object' && i.label) !== pending.label);
+  }
+  return { ...state, inventory, pendingItemUse: null };
+}
+
+/** Drop an existing item to make room, then add the first pending offered item. */
+export function acceptInventoryOffer(state, droppedItemId) {
+  const offered = state.pendingInventoryOffer?.[0];
+  if (!offered) return { ...state, pendingInventoryOffer: null };
+  const inventory = [
+    ...state.inventory.filter((i) => (typeof i === 'string' ? i : i.id) !== droppedItemId),
+    offered,
+  ];
+  return { ...state, inventory, pendingInventoryOffer: null };
+}
+
+/** Decline the pending inventory offer — keep current inventory, discard offered item. */
+export function declineInventoryOffer(state) {
+  return { ...state, pendingInventoryOffer: null };
 }
 
 /** First ending whose condition holds (the last one should have no condition). */

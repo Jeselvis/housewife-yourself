@@ -83,12 +83,26 @@
         "recap": { "type": "string", "description": "Line shown in the ending recap when this flag is set." }
       }
     },
+    "itemSprite": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base", "color", "accent"],
+      "properties": {
+        "base":   { "enum": ["document", "bottle", "creature", "device", "ring", "food", "cloth", "orb", "flora", "key", "glass", "trophy", "bag"] },
+        "color":  { "enum": ["gold", "pink", "teal", "cream", "purple"] },
+        "accent": { "enum": ["sparkle", "glow", "stain", "tear", "none"] }
+      }
+    },
     "itemDef": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["label"],
+      "required": ["label", "sprite"],
       "properties": {
-        "label": { "type": "string", "minLength": 1, "description": "Display name shown in the inventory strip." }
+        "label":       { "type": "string", "minLength": 1, "maxLength": 40, "description": "Display name shown in inventory." },
+        "description": { "type": "string", "description": "Shown on inventory screen detail panel." },
+        "hint":        { "type": "string", "description": "Warning shown before drop. Signals this item might matter." },
+        "useFlag":     { "$ref": "#/definitions/flagName", "description": "Flag set when this item is used (regardless of consumed)." },
+        "sprite":      { "$ref": "#/definitions/itemSprite" }
       }
     },
     "condition": {
