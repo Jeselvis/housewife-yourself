@@ -14,7 +14,13 @@ import briarwoodCast from '../../cast/briarwood.json'
 import lakewoodCast from '../../cast/lakewood.json'
 
 const _adventureMods = import.meta.glob('../../adventures/*.json', { eager: true })
-const ADVENTURES = Object.values(_adventureMods).map(m => m.default)
+const ADVENTURES = Object.values(_adventureMods)
+  .map(m => m.default)
+  .sort((a, b) => {
+    const sa = (a.season ?? 0) * 1000 + (a.episodeNumber ?? 0)
+    const sb = (b.season ?? 0) * 1000 + (b.episodeNumber ?? 0)
+    return sb - sa
+  })
 const CASTS = { 'lake-sparkle': lakeSparkleCast, briarwood: briarwoodCast, lakewood: lakewoodCast }
 const SAVE_KEY = 'lsa'
 const AUTH_KEY  = 'lsa-auth'
