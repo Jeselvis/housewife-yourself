@@ -58,7 +58,7 @@ function buildSeedItems(adventure, globalItems) {
     })
     .slice(0, 8)
 }
-const ADVENTURE_IMAGES = { toast: '/toast.webp', passions: '/wedding.webp', easter: '/easter.webp' }
+const ADVENTURE_IMAGES = { toast: '/wedding.webp', passions: '/toast.webp', easter: '/easter.webp' }
 
 const C = {
   bg: '#170a21',
