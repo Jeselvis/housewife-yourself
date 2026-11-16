@@ -262,8 +262,14 @@ function EpisodeSelect({ onSelect, onNewGame, spice, onSpice }) {
           const epBadge = adv.season && adv.episodeNumber
             ? `S${adv.season} · EP ${adv.episodeNumber}`
             : adv.label
+          const isNew = i === 0 && !hasSave
           return (
-            <div key={adv.id} style={{ background: C.panel, border: `3px solid ${C.gold}`, padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+            <div key={adv.id} style={{ position: 'relative', background: C.panel, border: `3px solid ${C.gold}`, padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+              {isNew && (
+                <div style={{ position: 'absolute', top: -14, right: -10, zIndex: 2, pointerEvents: 'none' }}>
+                  <span className="new-star" style={{ color: C.gold, textShadow: `0 0 8px ${C.pink}, 0 0 16px ${C.gold}` }}>★</span>
+                </div>
+              )}
               <div className="adv-card-body">
                 {ADVENTURE_IMAGES[adv.id] && (
                   <img src={ADVENTURE_IMAGES[adv.id]} alt="" aria-hidden="true" className="adv-card-img" />

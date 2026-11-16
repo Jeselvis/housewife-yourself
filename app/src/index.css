@@ -86,6 +86,20 @@ button { font-family: inherit; cursor: pointer; }
   animation: conf-gesture 1.8s ease-in-out forwards;
 }
 
+@keyframes new-star {
+  0%   { transform: scale(1)    rotate(0deg);   opacity: 1; }
+  25%  { transform: scale(1.25) rotate(15deg);  opacity: 1; }
+  50%  { transform: scale(1)    rotate(0deg);   opacity: 0.7; }
+  75%  { transform: scale(1.2)  rotate(-12deg); opacity: 1; }
+  100% { transform: scale(1)    rotate(0deg);   opacity: 1; }
+}
+.new-star {
+  animation: new-star 1.6s ease-in-out infinite;
+  display: block;
+  line-height: 1;
+  font-size: 22px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
