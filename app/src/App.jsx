@@ -270,7 +270,7 @@ function EpisodeSelect({ onSelect, onNewGame, spice, onSpice }) {
                 )}
                 <div className="adv-card-text">
                   <div style={{ fontFamily: press, fontSize: 8, color: C.pink }}>{epBadge}</div>
-                  <div style={{ fontSize: 18, color: C.lavender }}>{castName}</div>
+                  {ADVENTURES.filter(a => a.cast === adv.cast).length > 1 ? null : <div style={{ fontSize: 18, color: C.lavender }}>{castName}</div>}
                   <div style={{ fontSize: 20, color: C.gold, lineHeight: 1.3 }}>{adv.episode}</div>
                   <div style={{ fontSize: 18, color: C.cream, lineHeight: 1.3 }}>{tease}</div>
                 </div>

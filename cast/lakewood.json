@@ -2,7 +2,7 @@
   "$schema": "../schema/cast.schema.json",
   "version": 1,
   "id": "lakewood",
-  "name": "The Housewives of Lake Sparkle (Season 5)",
+  "name": "The Housewives of Lake Sparkle",
   "characters": {
     "MIMOSA RAINES": {
       "look": { "style": "big", "hair": "#f2d880", "skin": "#f5dcbc", "outfit": "#d4a040", "lips": "#c05070", "accent": "#ffd54a" },
